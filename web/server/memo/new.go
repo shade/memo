@@ -71,7 +71,7 @@ var newSubmitRoute = web.Route{
 		tx, err := build.MemoMessage(message, privateKey)
 		if err != nil {
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building like tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building new memo tx", err), http.StatusInternalServerError)
 			return
 		}
 

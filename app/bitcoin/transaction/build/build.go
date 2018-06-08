@@ -36,7 +36,7 @@ func Build(spendOutputs []transaction.SpendOutput, privateKey *wallet.PrivateKey
 		totalInputs += txOut.Value
 	}
 
-	var fee = int64(memo.BaseTxFee + len(txOuts)*memo.InputFeeP2PKH) + memo.OutputFeeP2PKH
+	var fee = int64(memo.BaseTxFee+len(txOuts)*memo.InputFeeP2PKH) + memo.OutputFeeP2PKH
 
 	var totalOutputs int64
 	for _, spendOutput := range spendOutputs {
@@ -74,9 +74,21 @@ func Build(spendOutputs []transaction.SpendOutput, privateKey *wallet.PrivateKey
 
 func getMemoOutputFee(spendOutput transaction.SpendOutput) (int64, error) {
 	switch spendOutput.Type {
+	case transaction.SpendOutputTypeMemoMessage:
+		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
+	case transaction.SpendOutputTypeMemoReply:
+		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data) + memo.OutputOpDataFee + len(spendOutput.RefData)), nil
 	case transaction.SpendOutputTypeMemoLike:
 		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
+	case transaction.SpendOutputTypeMemoSetName:
+		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
 	case transaction.SpendOutputTypeMemoSetProfilePic:
+		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
+	case transaction.SpendOutputTypeMemoFollow, transaction.SpendOutputTypeMemoUnfollow:
+		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
+	case transaction.SpendOutputTypeMemoTopicMessage:
+		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data) + memo.OutputOpDataFee + len(spendOutput.RefData)), nil
+	case transaction.SpendOutputTypeMemoTopicFollow, transaction.SpendOutputTypeMemoTopicUnfollow:
 		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
 	}
 	return 0, jerr.New("unable to get fee for output type")

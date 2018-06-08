@@ -109,8 +109,6 @@ var setPicSubmitRoute = web.Route{
 		}
 		response.Body.Close()
 
-		//pic.FetchProfilePic(url, address.GetAddress().String())
-
 		pkHash := privateKey.GetPublicKey().GetAddress().GetScriptAddress()
 		mutex.Lock(pkHash)
 

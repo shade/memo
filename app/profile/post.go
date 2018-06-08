@@ -597,7 +597,7 @@ func AttachParentToPosts(posts []*Post) error {
 			SelfPkHash: post.SelfPkHash,
 		}
 		if setPic != nil {
-			post.ProfilePic = setPic
+			post.Parent.ProfilePic = setPic
 		}
 	}
 	return nil

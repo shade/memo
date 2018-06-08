@@ -1,8 +1,15 @@
 <div class="topic-post" id="topic-post-{{ .Post.Memo.GetTransactionHashString }}">
     <a href="profile/{{ .Post.Memo.GetAddressString }}">
-    <span class="identicon-{{ .Post.Memo.GetAddressString }}">
-        <img class="identicon"/>
-    </span>
+
+    {{ if .Post.ProfilePic }}
+        <a class="image-link" href="profile/{{ .Post.Memo.GetAddressString }}">
+            <img class="profile-pic profile-pic-24" src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}"/>
+        </a>
+    {{ else }}
+        <span class="identicon-{{ .Post.Memo.GetAddressString }}">
+            <img class="identicon"/>
+        </span>
+    {{ end }}
     </a>
     <div class="post-wrapper">
     <div class="post-header">
@@ -44,11 +51,11 @@
                         like{{ if not (eq (len .Post.Likes) 1) }}s{{ end }}</a>
                     (tip: {{ formatBigInt .Post.GetTotalTip }} satoshis)
                 {{- else }}
-                    <a class="like-link" id="like-link-{{ .Post.Memo.GetTransactionHashString }}" href="#">{{ T "like" 1 }}</a>
+                    <a class="like-link" id="like-link-{{ .Post.Memo.GetTransactionHashString }}" href="#">{{ T "like" 1 | UcFirst }}</a>
                 {{- end }}
                     &middot;
                 {{- if not (eq .Post.ReplyCount 0) }}
-                    <a class="reply-count" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ T "replies" }}</a>
+                    <a class="reply-count" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ T "reply" (.Post.ReplyCount | ToInt) }}</a>
                 {{ else }}
                     <a class="like-link" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ T "start_thread" | UcFirst }}</a>
                 {{ end }}

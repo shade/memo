@@ -93,7 +93,14 @@
   },
   {
     "id": "reply",
-    "translation": "답글"
+    "translation": {
+      "one": "답글",
+      "other": "답글들"
+    }
+  },
+  {
+    "id": "reply_verb",
+    "translation": "대답하다"
   },
   {
     "id": "like",
@@ -101,14 +108,6 @@
       "one": "좋아요",
       "other": "좋아요"
     }
-  },
-  {
-    "id": "replies",
-    "translation": "답글들"
-  },
-  {
-    "id": "likes",
-    "translation": "좋아요"
   },
   {
     "id": "top",
@@ -351,5 +350,21 @@
   {
     "id": "start_thread",
     "translation": "start thread"
+  },
+  {
+    "id": "set_profile_pic",
+    "translation": "set profile picture"
+  },
+  {
+    "id": "show",
+    "translation": "보이다"
+  },
+  {
+    "id": "replied_to",
+    "translation": "대답했다"
+  },
+  {
+    "id": "topics_following",
+    "translation": "topics following"
   }
 ]

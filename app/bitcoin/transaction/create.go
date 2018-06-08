@@ -33,6 +33,7 @@ const (
 	SpendOutputTypeMemoPollQuestionMulti
 	SpendOutputTypeMemoPollOption
 	SpendOutputTypeMemoPollVote
+	SpendOutputTypeMemoSetProfilePic
 )
 
 func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spendOutputs []SpendOutput) (*wire.MsgTx, error) {
@@ -305,6 +306,23 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			}
 			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
+		case SpendOutputTypeMemoSetProfilePic:
+			if len(spendOutput.Data) > memo.MaxPostSize {
+				return nil, jerr.New("url too large")
+			}
+			if len(spendOutput.Data) == 0 {
+				return nil, jerr.New("empty url")
+			}
+			pkScript, err := txscript.NewScriptBuilder().
+				AddOp(txscript.OP_RETURN).
+				AddData([]byte{memo.CodePrefix, memo.CodeSetProfilePicture}).
+				AddData(spendOutput.Data).
+				Script()
+			if err != nil {
+				return nil, jerr.Get("error creating memo set pic output", err)
+			}
+			fmt.Printf("pkScript: %x\n", pkScript)
+			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
 		}
 	}
 
@@ -330,24 +348,25 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 		LockTime: 0,
 	}
 
-	signature, err := txscript.SignatureScript(
-		tx,
-		0,
-		spendOuts[0].PkScript,
-		txscript.SigHashAll+wallet.SigHashForkID,
-		privateKey.GetBtcEcPrivateKey(),
-		true,
-		totalValue,
-	)
-
-	if err != nil {
-		return nil, jerr.Get("error signing transaction", err)
+	for i := 0; i < len(spendOuts); i++ {
+		signature, err := txscript.SignatureScript(
+			tx,
+			i,
+			spendOuts[i].PkScript,
+			txscript.SigHashAll+wallet.SigHashForkID,
+			privateKey.GetBtcEcPrivateKey(),
+			true,
+			spendOuts[i].Value,
+		)
+		if err != nil {
+			return nil, jerr.Get("error signing transaction", err)
+		}
+		txIns[i].SignatureScript = signature
+		fmt.Printf("Signature: %x\n", signature)
 	}
-	txIns[0].SignatureScript = signature
 
-	fmt.Printf("Signature: %x\n", signature)
 	writer := new(bytes.Buffer)
-	err = tx.BtcEncode(writer, 1)
+	err := tx.BtcEncode(writer, 1)
 	if err != nil {
 		return nil, jerr.Get("error encoding transaction", err)
 	}

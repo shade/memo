@@ -93,22 +93,21 @@
   },
   {
     "id": "reply",
-    "translation": "Respuesta"
+    "translation": {
+      "one": "respuesta",
+      "other": "respuestas"
+    }
+  },
+  {
+    "id": "reply_verb",
+    "translation": "responder"
   },
   {
     "id": "like",
     "translation": {
-      "one": "Me gusta",
-      "other": "Me gustas"
+      "one": "me gusta",
+      "other": "me gustas"
     }
-  },
-  {
-    "id": "replies",
-    "translation": "respuestas"
-  },
-  {
-    "id": "likes",
-    "translation": "me gustas"
   },
   {
     "id": "top",
@@ -351,5 +350,21 @@
   {
     "id": "start_thread",
     "translation": "start thread"
+  },
+  {
+    "id": "set_profile_pic",
+    "translation": "set profile picture"
+  },
+  {
+    "id": "show",
+    "translation": "mostrar"
+  },
+  {
+    "id": "replied_to",
+    "translation": "responder a"
+  },
+  {
+    "id": "topics_following",
+    "translation": "topics following"
   }
 ]

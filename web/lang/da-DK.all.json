@@ -93,7 +93,14 @@
   },
   {
     "id": "reply",
-    "translation": "απάντηση"
+    "translation": {
+      "one": "απάντηση",
+      "other": "απαντήσεις"
+    }
+  },
+  {
+    "id": "reply_verb",
+    "translation": "svare"
   },
   {
     "id": "like",
@@ -101,14 +108,6 @@
       "one": "άρεσε",
       "other": "άρεσε"
     }
-  },
-  {
-    "id": "replies",
-    "translation": "απαντήσεις"
-  },
-  {
-    "id": "likes",
-    "translation": "καρδούλες"
   },
   {
     "id": "top",
@@ -351,5 +350,21 @@
   {
     "id": "start_thread",
     "translation": "start thread"
+  },
+  {
+    "id": "set_profile_pic",
+    "translation": "set profile picture"
+  },
+  {
+    "id": "show",
+    "translation": "vise"
+  },
+  {
+    "id": "replied_to",
+    "translation": "svarede til"
+  },
+  {
+    "id": "topics_following",
+    "translation": "topics following"
   }
 ]

@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -87,12 +88,24 @@ func preHandler(r *web.Response) {
 			r.Error(jerr.Get("error getting last notification id from cache", err), http.StatusInternalServerError)
 			return
 		}
+		profilePic, err := cache.GetProfilePic(userAddress.GetScriptAddress())
+		if err != nil {
+			r.Error(jerr.Get("error getting has pic from cache", err), http.StatusInternalServerError)
+			return
+		}
+		r.Helper["ProfilePic"] = profilePic
 		r.Helper["UnreadNotifications"] = unreadNotifications
 		r.Helper["UserSettings"] = userSettings
 		r.Helper["IsLoggedIn"] = true
 	} else {
 		r.Helper["UserSettings"] = db.GetDefaultUserSettings()
 		r.Helper["IsLoggedIn"] = false
+	}
+	memoContext := r.Request.GetHeader("memo-context")
+	if memoContext == "mobile-app" {
+		r.Helper["IsMobileApp"] = true
+	} else {
+		r.Helper["IsMobileApp"] = false
 	}
 	if UseMinJS {
 		r.Helper["jsFiles"] = res.GetMinJsFiles()
@@ -122,6 +135,29 @@ func preHandler(r *web.Response) {
 			}
 			return ""
 		},
+		"ToInt": func(value interface{}) int32 {
+			switch v := value.(type){
+				case string:
+					converted, err := strconv.ParseInt(v, 10, 32)
+					if err != nil {
+						log.Fatal(jerr.Get("error casting to int in template", err))
+					}
+					return int32(converted)
+				case int:
+					return int32(v)
+				case int32:
+					return int32(v)
+				case int64:
+					return int32(v)
+				case uint:
+					return int32(v)
+				case uint32:
+					return int32(v)
+				case uint64:
+					return int32(v)
+			}
+			return int32(0)
+		},
 	})
 }
 
@@ -131,7 +167,7 @@ func notFoundHandler(r *web.Response) {
 }
 
 func isValidLang(lang string) bool {
-	for _, item := range []string{"en-US", "es-LA", "zh-CN", "ja-JP", "fr-FR", "sv-SE", "ko-KR", "el-GR", "pl-PL"} {
+	for _, item := range []string{"en-US", "es-LA", "zh-CN", "ja-JP", "fr-FR", "sv-SE", "ko-KR", "el-GR", "pl-PL", "pt-BR", "cs-CZ", "nl-NL"} {
 		if item == lang {
 			return true
 		}
@@ -153,7 +189,7 @@ var allowedExtensions = []string{
 	"eot",
 }
 
-func Run(sessionCookieInsecure bool) {
+func Run(sessionCookieInsecure bool, port int) {
 	go func() {
 		queuer.StartAndKeepAlive()
 	}()
@@ -174,7 +210,7 @@ func Run(sessionCookieInsecure bool) {
 		InsecureCookie:    sessionCookieInsecure,
 		AllowedExtensions: allowedExtensions,
 		IsLoggedIn:        isLoggedIn,
-		Port:              8261,
+		Port:              port,
 		NotFoundHandler:   notFoundHandler,
 		PreHandler:        preHandler,
 		GetCsrfToken:      getCsrfToken,

@@ -31,11 +31,14 @@
     </script>
 </head>
 <body {{ if eq .UserSettings.Theme "dark" }}class="dark"{{ end }}>
-<nav class="navbar navbar-default">
+{{ if not .IsMobileApp }}
+<br/>
+<br/>
+<br/>
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand navbar-left" href="">
-                <img class="logo img-fluid" src="img/memo-logo-header.png"/>
                 Memo
             </a>
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -80,7 +83,7 @@
                 <li {{ if eq $nav "login" }}class="active"{{ end }}><a href="login">{{ T "Login" }}</a></li>
             {{ end }}
             </ul>
-        {{ if .Username }}
+        {{ if .IsLoggedIn }}
             <ul class="nav navbar-nav navbar-right">
                 <li class="hidden-xs nav-item notifications"><a href="notifications">
                 {{ formatUInt .UnreadNotifications }}
@@ -89,7 +92,13 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {{ .Username }} <img src="img/profile.png"/>
+                    {{ .Username }}
+                    {{ if .ProfilePic.Has }}
+                        <img class="profile-pic profile-pic-24"
+                             src="/img/profilepics/{{ .UserAddress }}-24x24.{{ .ProfilePic.Extension }}?id={{ .ProfilePic.Id }}"/>
+                    {{ else }}
+                        <img src="img/profile.png"/>
+                    {{ end }}
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
@@ -106,6 +115,7 @@
         </div>
     </div>
 </nav>
+{{ end }}
 
 <div class="wrapper">
 

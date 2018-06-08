@@ -51,7 +51,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     $followTopicCreating.addClass("hidden");
@@ -76,7 +76,7 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
@@ -85,7 +85,7 @@
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -136,28 +136,28 @@
             var topicName = $topicName.val();
             var message = $message.val();
             if (maxNewTopicBytes - getByteSize() < 0) {
-                alert("Maximum size is " + maxNewTopicBytes + " bytes. Note that some characters are more than 1 byte." +
+                MemoApp.AddAlert("Maximum size is " + maxNewTopicBytes + " bytes. Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
             }
 
             if (topicName.match(/[%+]+/)) {
-                alert("Characters %,+ are not allowed in a topic name. Sorry for the inconvenience.");
+                MemoApp.AddAlert("Characters %,+ are not allowed in a topic name. Sorry for the inconvenience.");
                 return;
             }
 
             if (topicName.search('/') === 0) {
-                alert("The / character can't be the first character of the topic name. Sorry for the inconvenience.");
+                MemoApp.AddAlert("The / character can't be the first character of the topic name. Sorry for the inconvenience.");
                 return;
             }
 
             if (topicName.length === 0) {
-                alert("Must enter a topic name.");
+                MemoApp.AddAlert("Must enter a topic name.");
                 return;
             }
 
             if (message.length === 0) {
-                alert("Must enter a message.");
+                MemoApp.AddAlert("Must enter a message.");
                 return;
             }
 
@@ -179,7 +179,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -187,7 +187,7 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
@@ -196,7 +196,7 @@
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -243,7 +243,7 @@
                         $allPosts.scrollTop($allPosts[0].scrollHeight);
                     },
                     error: function (xhr) {
-                        alert("error getting post via ajax (status: " + xhr.status + ")");
+                        MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
                     }
                 });
             };
@@ -283,7 +283,7 @@
                     },
                     error: function (xhr) {
                         submitting = false;
-                        alert("error getting posts (status: " + xhr.status + ")");
+                        MemoApp.AddAlert("error getting posts (status: " + xhr.status + ")");
                     }
                 });
             }
@@ -360,18 +360,18 @@
             var topicName = $topicName.val();
             var message = $message.val();
             if (maxNewTopicBytes - getByteSize() < 0) {
-                alert("Maximum size is " + maxNewTopicBytes + " bytes. Note that some characters are more than 1 byte." +
+                MemoApp.AddAlert("Maximum size is " + maxNewTopicBytes + " bytes. Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
             }
 
             if (topicName.length === 0) {
-                alert("Must enter a topic name.");
+                MemoApp.AddAlert("Must enter a topic name.");
                 return;
             }
 
             if (message.length === 0) {
-                alert("Must enter a message.");
+                MemoApp.AddAlert("Must enter a message.");
                 return;
             }
 
@@ -393,7 +393,7 @@
                 success: function (txHash) {
                     if (!txHash || txHash.length === 0) {
                         submitting = false;
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     $broadcasting.removeClass("hidden");
@@ -411,7 +411,7 @@
                         },
                         error: function () {
                             submitting = false;
-                            alert("Error waiting for transaction to broadcast.");
+                            MemoApp.AddAlert("Error waiting for transaction to broadcast.");
                             $broadcasting.addClass("hidden");
                             $message.val("");
                         }
@@ -420,7 +420,7 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
@@ -429,7 +429,7 @@
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -463,13 +463,13 @@
 
             var txHash = $form.find("[name=tx-hash]").val();
             if (txHash.length === 0) {
-                alert("Form error, tx hash not set.");
+                MemoApp.AddAlert("Form error, tx hash not set.");
                 return;
             }
 
             var tip = $form.find("[name=tip]").val();
             if (tip.length !== 0 && tip < 546) {
-                alert("Must enter a tip greater than 546 (the minimum dust limit).");
+                MemoApp.AddAlert("Must enter a tip greater than 546 (the minimum dust limit).");
                 return;
             }
 
@@ -491,7 +491,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     $broadcasting.removeClass("hidden");
@@ -508,7 +508,7 @@
                         },
                         error: function () {
                             submitting = false;
-                            alert("Error waiting for transaction to broadcast.");
+                            MemoApp.AddAlert("Error waiting for transaction to broadcast.");
                             $broadcasting.addClass("hidden");
                         }
                     });
@@ -516,7 +516,7 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
@@ -525,7 +525,7 @@
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });

@@ -44,6 +44,22 @@ var MemoApp = {
         });
     };
 
+    var alertId = 0;
+    /**
+     * @param message {string}
+     */
+    MemoApp.AddAlert = function(message) {
+        alertId++;
+        $(".alert-banner").append("<p id='alert-banner-message-" + alertId + "'>" + message + "</p>");
+        var $alertMessage = $("#alert-banner-message-" + alertId);
+        $alertMessage.hide().slideDown();
+        setTimeout(function() {
+            $alertMessage.slideUp(function() {
+                $alertMessage.remove();
+            })
+        }, 5000);
+    };
+
     var BaseURL = "/";
 
     /**
@@ -74,7 +90,7 @@ var MemoApp = {
 
     MemoApp.GetPassword = function() {
         if (!localStorage.WalletPassword || localStorage.WalletPassword.length === 0) {
-            alert("We've updated how wallets are unlocked. Please re-login to unlock your wallet.");
+            MemoApp.AddAlert("We've updated how wallets are unlocked. Please re-login to unlock your wallet.");
             window.location = MemoApp.URL.Logout + "?a=re-login";
         }
         return localStorage.WalletPassword;
@@ -95,7 +111,7 @@ var MemoApp = {
             "Error with request (response code " + xhr.status + "):\n" +
             (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
             "If this problem persists, try refreshing the page.";
-        alert(errorMessage);
+        MemoApp.AddAlert(errorMessage);
     };
 
     /**

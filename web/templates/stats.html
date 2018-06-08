@@ -20,8 +20,20 @@
         <td>{{ formatBigInt .MemoSetNameCount }}</td>
     </tr>
     <tr>
+        <th>{{ T "Profiles set" }}</th>
+        <td>{{ formatBigInt .MemoSetProfileCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Profile pics set" }}</th>
+        <td>{{ formatBigInt .MemoSetProfilePicCount }}</td>
+    </tr>
+    <tr>
         <th>{{ T "Polls created" }}</th>
         <td>{{ formatBigInt .MemoPollQuestionCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Polls options added" }}</th>
+        <td>{{ formatBigInt .MemoPollOptionCount }}</td>
     </tr>
     <tr>
         <th>{{ T "Poll votes" }}</th>

@@ -77,3 +77,11 @@ func GetMemoPollOptionByOption(pollTxHash []byte, option string) (*MemoPollOptio
 	}
 	return &memoPollOption, nil
 }
+
+func GetCountMemoPollOption() (uint, error) {
+	cnt, err := count(&MemoPollOption{})
+	if err != nil {
+		return 0, jerr.Get("error getting total count", err)
+	}
+	return cnt, nil
+}

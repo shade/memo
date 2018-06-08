@@ -14,6 +14,7 @@ const (
 	MaxTxFee          = 425
 	OutputFeeP2PKH    = 34
 	OutputFeeOpReturn = 20
+	OutputOpDataFee   = 3
 	InputFeeP2PKH     = 148
 	BaseTxFee         = 10
 )

@@ -22,6 +22,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"github.com/memocash/memo/app/util"
 )
 
 var UseMinJS bool
@@ -120,7 +121,7 @@ func preHandler(r *web.Response) {
 	if lang == "" {
 		lang = r.Request.GetHeader("Accept-Language")
 	}
-	if ! isValidLang(lang) {
+	if ! util.IsValidLang(lang) {
 		lang = "en-US"
 	}
 
@@ -164,15 +165,6 @@ func preHandler(r *web.Response) {
 func notFoundHandler(r *web.Response) {
 	r.SetResponseCode(http.StatusNotFound)
 	r.RenderTemplate(res.UrlNotFound)
-}
-
-func isValidLang(lang string) bool {
-	for _, item := range []string{"en-US", "es-LA", "zh-CN", "ja-JP", "fr-FR", "sv-SE", "ko-KR", "el-GR", "pl-PL", "pt-BR", "cs-CZ", "nl-NL"} {
-		if item == lang {
-			return true
-		}
-	}
-	return false
 }
 
 var allowedExtensions = []string{

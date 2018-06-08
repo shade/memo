@@ -71,6 +71,7 @@
                     <a href="#" id="like-cancel-{{ .Post.Memo.GetTransactionHashString }}">Cancel</a>
                 </form>
                 <span class="broadcasting hidden">Broadcasting...</span>
+                <span class="creating hidden">Creating...</span>
                 <script type="text/javascript">
                     $(function () {
                         MemoApp.Form.NewTopicLike($("#like-{{ .Post.Memo.GetTransactionHashString }}"), "{{ .Post.Memo.GetTransactionHashString }}");

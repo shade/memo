@@ -130,63 +130,16 @@ func GetNamesForPkHashes(pkHashes [][]byte) ([]*MemoSetName, error) {
 		"	FROM memo_set_names" +
 		"	GROUP BY pk_hash" +
 		") sq ON (sq.id = memo_set_names.id)"
-	query := db.
-		Table("memo_set_names").
-		Select("memo_set_names.*, blocks.*").
-		Joins(joinSelect).
-		Joins("JOIN blocks ON (memo_set_names.block_id = blocks.id)").
-		Order("blocks.timestamp DESC").
-		Where("pk_hash IN (?)", pkHashes)
-	rows, err := query.Rows()
-	if err != nil {
-		return nil, jerr.Get("error getting set names", err)
-	}
 	var memoSetNames []*MemoSetName
-	for rows.Next() {
-		var memoSetName = MemoSetName{
-			Block: &Block{},
-		}
-		err = rows.Scan(
-			&memoSetName.Id,
-			&memoSetName.TxHash,
-			&memoSetName.ParentHash,
-			&memoSetName.PkHash,
-			&memoSetName.PkScript,
-			&memoSetName.Address,
-			&memoSetName.Name,
-			&memoSetName.BlockId,
-			&memoSetName.CreatedAt,
-			&memoSetName.UpdatedAt,
-			&memoSetName.Block.Id,
-			&memoSetName.Block.Height,
-			&memoSetName.Block.Timestamp,
-			&memoSetName.Block.Hash,
-			&memoSetName.Block.PrevBlock,
-			&memoSetName.Block.MerkleRoot,
-			&memoSetName.Block.Nonce,
-			&memoSetName.Block.TxnCount,
-			&memoSetName.Block.Version,
-			&memoSetName.Block.Bits,
-			&memoSetName.Block.CreatedAt,
-			&memoSetName.Block.UpdatedAt,
-		)
-		if err != nil {
-			return nil, jerr.Get("error scanning set name", err)
-		}
-		memoSetNames = append(memoSetNames, &memoSetName)
+	result := db.
+		Preload(BlockTable).
+		Joins(joinSelect).
+		Where("pk_hash IN (?)", pkHashes).
+		Find(&memoSetNames)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting set names", result.Error)
 	}
-
-	var setNames []*MemoSetName
-SetNameLoop:
-	for _, memoSetName := range memoSetNames {
-		for _, setName := range setNames {
-			if bytes.Equal(setName.PkHash, memoSetName.PkHash) {
-				continue SetNameLoop
-			}
-		}
-		setNames = append(setNames, memoSetName)
-	}
-	return setNames, nil
+	return memoSetNames, nil
 }
 
 func GetUniqueMemoAPkHashesMatchName(searchString string, offset int) ([][]byte, error) {

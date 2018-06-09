@@ -453,6 +453,7 @@
         var $form = $like.find("form");
 
         var $broadcasting = $like.find(".broadcasting");
+        var $creating = $like.find(".creating");
 
         var submitting = false;
         $form.submit(function (e) {
@@ -460,6 +461,9 @@
             if (submitting) {
                 return
             }
+
+            $creating.removeClass("hidden");
+            $form.hide();
 
             var txHash = $form.find("[name=tx-hash]").val();
             if (txHash.length === 0) {
@@ -494,8 +498,8 @@
                         MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
+                    $creating.addClass("hidden");
                     $broadcasting.removeClass("hidden");
-                    $form.hide();
                     $.ajax({
                         type: "POST",
                         url: MemoApp.GetBaseUrl() + MemoApp.URL.MemoWaitSubmit,

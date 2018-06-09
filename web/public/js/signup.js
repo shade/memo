@@ -29,8 +29,8 @@
                 return;
             }
 
-            if (password.length === 0) {
-                MemoApp.AddAlert("Must enter a password.");
+            if (password.length < 13) {
+                MemoApp.AddAlert("Must enter a password at least 13 characters in length.");
                 return;
             }
 

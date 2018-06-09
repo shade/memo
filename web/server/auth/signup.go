@@ -8,6 +8,7 @@ import (
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/res"
 	"net/http"
+	"github.com/memocash/memo/app/util"
 )
 
 const (
@@ -18,6 +19,7 @@ const (
 	MsgErrorImportingKey       = "error importing key"
 	MsgErrorUserAlreadyExists  = "user already exists"
 	MsgErrorSigningUp          = "error signing up"
+	MsgErrorPasswordLength     = "password must be at least 13 characters in length"
 )
 
 var signupRoute = web.Route{
@@ -46,6 +48,10 @@ var signupSubmitRoute = web.Route{
 		db.UpdateCsrfTokenSession(oldCookieId, r.Session.CookieId)
 		username := r.Request.GetFormValue("username")
 		password := r.Request.GetFormValue("password")
+		if !util.ValidatePassword(password) {
+			r.Error(jerr.New(MsgErrorPasswordLength), http.StatusInternalServerError)
+			return
+		}
 		wif := r.Request.GetFormValue("wif")
 
 		// Before creating account, make sure we have a valid private key

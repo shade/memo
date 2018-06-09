@@ -6,6 +6,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/res"
+	"encoding/base64"
 	"github.com/skip2/go-qrcode"
 	"net/http"
 )
@@ -61,7 +62,12 @@ var loadKeyRoute = web.Route{
 			r.Error(jerr.Get("error generating qr", err), http.StatusInternalServerError)
 			return
 		}
-		r.Helper["QR"] = qr.ToString(true)
+		png, err := qr.PNG(250)
+		if err != nil {
+			r.Error(jerr.Get("error generating png", err), http.StatusInternalServerError)
+			return
+		}
+		r.Helper["QR"] = base64.StdEncoding.EncodeToString(png)
 
 		r.RenderTemplate(res.UrlKeyLoad)
 	},

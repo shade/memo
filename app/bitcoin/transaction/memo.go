@@ -278,7 +278,7 @@ func saveMemoSetPic(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 	go func() {
 		err = pic.FetchProfilePic(memoSetPic.Url, memoSetPic.GetAddressString())
 		if err != nil {
-			jerr.Get("Error generating profile pic", err).Print()
+			jerr.Get("error generating profile pic", err).Print()
 		} else {
 			fmt.Printf("Generated profile pic (%s) for user %s\n", memoSetPic.Url, memoSetPic.GetAddressString())
 		}

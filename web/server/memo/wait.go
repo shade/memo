@@ -11,7 +11,6 @@ import (
 	"github.com/memocash/memo/app/res"
 	"net/http"
 	"strings"
-	"time"
 )
 
 var waitRoute = web.Route{
@@ -124,8 +123,6 @@ var waitSubmitRoute = web.Route{
 				r.Error(jerr.Get("error getting profile picture from db", err), http.StatusInternalServerError)
 				return
 			}
-			// Give it a little extra time to generate the image
-			time.Sleep(time.Second)
 			r.Write(strings.TrimLeft(res.UrlProfileView + "/" + setName.GetAddressString(), "/"))
 		}
 	},

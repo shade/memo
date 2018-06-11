@@ -323,13 +323,13 @@
 
     /**
      * @param {jQuery} $broadcasting
+     * @param {jQuery} $creating
      * @param {jQuery} $form
      */
     MemoApp.Form.NewTopicMessage = function ($broadcasting, $creating, $form) {
         var $topicName = $form.find("[name=topic]");
         var $message = $form.find("[name=message]");
         var $msgByteCount = $form.find(".message-byte-count");
-        var $message = $form.find("#message");
         var $submitButton = $form.find("#message-submit");
 
         $message.on("input", function () {

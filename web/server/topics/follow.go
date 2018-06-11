@@ -2,11 +2,12 @@ package topics
 
 import (
 	"fmt"
+	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
-	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/bitcoin/transaction/build"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/mutex"
 	"github.com/memocash/memo/app/res"
@@ -38,35 +39,18 @@ var followSubmitRoute = web.Route{
 			return
 		}
 
-		address := key.GetAddress()
-		var fee = int64(memo.MaxTxFee - memo.MaxTagMessageSize + len([]byte(topicName)))
-		var minInput = fee + transaction.DustMinimumOutput
+		pkHash := privateKey.GetPublicKey().GetAddress().GetScriptAddress()
+		mutex.Lock(pkHash)
 
-		mutex.Lock(key.PkHash)
-		txOut, err := db.GetSpendableTxOut(key.PkHash, minInput)
-		if err != nil {
-			mutex.Unlock(key.PkHash)
-			r.Error(jerr.Get("error getting spendable tx out", err), http.StatusInternalServerError)
-			return
-		}
-		var followType transaction.SpendOutputType
+		var tx *wire.MsgTx
 		if unfollow {
-			followType = transaction.SpendOutputTypeMemoTopicUnfollow
+			tx, err = build.UnfollowTopic(topicName, privateKey)
 		} else {
-			followType = transaction.SpendOutputTypeMemoTopicFollow
+			tx, err = build.FollowTopic(topicName, privateKey)
 		}
-
-		tx, err := transaction.Create([]*db.TransactionOut{txOut}, privateKey, []transaction.SpendOutput{{
-			Type:    transaction.SpendOutputTypeP2PK,
-			Address: address,
-			Amount:  txOut.Value - fee,
-		}, {
-			Type: followType,
-			Data: []byte(topicName),
-		}})
 		if err != nil {
-			mutex.Unlock(key.PkHash)
-			r.Error(jerr.Get("error creating tx", err), http.StatusInternalServerError)
+			mutex.Unlock(pkHash)
+			r.Error(jerr.Get("error building topic follow tx", err), http.StatusInternalServerError)
 			return
 		}
 

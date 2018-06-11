@@ -57,7 +57,7 @@
   },
   {
     "id": "following",
-    "translation": "Obserwowani"
+    "translation": "Obserwowane"
   },
   {
     "id": "balance",
@@ -119,11 +119,11 @@
   },
   {
     "id": "new",
-    "translation": "nowe"
+    "translation": "Nowe"
   },
   {
     "id": "archive",
-    "translation": "archiwalne"
+    "translation": "Archiwalne"
   },
   {
     "id": "last_hour",
@@ -333,27 +333,31 @@
   },
   {
     "id": "search",
-    "translation": "poszukiwać"
+    "translation": "szukaj"
   },
   {
     "id": "all",
-    "translation": "all"
+    "translation": "wszystkie"
   },
   {
     "id": "most_posts",
-    "translation": "most posts"
+    "translation": "najwięcej postów"
   },
   {
     "id": "most_followed",
-    "translation": "most followed"
+    "translation": "najwięcej obserwujących"
   },
   {
     "id": "start_thread",
-    "translation": "start thread"
+    "translation": "rozpocznij wątek"
+  },
+  {
+    "id": "set_profile_pic",
+    "translation": "ustaw zdjęcie profilowe"
   },
   {
     "id": "show",
-    "translation": "wykazać"
+    "translation": "pokaż"
   },
   {
     "id": "replied_to",
@@ -361,6 +365,6 @@
   },
   {
     "id": "topics_following",
-    "translation": "Tematy obserwowane"
+    "translation": "obserwowane tematy"
   }
 ]

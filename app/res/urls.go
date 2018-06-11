@@ -53,6 +53,8 @@ const (
 	UrlMemoWaitSubmit           = "/memo/wait-submit"
 	UrlMemoSetProfile           = "/memo/set-profile"
 	UrlMemoSetProfileSubmit     = "/memo/set-profile-submit"
+	UrlMemoSetProfilePic        = "/memo/set-profile-pic"
+	UrlMemoSetProfilePicSubmit  = "/memo/set-profile-pic-submit"
 
 	TmplMemoPost         = "/memo/post"
 	TmplMemoPostThreaded = "/memo/post-threaded"
@@ -64,12 +66,14 @@ const (
 	UrlProfileFollowers       = "/profile/followers"
 	UrlProfileFollowing       = "/profile/following"
 	UrlProfileSettings        = "/settings"
+	UrlProfileCoins           = "/coins"
 	UrlProfileSettingsSubmit  = "/settings-submit"
 	UrlProfileNotifications   = "/notifications"
 	UrlProfileTopicsFollowing = "/profile/topics-following"
 
 	TmplProfiles             = "/profile/all"
 	TmplProfileSettings      = "/profile/settings"
+	TmplProfileCoins         = "/profile/coins"
 	TmplProfileNotifications = "/profile/notifications"
 )
 

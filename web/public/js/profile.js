@@ -13,15 +13,15 @@
 
             if (defaultTipRaw.length > 0) {
                 if (isNaN(defaultTip)) {
-                    alert("Must enter a numeric default tip.");
+                    MemoApp.AddAlert("Must enter a numeric default tip.");
                     return;
                 }
                 if (defaultTip < 0) {
-                    alert("Cannot have a negative tip value.");
+                    MemoApp.AddAlert("Cannot have a negative tip value.");
                     return;
                 }
                 if (defaultTip !== 0 && defaultTip < 546) {
-                    alert("Default tip must be above dust limit of 546 satoshis.")
+                    MemoApp.AddAlert("Default tip must be above dust limit of 546 satoshis.")
                     return;
                 }
             }
@@ -46,7 +46,7 @@
                     var errorMessage =
                         "Error saving settings:\nCode: " + xhr.responseText + "\n" +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });

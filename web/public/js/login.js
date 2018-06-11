@@ -9,12 +9,12 @@
             var password = $ele.find("[name=password]").val();
 
             if (username.length === 0) {
-                alert("Must enter a username.");
+                MemoApp.AddAlert("Must enter a username.");
                 return;
             }
 
             if (password.length === 0) {
-                alert("Must enter a password.");
+                MemoApp.AddAlert("Must enter a password.");
                 return;
             }
 
@@ -35,16 +35,16 @@
                 error: function (xhr) {
                     switch(xhr.status) {
                         case 401:
-                            alert("Invalid username or password. Please try again.");
+                            MemoApp.AddAlert("Invalid username or password. Please try again.");
                             return
                         case 500:
-                            alert("Server side issue. Please try again.");
+                            MemoApp.AddAlert("Server side issue. Please try again.");
                             return
                     }
                     var errorMessage =
                         "Error logging in:\n" + xhr.responseText + "\n" +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });

@@ -31,9 +31,24 @@ var statsRoute = web.Route{
 			r.Error(jerr.Get("error getting memo set name count", err), http.StatusInternalServerError)
 			return
 		}
+		memoSetProfileCount, err := db.GetCountMemoSetProfile()
+		if err != nil {
+			r.Error(jerr.Get("error getting memo set profile count", err), http.StatusInternalServerError)
+			return
+		}
+		memoSetProfilePicCount, err := db.GetCountMemoSetPic()
+		if err != nil {
+			r.Error(jerr.Get("error getting memo set pic count", err), http.StatusInternalServerError)
+			return
+		}
 		memoPollQuestionCount, err := db.GetCountMemoPollQuestion()
 		if err != nil {
 			r.Error(jerr.Get("error getting memo poll question count", err), http.StatusInternalServerError)
+			return
+		}
+		memoPollOptionCount, err := db.GetCountMemoPollOption()
+		if err != nil {
+			r.Error(jerr.Get("error getting memo poll option count", err), http.StatusInternalServerError)
 			return
 		}
 		memoPollVoteCount, err := db.GetCountMemoPollVote()
@@ -50,14 +65,20 @@ var statsRoute = web.Route{
 		r.Helper["MemoLikeCount"] = int64(memoLikeCount)
 		r.Helper["MemoPostCount"] = int64(memoPostCount)
 		r.Helper["MemoSetNameCount"] = int64(memoSetNameCount)
+		r.Helper["MemoSetProfileCount"] = int64(memoSetProfileCount)
+		r.Helper["MemoSetProfilePicCount"] = int64(memoSetProfilePicCount)
 		r.Helper["MemoPollQuestionCount"] = int64(memoPollQuestionCount)
+		r.Helper["MemoPollOptionCount"] = int64(memoPollOptionCount)
 		r.Helper["MemoPollVoteCount"] = int64(memoPollVoteCount)
 		r.Helper["MemoTopicFollowCount"] = int64(memoTopicFollowCount)
 		r.Helper["MemoTotalActionCount"] = int64(memoFollowCount +
 			memoLikeCount +
 			memoPostCount +
 			memoSetNameCount +
+			memoSetProfileCount +
+			memoSetProfilePicCount +
 			memoPollQuestionCount +
+			memoPollOptionCount +
 			memoPollVoteCount +
 			memoTopicFollowCount)
 

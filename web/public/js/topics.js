@@ -325,11 +325,12 @@
      * @param {jQuery} $broadcasting
      * @param {jQuery} $form
      */
-    MemoApp.Form.NewTopicMessage = function ($broadcasting, $form) {
+    MemoApp.Form.NewTopicMessage = function ($broadcasting, $creating, $form) {
         var $topicName = $form.find("[name=topic]");
         var $message = $form.find("[name=message]");
-
         var $msgByteCount = $form.find(".message-byte-count");
+        var $message = $form.find("#message");
+        var $submitButton = $form.find("#message-submit");
 
         $message.on("input", function () {
             setMsgByteCount();
@@ -381,6 +382,10 @@
                 return;
             }
 
+            $creating.removeClass("hidden");
+            $message.prop('disabled', true);
+            $submitButton.prop('disabled', true);
+
             submitting = true;
             $.ajax({
                 type: "POST",
@@ -397,6 +402,7 @@
                         return
                     }
                     $broadcasting.removeClass("hidden");
+                    $creating.addClass("hidden");
                     $.ajax({
                         type: "POST",
                         url: MemoApp.GetBaseUrl() + MemoApp.URL.MemoWaitSubmit,
@@ -407,6 +413,8 @@
                             submitting = false;
                             $broadcasting.addClass("hidden");
                             $message.val("");
+                            $message.prop('disabled', false);
+                            $submitButton.prop('disabled', false);
                             setMsgByteCount();
                         },
                         error: function () {
@@ -414,11 +422,16 @@
                             MemoApp.AddAlert("Error waiting for transaction to broadcast.");
                             $broadcasting.addClass("hidden");
                             $message.val("");
+                            $message.prop('disabled', false);
+                            $submitButton.prop('disabled', false);
                         }
                     });
                 },
                 error: function (xhr) {
                     submitting = false;
+                    $creating.addClass("hidden");
+                    $message.prop('disabled', false);
+                    $submitButton.prop('disabled', false);
                     if (xhr.status === 401) {
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +

@@ -35,9 +35,12 @@
                required/>
     </p>
     <p>
-        <input class="btn btn-primary" type="submit" value="{{ T "Send" }}"/>
+        <input id="message-submit" class="btn btn-primary" type="submit" value="{{ T "Send" }}"/>
         <span id="broadcasting" class="hidden">
             Broadcasting...
+        </span>
+        <span id="creating" class="hidden">
+            Creating...
         </span>
     </p>
 </form>
@@ -50,7 +53,7 @@
         // handles html encoding
         var topicName = $("#topic-name").val();
     {{ if .IsLoggedIn }}
-        MemoApp.Form.NewTopicMessage($("#broadcasting"), $("#form-new-topic-message"));
+        MemoApp.Form.NewTopicMessage($("#broadcasting"), $("#creating"), $("#form-new-topic-message"));
         MemoApp.Form.FollowTopic($("#follow-topic"), topicName, {{ if .IsFollowingTopic }}true{{ else }}false{{ end }});
     {{ end }}
         MemoApp.SetFirstPostId({{ .FirstPostId }});

@@ -18,8 +18,3 @@ func ValidateImgurDirectLink(url string) bool {
 	var re = regexp.MustCompile(`(^https://i\.imgur\.com/[a-zA-Z0-9]+\.(jpg|png)$)`)
 	return re.MatchString(url)
 }
-
-func ValidatePassword(password string) bool {
-	var re = regexp.MustCompile("([[:ascii:]]){13,255}")
-	return re.MatchString(password)
-}

@@ -14,6 +14,26 @@
             }
         });
 
+        // Warn if password is < 13 characters.
+        var $password = $form.find("[name=password]");
+        var passwordWarnOnKey = false
+        var checkPassLength = function() {
+            if($password.val().length < 13) {
+                $('#password-warning').removeClass('hidden');
+            } else {
+                $('#password-warning').addClass('hidden');
+            }
+        }
+        $password.on("focusout", function() {
+            passwordWarnOnKey = true
+            checkPassLength()
+        });
+        $password.on("keypress", function() {
+            if(passwordWarnOnKey) {
+                checkPassLength()
+            }
+        });
+
         $form.submit(function (e) {
             e.preventDefault();
             var username = $form.find("[name=username]").val();
@@ -26,11 +46,6 @@
 
             if (username.length === 0) {
                 MemoApp.AddAlert("Must enter a username.");
-                return;
-            }
-
-            if (password.length < 13) {
-                MemoApp.AddAlert("Must enter a password at least 13 characters in length.");
                 return;
             }
 

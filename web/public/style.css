@@ -691,6 +691,12 @@ img.imgur {
     font-style: italic;
     margin: 5px 0;
 }
+.password-insecure {
+    font-weight:bold;
+    color: red;
+    font-size: 12px;
+    margin-left: 5px;
+}
 .disclaimer {
     padding-left: 25px;
 }

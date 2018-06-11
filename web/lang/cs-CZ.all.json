@@ -337,19 +337,19 @@
   },
   {
     "id": "all",
-    "translation": "all"
+    "translation": "všechny"
   },
   {
     "id": "most_posts",
-    "translation": "most posts"
+    "translation": "nejvíc příspěvků"
   },
   {
     "id": "most_followed",
-    "translation": "most followed"
+    "translation": "nejvíc sledován"
   },
   {
     "id": "start_thread",
-    "translation": "start thread"
+    "translation": "začnout diskusní vlákno"
   },
   {
     "id": "show",
@@ -361,6 +361,6 @@
   },
   {
     "id": "topics_following",
-    "translation": "topics following"
+    "translation": "témata sledovány"
   }
 ]

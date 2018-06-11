@@ -34,16 +34,6 @@ var MemoApp = {
         }
     };
 
-    MemoApp.SetLanguageEvents = function() {
-        $( "a.setlang" ).click(function(e) {
-            e.preventDefault();
-            if (document.cookie) {
-                document.cookie = "memo_language=" + $(e.currentTarget).attr('language') + ";path=/;max-age=31104000";
-                window.location.reload();
-            }
-        });
-    };
-
     var alertId = 0;
     /**
      * @param message {string}

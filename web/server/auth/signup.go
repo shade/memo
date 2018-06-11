@@ -18,7 +18,6 @@ const (
 	MsgErrorImportingKey       = "error importing key"
 	MsgErrorUserAlreadyExists  = "user already exists"
 	MsgErrorSigningUp          = "error signing up"
-	MsgErrorPasswordLength     = "password must be at least 13 characters in length"
 )
 
 var signupRoute = web.Route{

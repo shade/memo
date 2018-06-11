@@ -49,6 +49,11 @@
                 return;
             }
 
+            if (password.length === 0) {
+                MemoApp.AddAlert("Must enter a password.");
+                return;
+            }
+
             if (retypePassword.length === 0) {
                 MemoApp.AddAlert("Must retype password.");
                 return;

@@ -95,6 +95,11 @@ var viewRoute = web.Route{
 				return
 			}
 		}
+		err = pf.SetBalances()
+		if err != nil {
+			r.Error(jerr.Get("error setting balances for profile", err), http.StatusInternalServerError)
+			return
+		}
 		err = pf.SetQr()
 		if err != nil {
 			r.Error(jerr.Get("error creating qr", err), http.StatusInternalServerError)

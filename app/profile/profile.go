@@ -177,7 +177,7 @@ func (p *Profile) SetQr() error {
 
 func (p Profile) GetText() string {
 	if p.Profile == "" {
-		return "Not set"
+		return "Profile not set"
 	}
 	var re = regexp.MustCompile(`(http[s]?://[^\s]*)`)
 	s := re.ReplaceAllString(p.Profile, `<a href="$1" target="_blank">$1</a>`)

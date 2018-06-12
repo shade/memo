@@ -55,6 +55,7 @@ func (p Post) GetMessage() string {
 		msg = addYoutubeVideos(msg)
 		msg = addImgurImages(msg)
 		msg = addGiphyImages(msg)
+		msg = addTwitterImages(msg)
 	}
 	msg = addLinks(msg)
 	return msg
@@ -108,6 +109,12 @@ func addGiphyImages(msg string) string {
 		var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?giphy\.com/)([^\s]*)`)
 		msg = re.ReplaceAllString(msg, `<a href="https://i.giphy.com/$3" target="_blank"><img class="imgur" src="https://i.giphy.com/$3"/></a>`)
 	}
+	return msg
+}
+
+func addTwitterImages(msg string) string {
+	var re = regexp.MustCompile(`(http[s]?://pbs.twimg.com/media/([A-Za-z0-9_]+)).jpg`)
+	msg = re.ReplaceAllString(msg, `<a href="https://pbs.twimg.com/media/$2.jpg" target="_blank"><img class="imgur" src="https://pbs.twimg.com/media/$2.jpg"/></a>`)
 	return msg
 }
 
@@ -597,7 +604,7 @@ func AttachParentToPosts(posts []*Post) error {
 			SelfPkHash: post.SelfPkHash,
 		}
 		if setPic != nil {
-			post.ProfilePic = setPic
+			post.Parent.ProfilePic = setPic
 		}
 	}
 	return nil

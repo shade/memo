@@ -18,6 +18,7 @@ func QueueAndWaitForTx(tx *wire.MsgTx) error {
 }
 
 func QueueTx(tx *wire.MsgTx) {
+	return
 	doneChan := make(chan struct{}, 1)
 	queuer.Node.Peer.QueueMessage(tx, doneChan)
 	<-doneChan

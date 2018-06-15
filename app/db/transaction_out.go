@@ -177,11 +177,11 @@ func GetSpendableTxOut(pkHash []byte, fee int64) (*TransactionOut, error) {
 	return txOut, nil
 }
 
-type txOutSortByValue []*TransactionOut
+type TxOutSortByValue []*TransactionOut
 
-func (txOuts txOutSortByValue) Len() int      { return len(txOuts) }
-func (txOuts txOutSortByValue) Swap(i, j int) { txOuts[i], txOuts[j] = txOuts[j], txOuts[i] }
-func (txOuts txOutSortByValue) Less(i, j int) bool {
+func (txOuts TxOutSortByValue) Len() int      { return len(txOuts) }
+func (txOuts TxOutSortByValue) Swap(i, j int) { txOuts[i], txOuts[j] = txOuts[j], txOuts[i] }
+func (txOuts TxOutSortByValue) Less(i, j int) bool {
 	return txOuts[i].Value > txOuts[j].Value
 }
 
@@ -198,7 +198,7 @@ func GetSpendableTxOuts(pkHash []byte, fee int64) ([]*TransactionOut, error) {
 			}
 		}
 	}
-	sort.Sort(txOutSortByValue(spendableOuts))
+	sort.Sort(TxOutSortByValue(spendableOuts))
 	var outsToUse []*TransactionOut
 	var totalValue int64
 	for _, spendableOut := range spendableOuts {

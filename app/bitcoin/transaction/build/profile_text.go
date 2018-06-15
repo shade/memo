@@ -6,15 +6,14 @@ import (
 	"github.com/memocash/memo/app/bitcoin/wallet"
 )
 
-func TopicMessage(topicName string, message string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+func SetProfileText(profileText string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
 	transactions := []memo.SpendOutput{{
-		Type:    memo.SpendOutputTypeMemoTopicMessage,
-		RefData: []byte(topicName),
-		Data:    []byte(message),
+		Type: memo.SpendOutputTypeMemoSetProfile,
+		Data: []byte(profileText),
 	}}
 	tx, err := Build(transactions, privateKey)
 	if err != nil {
-		return nil, jerr.Get("error building memo tx", err)
+		return nil, jerr.Get("error building memo set profile text tx", err)
 	}
 	return tx, nil
 }

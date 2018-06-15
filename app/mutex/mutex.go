@@ -25,13 +25,13 @@ func Lock(pkHash []byte) {
 	lock := getLock(hashString)
 	select {
 	case lock.mutex <- true:
+		lock.timeout = time.NewTimer(15 * time.Second)
+		go func() {
+			<-lock.timeout.C
+			Unlock(pkHash)
+		}()
 		return
 	}
-	lock.timeout = time.NewTimer(15 * time.Second)
-	go func() {
-		<-lock.timeout.C
-		Unlock(pkHash)
-	}()
 }
 
 func Unlock(pkHash []byte) {

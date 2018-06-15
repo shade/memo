@@ -1,15 +1,14 @@
 package build
 
 import (
-	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 )
 
-func FollowTopic(topicName string, privateKey *wallet.PrivateKey) (*wire.MsgTx, error) {
-	transactions := []transaction.SpendOutput{{
-		Type: transaction.SpendOutputTypeMemoTopicFollow,
+func FollowTopic(topicName string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+	transactions := []memo.SpendOutput{{
+		Type: memo.SpendOutputTypeMemoTopicFollow,
 		Data: []byte(topicName),
 	}}
 	tx, err := Build(transactions, privateKey)
@@ -19,9 +18,9 @@ func FollowTopic(topicName string, privateKey *wallet.PrivateKey) (*wire.MsgTx, 
 	return tx, nil
 }
 
-func UnfollowTopic(topicName string, privateKey *wallet.PrivateKey) (*wire.MsgTx, error) {
-	transactions := []transaction.SpendOutput{{
-		Type: transaction.SpendOutputTypeMemoTopicUnfollow,
+func UnfollowTopic(topicName string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+	transactions := []memo.SpendOutput{{
+		Type: memo.SpendOutputTypeMemoTopicUnfollow,
 		Data: []byte(topicName),
 	}}
 	tx, err := Build(transactions, privateKey)

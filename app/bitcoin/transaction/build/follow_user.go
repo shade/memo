@@ -1,15 +1,14 @@
 package build
 
 import (
-	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 )
 
-func FollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*wire.MsgTx, error) {
-	transactions := []transaction.SpendOutput{{
-		Type: transaction.SpendOutputTypeMemoFollow,
+func FollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+	transactions := []memo.SpendOutput{{
+		Type: memo.SpendOutputTypeMemoFollow,
 		Data: pkHash,
 	}}
 	tx, err := Build(transactions, privateKey)
@@ -19,9 +18,9 @@ func FollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*wire.MsgTx, erro
 	return tx, nil
 }
 
-func UnfollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*wire.MsgTx, error) {
-	transactions := []transaction.SpendOutput{{
-		Type: transaction.SpendOutputTypeMemoUnfollow,
+func UnfollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+	transactions := []memo.SpendOutput{{
+		Type: memo.SpendOutputTypeMemoUnfollow,
 		Data: pkHash,
 	}}
 	tx, err := Build(transactions, privateKey)

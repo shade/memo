@@ -7,10 +7,11 @@ import (
 	"github.com/memocash/memo/app/db"
 )
 
-func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+func Vote(pollTxBytes []byte, message string, tip int64, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
 	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoLike,
-		Data: likeTxBytes,
+		Type:    memo.SpendOutputTypeMemoPollVote,
+		Data:    pollTxBytes,
+		RefData: []byte(message),
 	}}
 	if tip != 0 {
 		if tip < memo.DustMinimumOutput {
@@ -19,7 +20,7 @@ func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*memo.T
 		if tip > 1e8 {
 			return nil, jerr.New("error trying to tip too much")
 		}
-		memoPost, err := db.GetMemoPost(likeTxBytes)
+		memoPost, err := db.GetMemoPost(pollTxBytes)
 		if err != nil {
 			return nil, jerr.Get("error getting memo_post", err)
 		}
@@ -31,7 +32,7 @@ func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*memo.T
 	}
 	tx, err := Build(transactions, privateKey)
 	if err != nil {
-		return nil, jerr.Get("error building like tx", err)
+		return nil, jerr.Get("error building vote tx", err)
 	}
 	return tx, nil
 }

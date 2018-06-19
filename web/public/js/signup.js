@@ -63,7 +63,9 @@
                 },
                 success: function () {
                     MemoApp.SetPassword(password);
-                    window.location = MemoApp.GetBaseUrl() + MemoApp.URL.Index
+                    setTimeout(function() {
+                        window.location = MemoApp.GetBaseUrl() + MemoApp.URL.Index
+                    });
                 },
                 /**
                  * @param {XMLHttpRequest} xhr

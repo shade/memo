@@ -80,8 +80,7 @@ var MemoApp = {
 
     MemoApp.GetPassword = function() {
         if (!localStorage.WalletPassword || localStorage.WalletPassword.length === 0) {
-            MemoApp.AddAlert("We've updated how wallets are unlocked. Please re-login to unlock your wallet.");
-            window.location = MemoApp.URL.Logout + "?a=re-login";
+            localStorage.WalletPassword = prompt("Your wallet has become locked. Please re-enter your password to unlock your wallet.");
         }
         return localStorage.WalletPassword;
     };

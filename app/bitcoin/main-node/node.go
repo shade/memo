@@ -16,6 +16,10 @@ var BitcoinNode Node
 type Node struct {
 	Peer               *peer.Peer
 	NodeStatus         *db.NodeStatus
+	BlockHashes        map[string]*db.Block
+	PrevBlockHashes    map[string]*db.Block
+	MemoTxnsFound      int
+	AllTxnsFound       int
 	BlocksQueued       int
 	HeaderSyncComplete bool
 	BlocksSyncComplete bool
@@ -41,13 +45,14 @@ func (n *Node) Start() {
 		UserAgentVersion: "0.1.0",
 		ChainParams:      &wallet.MainNetParams,
 		Listeners: peer.MessageListeners{
-			OnVerAck:  n.OnVerAck,
-			OnHeaders: n.OnHeaders,
-			OnInv:     n.OnInv,
-			OnBlock:   n.OnBlock,
-			OnTx:      n.OnTx,
-			OnReject:  n.OnReject,
-			OnPing:    n.OnPing,
+			OnVerAck:      n.OnVerAck,
+			OnHeaders:     n.OnHeaders,
+			OnInv:         n.OnInv,
+			OnBlock:       n.OnBlock,
+			OnTx:          n.OnTx,
+			OnReject:      n.OnReject,
+			OnPing:        n.OnPing,
+			OnMerkleBlock: n.OnMerkleBlock,
 		},
 	}, bitcoinNodeConfig.GetConnectionString())
 	if err != nil {
@@ -89,4 +94,8 @@ func (n *Node) OnReject(p *peer.Peer, msg *wire.MsgReject) {
 func (n *Node) OnPing(p *peer.Peer, msg *wire.MsgPing) {
 	fmt.Printf("Received ping: %d\n", msg.Nonce)
 	n.Peer.QueueMessage(wire.NewMsgPong(msg.Nonce), nil)
+}
+
+func (n *Node) OnMerkleBlock(p *peer.Peer, msg *wire.MsgMerkleBlock) {
+	onMerkleBlock(n, msg)
 }

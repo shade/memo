@@ -49,7 +49,7 @@ func onHeaders(n *Node, msg *wire.MsgHeaders) {
 			fmt.Println("Header sync complete")
 			n.HeaderSyncComplete = true
 		}
-		queueBlocks(n)
+		queueMerkleBlocks(n)
 		return
 	}
 	if lastBlock == nil {

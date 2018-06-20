@@ -140,3 +140,19 @@ func GetCountMemoSetProfile() (uint, error) {
 	}
 	return cnt, nil
 }
+
+func GetSetProfiles(offset uint) ([]*MemoSetProfile, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoSetProfiles []*MemoSetProfile
+	result := db.
+		Limit(25).
+		Offset(offset).
+		Find(&memoSetProfiles)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoSetProfiles, nil
+}

@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-var backfillRootTx = &cobra.Command{
+var backfillRootTxCmd = &cobra.Command{
 	Use: "backfill-root-tx",
 	RunE: func(c *cobra.Command, args []string) error {
 		var printStatus = func(offset uint, postsUpdated int) {

@@ -83,35 +83,12 @@ func (p Profile) GetCashAddressString() string {
 
 func (p *Profile) SetBalances() error {
 	bal, err := cache.GetBalance(p.PkHash)
-	if err == nil {
-		p.Balance = bal
-		p.BalanceBCH = float64(bal) * 1e-8
-		p.hasBalance = true
-		return nil
-	} else if ! cache.IsMissError(err) {
-		jerr.Get("error getting balance from cache", err).Print()
-	}
-	outs, err := db.GetTransactionOutputsForPkHash(p.PkHash)
 	if err != nil {
-		return jerr.Get("error getting outs", err)
+		return jerr.Get("error getting balance from cache", err)
 	}
-	var balance int64
-	var balanceBCH float64
-
-	for _, out := range outs {
-		if out.TxnInHashString != "" {
-			continue
-		}
-		balance += out.Value
-		balanceBCH += out.ValueInBCH()
-	}
-	p.Balance = balance
-	p.BalanceBCH = balanceBCH
+	p.Balance = bal
+	p.BalanceBCH = float64(bal) * 1e-8
 	p.hasBalance = true
-	err = cache.SetBalance(p.PkHash, p.Balance)
-	if err != nil {
-		jerr.Get("error setting balance in cache", err).Print()
-	}
 	return nil
 }
 

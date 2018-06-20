@@ -98,3 +98,19 @@ func GetCountMemoPollVote() (uint, error) {
 	}
 	return cnt, nil
 }
+
+func GetPollVotes(offset uint) ([]*MemoPollVote, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoPollVotes []*MemoPollVote
+	result := db.
+		Limit(25).
+		Offset(offset).
+		Find(&memoPollVotes)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoPollVotes, nil
+}

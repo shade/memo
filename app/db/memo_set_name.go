@@ -197,3 +197,19 @@ func GetCountMemoSetName() (uint, error) {
 	}
 	return cnt, nil
 }
+
+func GetSetNames(offset uint) ([]*MemoSetName, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoSetNames []*MemoSetName
+	result := db.
+		Limit(25).
+		Offset(offset).
+		Find(&memoSetNames)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoSetNames, nil
+}

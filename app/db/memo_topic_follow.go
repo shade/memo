@@ -181,3 +181,19 @@ func GetCountMemoTopicFollow() (uint, error) {
 	}
 	return cnt, nil
 }
+
+func GetTopicFollows(offset uint) ([]*MemoTopicFollow, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoTopicFollows []*MemoTopicFollow
+	result := db.
+		Limit(25).
+		Offset(offset).
+		Find(&memoTopicFollows)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoTopicFollows, nil
+}

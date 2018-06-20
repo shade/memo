@@ -1,6 +1,6 @@
 {{ template "snippets/header.html" . }}
 
-{{ if eq .Profile.Balance 0 }}
+{{ if eq .Balance 0 }}
 <h3>
     You need some Bitcoin Cash (BCH) to get started
 </h3>
@@ -14,28 +14,13 @@
 </p>
 {{ end }}
 
-<br/>
-
-{{ template "snippets/profile.html" dict "Profile" .Profile "UserSettings" .UserSettings }}
-
-<div class="dashboard-actions">
-    <a class="btn btn-default" href="profile/{{ .Profile.GetAddressString }}">{{ T "view_your_profile" }}</a>
-    <!--<a href="memo/new">{{ T "new_memo" }}</a>-->
-    <a class="btn btn-default" href="memo/set-name">{{ T "set_name" }}</a>
-    <a class="btn btn-default" href="memo/set-profile">{{ T "set_profile" }}</a>
-    <a class="btn btn-default" href="memo/set-profile-pic">{{ T "set_profile_pic" | Title }}</a>
-    <a class="btn btn-default" href="key/export">{{ T "export_key" }}</a>
-    <a class="btn btn-default" href="key/change-password">{{ T "change_password" }}</a>
-    <a class="btn btn-default" href="key/delete-account">{{ T "Delete_Account" }}</a>
-</div>
-
-{{ if and (not .Posts) (not (eq .Profile.Balance 0)) }}
+{{ if and (not .Posts) (not (eq .Balance 0)) }}
 <h3>Feed Empty</h3>
 <p>Start following others to see their posts here</p>
 {{ end }}
 
 {{ if .Posts }}
-<h3 class="center">Feed</h3>
+{{ template "posts/feed_header.html" dict "Page" "feed" }}
 {{ template "snippets/feed.html" . }}
 {{ end }}
 

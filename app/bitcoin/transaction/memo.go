@@ -13,6 +13,7 @@ import (
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/html-parser"
 	"github.com/memocash/memo/app/notify"
+	"github.com/memocash/memo/app/obj/feed_event"
 	"github.com/memocash/memo/app/profile/pic"
 )
 
@@ -199,6 +200,12 @@ func saveMemoPost(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 	if err != nil {
 		return jerr.Get("error saving memo_post", err)
 	}
+	go func() {
+		err := feed_event.AddPost(memoPost)
+		if err != nil {
+			jerr.Get("error adding post feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -239,6 +246,12 @@ func saveMemoSetName(txn *db.Transaction, out *db.TransactionOut, blockId uint, 
 	if err != nil {
 		return jerr.Get("error saving memo_set_name", err)
 	}
+	go func() {
+		err := feed_event.AddSetName(memoSetName)
+		if err != nil {
+			jerr.Get("error adding set name feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -291,6 +304,12 @@ func saveMemoSetPic(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 			jerr.Get("error clearing has pic cache", err).Print()
 		}
 	}()
+	go func() {
+		err := feed_event.AddSetProfilePic(memoSetPic)
+		if err != nil {
+			jerr.Get("error adding set pic feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -340,6 +359,12 @@ func saveMemoFollow(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 			}
 		}()
 	}
+	go func() {
+		err := feed_event.AddFollow(memoFollow)
+		if err != nil {
+			jerr.Get("error adding follow feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -395,6 +420,12 @@ func saveMemoLike(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 		err = notify.AddLikeNotification(memoLike, true)
 		if err != nil {
 			jerr.Get("error adding like notification", err).Print()
+		}
+	}()
+	go func() {
+		err := feed_event.AddLike(memoLike)
+		if err != nil {
+			jerr.Get("error adding like feed event", err).Print()
 		}
 	}()
 	return nil
@@ -467,6 +498,12 @@ func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, in
 			jerr.Get("error adding reply notification", err).Print()
 		}
 	}()
+	go func() {
+		err := feed_event.AddPost(memoPost)
+		if err != nil {
+			jerr.Get("error adding reply feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -515,6 +552,12 @@ func saveMemoTopicMessage(txn *db.Transaction, out *db.TransactionOut, blockId u
 	if err != nil {
 		return jerr.Get("error saving memo topic message", err)
 	}
+	go func() {
+		err := feed_event.AddPost(memoPost)
+		if err != nil {
+			jerr.Get("error adding topic message feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -560,6 +603,12 @@ func saveMemoTopicFollow(unfollow bool, txn *db.Transaction, out *db.Transaction
 	if err != nil {
 		return jerr.Get("error saving memo follow topic", err)
 	}
+	go func() {
+		err := feed_event.AddTopicFollow(memoFollowTopic)
+		if err != nil {
+			jerr.Get("error adding topic follow feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -600,6 +649,12 @@ func saveMemoSetProfile(txn *db.Transaction, out *db.TransactionOut, blockId uin
 	if err != nil {
 		return jerr.Get("error saving memo_set_profile", err)
 	}
+	go func() {
+		err := feed_event.AddSetProfile(memoSetProfile)
+		if err != nil {
+			jerr.Get("error adding set profile feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -662,6 +717,12 @@ func saveMemoPollQuestion(txn *db.Transaction, out *db.TransactionOut, blockId u
 	if err != nil {
 		return jerr.Get("error saving memo_set_profile", err)
 	}
+	go func() {
+		err := feed_event.AddPost(memoPost)
+		if err != nil {
+			jerr.Get("error adding poll question feed event", err).Print()
+		}
+	}()
 	return nil
 }
 
@@ -778,6 +839,12 @@ func saveMemoPollVote(txn *db.Transaction, out *db.TransactionOut, blockId uint,
 	if err != nil {
 		return jerr.Get("error saving memo_post for poll vote", err)
 	}
+	go func() {
+		err := feed_event.AddPollVote(memoPollVote)
+		if err != nil {
+			jerr.Get("error adding poll vote feed event", err).Print()
+		}
+	}()
 	return nil
 }
 

@@ -273,3 +273,19 @@ func GetRecentLikes(offset uint) ([]*MemoLike, error) {
 	}
 	return memoLikes, nil
 }
+
+func GetLikes(offset uint) ([]*MemoLike, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoLikes []*MemoLike
+	result := db.
+		Limit(25).
+		Offset(offset).
+		Find(&memoLikes)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoLikes, nil
+}

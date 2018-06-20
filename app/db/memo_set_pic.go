@@ -156,3 +156,19 @@ func GetCountMemoSetPic() (uint, error) {
 	}
 	return cnt, nil
 }
+
+func GetSetProfilePics(offset uint) ([]*MemoSetPic, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoSetProfilePics []*MemoSetPic
+	result := db.
+		Limit(25).
+		Offset(offset).
+		Find(&memoSetProfilePics)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoSetProfilePics, nil
+}

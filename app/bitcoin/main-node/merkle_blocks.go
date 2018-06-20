@@ -39,18 +39,22 @@ func onMerkleBlock(n *Node, msg *wire.MsgMerkleBlock) {
 
 	n.BlocksQueued--
 	if n.BlocksQueued == 0 {
-		queueMerkleBlocks(n)
+		queueMerkleBlocks(n, false)
 	}
 }
 
-func queueMerkleBlocks(n *Node) {
+func queueMerkleBlocks(n *Node, first bool) {
 	if n.BlocksQueued != 0 {
 		return
 	}
 	if n.NodeStatus.HeightChecked < MinCheckHeight {
 		n.NodeStatus.HeightChecked = MinCheckHeight
 	}
-	blocks, err := db.GetBlocksInHeightRange(n.NodeStatus.HeightChecked+1, n.NodeStatus.HeightChecked+2000)
+	var initialHeight = n.NodeStatus.HeightChecked
+	if ! first {
+		initialHeight++
+	}
+	blocks, err := db.GetBlocksInHeightRange(initialHeight, initialHeight+1999)
 	if err != nil {
 		jerr.Get("error getting blocks in height range", err).Print()
 		return

@@ -24,7 +24,11 @@
         {{ if .FeedItem.Reputation }}
             {{ template "snippets/reputation.html" .FeedItem.Reputation }}
         {{ end }}
-            liked &middot; {{ .FeedItem.TimeAgo }}
+            liked post
+        {{ if .FeedItem.MemoLike.TipAmount }}
+            &middot; {{ formatBigInt .FeedItem.MemoLike.TipAmount }} sat tip
+        {{ end }}
+            &middot; {{ .FeedItem.TimeAgo }}
         </p>
     </div>
 {{ end }}
@@ -54,7 +58,7 @@
         {{ end }}
             voted on poll <b>{{ .FeedItem.PollOption.Option }}</b>
         {{ if .FeedItem.PollVote.TipAmount }}
-        {{ formatBigInt .FeedItem.PollVote.TipAmount }} sats
+            &middot; {{ formatBigInt .FeedItem.PollVote.TipAmount }} sat tip
         {{ end }}
             &middot; {{ .FeedItem.TimeAgo }}
         </p>
@@ -132,10 +136,18 @@
             </span>
     {{ end }}
     {{ if .Post.Memo.RootTxHash }}
-        <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}
-            's post</a>
+        <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">
+        {{ .Post.Parent.Name }}'s
+            post
+        </a>
     {{ else }}
-        <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s post</a>
+        <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">
+        {{ .Post.Parent.Name }}'s
+            post
+        </a>
+    {{ end }}
+    {{ if .Post.Parent.Reputation }}
+        {{ template "snippets/reputation.html" .Post.Parent.Reputation }}
     {{ end }}
         <p>{{ .Post.Parent.GetMessage }}</p>
     </div>

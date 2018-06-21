@@ -4,6 +4,8 @@
     {{ template "feed/set-profile.html" . }}
 {{ else if .Item.IsFollowUser }}
     {{ template "feed/follow-user.html" . }}
+{{ else if .Item.TopicFollow }}
+    {{ template "feed/topic-follow.html" . }}
 {{ else if .Item.IsLike }}
 {{ else if .Item.IsReply }}
 {{ else if .Item.IsPost }}
@@ -11,7 +13,7 @@
 {{ else if .Item.IsPollVote }}
 {{ else }}
 <p>
-{{ .Item.GetType }} &middot; <a href="profile/{{ .Item.GetAddressString }}">{{ .Item.Name }}</a> - {{ .Item.TimeAgo }}
+{{ .Item.GetType }} - <a href="profile/{{ .Item.GetAddressString }}">{{ .Item.Name }}</a> - {{ .Item.TimeAgo }}
 </p>
 {{ end }}
 

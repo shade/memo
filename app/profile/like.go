@@ -100,6 +100,13 @@ func AttachReputationToPosts(posts []*Post) error {
 			return jerr.Get("error getting reputation", err)
 		}
 		post.Reputation = reputation
+		if post.Parent != nil {
+			reputation, err := rep.GetReputation(post.Parent.SelfPkHash, post.Parent.Memo.PkHash)
+			if err != nil {
+				return jerr.Get("error getting reputation", err)
+			}
+			post.Parent.Reputation = reputation
+		}
 	}
 	return nil
 }

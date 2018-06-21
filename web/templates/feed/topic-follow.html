@@ -21,7 +21,7 @@
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
-            set profile to <b>{{ .Item.GetProfileText }}</b>
+            followed topic <b><a href="topic/{{ .Item.GetTopicUrl }}">{{ .Item.TopicFollow.Topic }}</a></b>
             &middot; {{ .Item.TimeAgo }}
         </p>
     </div>

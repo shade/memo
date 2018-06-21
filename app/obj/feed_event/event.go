@@ -7,6 +7,7 @@ import (
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/util"
 	"github.com/memocash/memo/app/util/format"
+	"net/url"
 	"strings"
 )
 
@@ -16,6 +17,7 @@ type Event struct {
 	SelfPkHash       []byte
 	ProfilePic       *db.MemoSetPic
 	Post             *profile.Post
+	MemoLike         *db.MemoLike
 	PollOption       *db.MemoPollOption
 	PollVote         *db.MemoPollVote
 	SetName          *db.MemoSetName
@@ -62,6 +64,13 @@ func (e *Event) GetProfileText() string {
 	profileText = strings.TrimSpace(profileText)
 	profileText = format.AddLinks(profileText)
 	return profileText
+}
+
+func (e *Event) GetTopicUrl() string {
+	if e.TopicFollow == nil {
+		return ""
+	}
+	return url.QueryEscape(e.TopicFollow.Topic)
 }
 
 func (e *Event) IsLike() bool {

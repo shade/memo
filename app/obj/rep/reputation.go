@@ -9,7 +9,8 @@ import (
 )
 
 type Reputation struct {
-	rep *cache.Reputation
+	rep    *cache.Reputation
+	IsSelf bool
 }
 
 func (r Reputation) HasReputation() bool {
@@ -40,7 +41,7 @@ func (r Reputation) GetPercentage() float32 {
 }
 
 func (r Reputation) GetClass() string {
-	if r.rep.DirectFollow {
+	if r.rep.DirectFollow || r.IsSelf{
 		return "blue"
 	}
 	percentage := r.GetPercentage()
@@ -65,7 +66,8 @@ func GetReputation(selfPkHash []byte, pkHash []byte) (*Reputation, error) {
 	cachedRep, err := cache.GetReputation(selfPkHash, pkHash)
 	if err == nil {
 		return &Reputation{
-			rep: cachedRep,
+			rep:    cachedRep,
+			IsSelf: bytes.Equal(selfPkHash, pkHash),
 		}, nil
 	} else if ! cache.IsMissError(err) {
 		return nil, jerr.Get("error getting reputation from cache", err)
@@ -114,5 +116,6 @@ TrustedFollowersLoop:
 	}
 	return &Reputation{
 		rep: rep,
+		IsSelf: bytes.Equal(selfPkHash, pkHash),
 	}, nil
 }

@@ -183,6 +183,7 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 		case db.FeedEventLike:
 			for _, memoLike := range memoLikes {
 				if bytes.Equal(memoLike.TxHash, feedEvent.TxHash) {
+					event.MemoLike = memoLike
 					for _, post := range posts {
 						if bytes.Equal(post.Memo.TxHash, memoLike.LikeTxHash) {
 							event.Post = post
@@ -233,10 +234,10 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 							event.FollowName = memoSetName.Name
 						}
 					}
-				}
-				for _, memoSetPic := range feedEventMemoSetProfilePics {
-					if bytes.Equal(memoSetPic.PkHash, memoFollow.FollowPkHash) {
-						event.FollowProfilePic = memoSetPic
+					for _, memoSetPic := range feedEventMemoSetProfilePics {
+						if bytes.Equal(memoSetPic.PkHash, memoFollow.FollowPkHash) {
+							event.FollowProfilePic = memoSetPic
+						}
 					}
 				}
 			}

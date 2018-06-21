@@ -6,7 +6,7 @@ import (
 )
 
 func AddLike(like *db.MemoLike) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    like.PkHash,
 		TxHash:    like.TxHash,
 		EventType: db.FeedEventLike,

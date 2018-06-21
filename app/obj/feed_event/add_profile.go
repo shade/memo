@@ -6,7 +6,7 @@ import (
 )
 
 func AddSetName(setName *db.MemoSetName) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    setName.PkHash,
 		TxHash:    setName.TxHash,
 		EventType: db.FeedEventSetName,
@@ -22,7 +22,7 @@ func AddSetName(setName *db.MemoSetName) error {
 }
 
 func AddSetProfile(setProfile *db.MemoSetProfile) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    setProfile.PkHash,
 		TxHash:    setProfile.TxHash,
 		EventType: db.FeedEventSetProfile,
@@ -38,7 +38,7 @@ func AddSetProfile(setProfile *db.MemoSetProfile) error {
 }
 
 func AddSetProfilePic(setName *db.MemoSetPic) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    setName.PkHash,
 		TxHash:    setName.TxHash,
 		EventType: db.FeedEventSetProfilePic,

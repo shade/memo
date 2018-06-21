@@ -14,14 +14,13 @@
 </p>
 {{ end }}
 
-{{ if and (not .Posts) (not (eq .Balance 0)) }}
+{{ if and (not .FeedItems) (not (eq .Balance 0)) }}
 <h3>Feed Empty</h3>
 <p>Start following others to see their posts here</p>
 {{ end }}
 
-{{ if .Posts }}
-{{ template "posts/feed_header.html" dict "Page" "feed" }}
-{{ template "snippets/feed.html" . }}
+{{ if .FeedItems }}
+{{ template "feed/items.html" . }}
 {{ end }}
 
 <br/>

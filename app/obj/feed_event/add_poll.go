@@ -6,7 +6,7 @@ import (
 )
 
 func AddPollVote(pollVote *db.MemoPollVote) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    pollVote.PkHash,
 		TxHash:    pollVote.TxHash,
 		EventType: db.FeedEventPollVote,

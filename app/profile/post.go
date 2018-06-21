@@ -14,20 +14,20 @@ import (
 )
 
 type Post struct {
-	Name          string
-	Memo          *db.MemoPost
-	Parent        *Post
-	Likes         []*Like
-	HasLiked      bool
-	SelfPkHash    []byte
-	ReplyCount    uint
-	Replies       []*Post
-	Reputation    *rep.Reputation
-	ShowMedia     bool
-	Poll          *Poll
-	VoteQuestion  *db.MemoPost
-	VoteOption    *db.MemoPollOption
-	ProfilePic    *db.MemoSetPic
+	Name         string
+	Memo         *db.MemoPost
+	Parent       *Post
+	Likes        []*Like
+	HasLiked     bool
+	SelfPkHash   []byte
+	ReplyCount   uint
+	Replies      []*Post
+	Reputation   *rep.Reputation
+	ShowMedia    bool
+	Poll         *Poll
+	VoteQuestion *db.MemoPost
+	VoteOption   *db.MemoPollOption
+	ProfilePic   *db.MemoSetPic
 }
 
 func (p Post) IsSelf() bool {
@@ -148,8 +148,7 @@ func (p Post) GetTimeString(timezone string) string {
 
 func (p Post) GetTimeAgo() string {
 	if p.Memo.Block != nil && p.Memo.Block.Timestamp.Before(p.Memo.CreatedAt) {
-		ts := p.Memo.Block.Timestamp
-		return util.GetTimeAgo(ts)
+		return util.GetTimeAgo(p.Memo.Block.Timestamp)
 	} else {
 		return util.GetTimeAgo(p.Memo.CreatedAt)
 	}
@@ -308,6 +307,91 @@ func GetPostByTxHash(txHash []byte, selfPkHash []byte) (*Post, error) {
 		ReplyCount: cnt,
 	}
 	return post, nil
+}
+
+func GetPostsByTxHashes(txHashes [][]byte, selfPkHash []byte) ([]*Post, error) {
+	memoPosts, err := db.GetPostsByTxHashes(txHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting memo posts", err)
+	}
+	var namePkHashes [][]byte
+	var pollVoteTxHashes [][]byte
+	for _, memoPost := range memoPosts {
+		namePkHashes = append(namePkHashes, memoPost.PkHash)
+		if memoPost.IsVote {
+			pollVoteTxHashes = append(pollVoteTxHashes, memoPost.TxHash)
+		}
+	}
+	memoPollVotes, err := db.GetMemoPollVotesByTxHashes(pollVoteTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting poll votes by tx hashes", err)
+	}
+	var pollOptionTxHashes [][]byte
+	for _, memoPollVote := range memoPollVotes {
+		pollOptionTxHashes = append(pollOptionTxHashes, memoPollVote.OptionTxHash)
+	}
+	memoPollOptions, err := db.GetMemoPollOptionsByTxHashes(pollOptionTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting poll options by tx hashes", err)
+	}
+	var pollTxHashes [][]byte
+	for _, memoPollOption := range memoPollOptions {
+		pollTxHashes = append(pollTxHashes, memoPollOption.PollTxHash)
+	}
+	memoPollQuestions, err := db.GetPostsByTxHashes(pollTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting poll questions for tx hashes", err)
+	}
+	setNames, err := db.GetNamesForPkHashes(namePkHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting names for hashes", err)
+	}
+	txHashCounts, err := db.GetPostReplyCounts(txHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting post reply counts", err)
+	}
+	var posts []*Post
+	for _, memoPost := range memoPosts {
+		var name string
+		var replyCount uint
+		var voteQuestion *db.MemoPost
+		var voteOption *db.MemoPollOption
+		for _, setName := range setNames {
+			if bytes.Equal(setName.PkHash, memoPost.PkHash) {
+				name = setName.Name
+			}
+		}
+		for _, txHashCount := range txHashCounts {
+			if bytes.Equal(txHashCount.TxHash, memoPost.TxHash) {
+				replyCount = txHashCount.Count
+			}
+		}
+		if memoPost.IsVote {
+			for _, memoPollVote := range memoPollVotes {
+				if bytes.Equal(memoPollVote.TxHash, memoPost.TxHash) {
+					for _, memoPollOption := range memoPollOptions {
+						if bytes.Equal(memoPollOption.TxHash, memoPollVote.OptionTxHash) {
+							voteOption = memoPollOption
+							for _, memoPollQuestion := range memoPollQuestions {
+								if bytes.Equal(memoPollQuestion.TxHash, memoPollOption.PollTxHash) {
+									voteQuestion = memoPollQuestion
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		posts = append(posts, &Post{
+			Name:         name,
+			Memo:         memoPost,
+			SelfPkHash:   selfPkHash,
+			ReplyCount:   replyCount,
+			VoteQuestion: voteQuestion,
+			VoteOption:   voteOption,
+		})
+	}
+	return posts, nil
 }
 
 func AttachRepliesToPost(post *Post, offset uint) error {

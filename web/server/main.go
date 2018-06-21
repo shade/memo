@@ -8,6 +8,7 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/res"
+	"github.com/memocash/memo/app/util"
 	auth2 "github.com/memocash/memo/web/server/auth"
 	"github.com/memocash/memo/web/server/key"
 	"github.com/memocash/memo/web/server/memo"
@@ -22,7 +23,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
-	"github.com/memocash/memo/app/util"
 )
 
 var UseMinJS bool

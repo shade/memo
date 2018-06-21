@@ -6,7 +6,7 @@ import (
 )
 
 func AddPost(post *db.MemoPost) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash: post.PkHash,
 		TxHash: post.TxHash,
 	}

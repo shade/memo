@@ -59,7 +59,7 @@ var dbInterfaces = []interface{}{
 	MemoTopicFollow{},
 	UserTopicView{},
 	MemoSetPic{},
-	Feed{},
+	FeedEvent{},
 }
 
 func getDb() (*gorm.DB, error) {

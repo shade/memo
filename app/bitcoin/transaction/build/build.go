@@ -74,7 +74,7 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 
 	var change = totalInputValue - fee - totalOutputValue
 	if change < memo.DustMinimumOutput {
-		return nil, nil, jerr.New("not enough funds")
+		return nil, nil, jerr.New("change value below dust minimum input")
 	}
 	address := privateKey.GetPublicKey().GetAddress()
 	spendOutputs = append([]memo.SpendOutput{{

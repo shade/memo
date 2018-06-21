@@ -6,7 +6,7 @@ import (
 )
 
 func AddTopicFollow(topicFollow *db.MemoTopicFollow) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    topicFollow.PkHash,
 		TxHash:    topicFollow.TxHash,
 		EventType: db.FeedEventFollowTopic,

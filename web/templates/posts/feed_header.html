@@ -1,6 +1,6 @@
 {{ $page := .Page }}
 <br/>
 <p class="posts-nav">
-    <a {{ if eq $page "feed" }}class="sel"{{ end }} href="/">{{ T "All Activity" }}</a>
-    <a {{ if eq $page "personalized" }}class="sel"{{ end }} href="posts/personalized">{{ T "Popular Posts" }}</a>
+    <a {{ if eq $page "feed" }}class="sel"{{ end }} href="/">{{ T "Feed" }}</a>
+    <!--<a {{ if eq $page "personalized" }}class="sel"{{ end }} href="posts/personalized">{{ T "Popular" }}</a>-->
 </p>

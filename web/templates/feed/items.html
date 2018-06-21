@@ -1,0 +1,22 @@
+<p class="pagination">
+
+    <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
+       href="?offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
+    <span class="page">{{ .Page }}</span>
+    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="?offset={{ .NextOffset }}">{{ T "next" }}
+        ></a>
+</p>
+
+{{ $tz := .TimeZone }}
+{{ $settings := .UserSettings }}
+{{ range .FeedItems }}
+{{ template "feed/item.html" dict "Item" . "TimeZone" $tz "UserSettings" $settings }}
+{{ end }}
+
+<p class="pagination">
+    <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
+       href="?offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
+    <span class="page">{{ .Page }}</span>
+    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="?offset={{ .NextOffset }}">{{ T "next" }}
+        ></a>
+</p>

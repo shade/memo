@@ -86,6 +86,21 @@ func GetMemoSetName(txHash []byte) (*MemoSetName, error) {
 	return &memoSetName, nil
 }
 
+func GetSetNamesByTxHashes(txHashes [][]byte) ([]*MemoSetName, error) {
+	var memoSetNames []*MemoSetName
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoSetNames)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo posts", result.Error)
+	}
+	return memoSetNames, nil
+}
+
 type memoSetNameSortByDate []*MemoSetName
 
 func (txns memoSetNameSortByDate) Len() int      { return len(txns) }
@@ -205,8 +220,10 @@ func GetSetNames(offset uint) ([]*MemoSetName, error) {
 	}
 	var memoSetNames []*MemoSetName
 	result := db.
+		Preload(BlockTable).
 		Limit(25).
 		Offset(offset).
+		Order("id ASC").
 		Find(&memoSetNames)
 	if result.Error != nil {
 		return nil, jerr.Get("error running query", result.Error)

@@ -6,6 +6,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/obj/feed_event"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -34,14 +35,25 @@ var indexRoute = web.Route{
 			r.Error(jerr.Get("error getting balance from cache", err), http.StatusInternalServerError)
 			return
 		}
-
 		r.Helper["Balance"] = bal
 
-		err = setFeed(r, key.PkHash, user.Id)
+		offset := r.Request.GetUrlParameterInt("offset")
+		events, err := feed_event.GetEventsForUser(key.PkHash, uint(offset))
 		if err != nil {
-			r.Error(jerr.Get("error setting feed", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error getting events", err), http.StatusInternalServerError)
 			return
 		}
+		r.Helper["FeedItems"] = events
+		r.Helper["Offset"] = offset
+
+		var prevOffset int
+		if offset > 25 {
+			prevOffset = offset - 25
+		}
+		page := offset/25 + 1
+		r.Helper["Page"] = page
+		r.Helper["PrevOffset"] = prevOffset
+		r.Helper["NextOffset"] = offset + 25
 
 		r.RenderTemplate("dashboard")
 	},
@@ -148,7 +160,7 @@ func setFeed(r *web.Response, selfPkHash []byte, userId uint) error {
 	if offset > 25 {
 		prevOffset = offset - 25
 	}
-	page := offset / 25 + 1
+	page := offset/25 + 1
 	r.Helper["Page"] = page
 	r.Helper["PrevOffset"] = prevOffset
 	r.Helper["NextOffset"] = offset + 25

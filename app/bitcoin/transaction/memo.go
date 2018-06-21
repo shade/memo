@@ -12,7 +12,6 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/html-parser"
-	"github.com/memocash/memo/app/notify"
 	"github.com/memocash/memo/app/obj/feed_event"
 	"github.com/memocash/memo/app/profile/pic"
 )
@@ -352,12 +351,7 @@ func saveMemoFollow(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 		return jerr.Get("error clearing cache", err)
 	}
 	if !unfollow {
-		go func() {
-			err = notify.AddNewFollowerNotification(memoFollow, true)
-			if err != nil {
-				jerr.Get("error adding new follower notification", err).Print()
-			}
-		}()
+		addFollowNotification(memoFollow)
 	}
 	go func() {
 		err := feed_event.AddFollow(memoFollow)
@@ -416,12 +410,7 @@ func saveMemoLike(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 	if err != nil {
 		return jerr.Get("error saving memo_like", err)
 	}
-	go func() {
-		err = notify.AddLikeNotification(memoLike, true)
-		if err != nil {
-			jerr.Get("error adding like notification", err).Print()
-		}
-	}()
+	addLikeNotification(memoLike)
 	go func() {
 		err := feed_event.AddLike(memoLike)
 		if err != nil {
@@ -464,19 +453,6 @@ func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, in
 		return jerr.Get("error parsing transaction hash", err)
 	}
 
-	// Carry forward the root hash of the thread so it's easy to fetch.
-	var rootTxHash []byte
-	prevMemoPost, err := db.GetMemoPost(replyTxHash)
-	if err != nil {
-		jerr.Get("error getting reply post from db", err).Print()
-	} else {
-		if len(prevMemoPost.ParentTxHash) > 0 {
-			rootTxHash = prevMemoPost.RootTxHash
-		} else {
-			rootTxHash = prevMemoPost.TxHash
-		}
-	}
-
 	memoPost = &db.MemoPost{
 		TxHash:       txn.Hash,
 		PkHash:       inputAddress.ScriptAddress(),
@@ -484,7 +460,6 @@ func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, in
 		ParentHash:   parentHash,
 		Address:      inputAddress.EncodeAddress(),
 		ParentTxHash: txHash.CloneBytes(),
-		RootTxHash:   rootTxHash,
 		Message:      html_parser.EscapeWithEmojis(string(messageRaw)),
 		BlockId:      blockId,
 	}
@@ -492,12 +467,8 @@ func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, in
 	if err != nil {
 		return jerr.Get("error saving memo_reply", err)
 	}
-	go func() {
-		err = notify.AddReplyNotification(memoPost, true)
-		if err != nil {
-			jerr.Get("error adding reply notification", err).Print()
-		}
-	}()
+	addReplyNotification(memoPost)
+	updateRootTxHash(memoPost)
 	go func() {
 		err := feed_event.AddPost(memoPost)
 		if err != nil {

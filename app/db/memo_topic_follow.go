@@ -189,8 +189,10 @@ func GetTopicFollows(offset uint) ([]*MemoTopicFollow, error) {
 	}
 	var memoTopicFollows []*MemoTopicFollow
 	result := db.
+		Preload(BlockTable).
 		Limit(25).
 		Offset(offset).
+		Order("id ASC").
 		Find(&memoTopicFollows)
 	if result.Error != nil {
 		return nil, jerr.Get("error running query", result.Error)

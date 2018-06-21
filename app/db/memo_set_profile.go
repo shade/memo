@@ -148,8 +148,10 @@ func GetSetProfiles(offset uint) ([]*MemoSetProfile, error) {
 	}
 	var memoSetProfiles []*MemoSetProfile
 	result := db.
+		Preload(BlockTable).
 		Limit(25).
 		Offset(offset).
+		Order("id ASC").
 		Find(&memoSetProfiles)
 	if result.Error != nil {
 		return nil, jerr.Get("error running query", result.Error)

@@ -6,7 +6,7 @@ import (
 )
 
 func AddFollow(follow *db.MemoFollow) error {
-	var feed = db.Feed{
+	var feed = db.FeedEvent{
 		PkHash:    follow.PkHash,
 		TxHash:    follow.TxHash,
 		EventType: db.FeedEventFollowUser,

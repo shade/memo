@@ -1,0 +1,17 @@
+{{ if .Item.IsLike }}
+<h4>Liked by {{ .Item.Name }} {{ .Item.TimeAgo }}</h4>
+{{ else }}
+<h4>Type: {{ .Item.GetType }}, Name: {{ .Item.Name }}, Time: {{ .Item.TimeAgo }}</h4>
+        {{ end }}
+
+{{ if .Item.SetName }}
+<p>
+    {{ .Item.Name }} set name to {{ .Item.SetName.Name }}
+</p>
+{{ end }}
+
+{{ if .Item.Post }}
+{{ template "snippets/post.html" dict "Post" .Item.Post "Compress" false "TimeZone" .TimeZone "UserSettings" .UserSettings }}
+{{ else }}
+Regular item
+{{ end }}

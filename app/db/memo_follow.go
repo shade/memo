@@ -264,8 +264,10 @@ func GetAllFollows(offset uint) ([]*MemoFollow, error) {
 	}
 	var memoFollows []*MemoFollow
 	result := db.
+		Preload(BlockTable).
 		Limit(25).
 		Offset(offset).
+		Order("id ASC").
 		Find(&memoFollows)
 	if result.Error != nil {
 		return nil, jerr.Get("error running query", result.Error)

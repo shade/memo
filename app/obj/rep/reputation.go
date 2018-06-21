@@ -32,7 +32,26 @@ func (r Reputation) GetPercentString() string {
 	if r.rep.TotalFollowing == 0 {
 		return "n/a"
 	}
-	return fmt.Sprintf("%.0f%%", float32(r.rep.TrustedFollowers)/float32(r.rep.TotalFollowing)*100)
+	return fmt.Sprintf("%.0f%%", r.GetPercentage()*100)
+}
+
+func (r Reputation) GetPercentage() float32 {
+	return float32(r.rep.TrustedFollowers) / float32(r.rep.TotalFollowing)
+}
+
+func (r Reputation) GetClass() string {
+	if r.rep.DirectFollow {
+		return "blue"
+	}
+	percentage := r.GetPercentage()
+	switch {
+	case percentage > 0.20:
+		return "green"
+	case percentage > 0.05:
+		return "yellow"
+	default:
+		return "red"
+	}
 }
 
 func (r Reputation) GetPercentStringIncludingDirect() string {

@@ -24,6 +24,7 @@ var feedRoute = web.Route{
 			return
 		}
 		r.Helper["Key"] = key
+		r.Helper["OffsetLink"] = res.UrlFeed
 		setFeed(r, key.PkHash, user.Id)
 		r.RenderTemplate(res.TmplFeed)
 	},

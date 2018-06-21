@@ -96,7 +96,7 @@ func GetSetNamesByTxHashes(txHashes [][]byte) ([]*MemoSetName, error) {
 		Where("tx_hash IN (?)", txHashes).
 		Find(&memoSetNames)
 	if result.Error != nil {
-		return nil, jerr.Get("error getting memo posts", result.Error)
+		return nil, jerr.Get("error getting memo set names", result.Error)
 	}
 	return memoSetNames, nil
 }

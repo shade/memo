@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/obj/rep"
 	"github.com/memocash/memo/app/profile"
 )
 
@@ -39,6 +40,8 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 		setNameTxHashes       [][]byte
 		profileSetTxHashes    [][]byte
 		profileSetPicTxHashes [][]byte
+		userFollowTxHashes    [][]byte
+		topicFollowTxHashes   [][]byte
 		getPkHashNames        [][]byte
 	)
 	for _, feedEvent := range feedEvents {
@@ -55,8 +58,21 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 			profileSetTxHashes = append(profileSetTxHashes, feedEvent.TxHash)
 		case db.FeedEventSetProfilePic:
 			profileSetPicTxHashes = append(profileSetPicTxHashes, feedEvent.TxHash)
+		case db.FeedEventFollowUser:
+			userFollowTxHashes = append(userFollowTxHashes, feedEvent.TxHash)
+		case db.FeedEventFollowTopic:
+			topicFollowTxHashes = append(topicFollowTxHashes, feedEvent.TxHash)
 		}
 		getPkHashNames = append(getPkHashNames, feedEvent.PkHash)
+	}
+
+	memoFollows, err := db.GetMemoFollowsByTxHashes(userFollowTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting follows by tx hashes", err)
+	}
+
+	for _, memoFollow := range memoFollows {
+		getPkHashNames = append(getPkHashNames, memoFollow.FollowPkHash)
 	}
 
 	feedEventMemoSetNames, err := db.GetNamesForPkHashes(getPkHashNames)
@@ -64,9 +80,29 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 		return nil, jerr.Get("error getting feed event set names", err)
 	}
 
+	feedEventMemoSetProfilePics, err := db.GetPicsForPkHashes(getPkHashNames)
+	if err != nil {
+		return nil, jerr.Get("error getting feed event set profile pics", err)
+	}
+
 	memoSetNames, err := db.GetSetNamesByTxHashes(setNameTxHashes)
 	if err != nil {
 		return nil, jerr.Get("error getting set names by tx hashes", err)
+	}
+
+	memoSetProfiles, err := db.GetSetProfilesByTxHashes(profileSetTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting set profiles by tx hashes", err)
+	}
+
+	memoSetProfilePics, err := db.GetSetProfilePicsByTxHashes(profileSetPicTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting set profile pics by tx hashes", err)
+	}
+
+	memoTopicFollows, err := db.GetMemoTopicFollowsByTxHashes(topicFollowTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting topic follows by tx hashes", err)
 	}
 
 	memoLikes, err := db.GetMemoLikesByTxHashes(likeTxHashes)
@@ -123,10 +159,19 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 	if err != nil {
 		return nil, jerr.Get("error attaching parents to posts", err)
 	}
+	err = profile.AttachProfilePicsToPosts(posts)
+	if err != nil {
+		return nil, jerr.Get("error attaching profile pics to posts", err)
+	}
+	err = profile.AttachReputationToPosts(posts)
+	if err != nil {
+		return nil, jerr.Get("error attaching profile pics to posts", err)
+	}
 	var events []*Event
 	for _, feedEvent := range feedEvents {
 		var event = &Event{
-			FeedEvent: feedEvent,
+			FeedEvent:  feedEvent,
+			SelfPkHash: pkHash,
 		}
 		switch feedEvent.EventType {
 		case db.FeedEventPost, db.FeedEventTopicPost, db.FeedEventReply, db.FeedEventCreatePoll:
@@ -148,8 +193,10 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 		case db.FeedEventPollVote:
 			for _, memoPollVote := range memoPollVotes {
 				if bytes.Equal(memoPollVote.TxHash, feedEvent.TxHash) {
+					event.PollVote = memoPollVote
 					for _, memoPollOption := range memoPollOptions {
 						if bytes.Equal(memoPollOption.TxHash, memoPollVote.OptionTxHash) {
+							event.PollOption = memoPollOption
 							for _, post := range posts {
 								if bytes.Equal(post.Memo.TxHash, memoPollOption.PollTxHash) {
 									event.Post = post
@@ -166,9 +213,39 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 				}
 			}
 		case db.FeedEventSetProfile:
+			for _, memoSetProfile := range memoSetProfiles {
+				if bytes.Equal(memoSetProfile.TxHash, feedEvent.TxHash) {
+					event.SetProfile = memoSetProfile
+				}
+			}
 		case db.FeedEventSetProfilePic:
+			for _, memoSetPic := range memoSetProfilePics {
+				if bytes.Equal(memoSetPic.TxHash, feedEvent.TxHash) {
+					event.SetProfilePic = memoSetPic
+				}
+			}
 		case db.FeedEventFollowUser:
+			for _, memoFollow := range memoFollows {
+				if bytes.Equal(memoFollow.TxHash, feedEvent.TxHash) {
+					event.UserFollow = memoFollow
+					for _, memoSetName := range feedEventMemoSetNames {
+						if bytes.Equal(memoSetName.PkHash, memoFollow.FollowPkHash) {
+							event.FollowName = memoSetName.Name
+						}
+					}
+				}
+				for _, memoSetPic := range feedEventMemoSetProfilePics {
+					if bytes.Equal(memoSetPic.PkHash, memoFollow.FollowPkHash) {
+						event.FollowProfilePic = memoSetPic
+					}
+				}
+			}
 		case db.FeedEventFollowTopic:
+			for _, memoTopicFollow := range memoTopicFollows {
+				if bytes.Equal(memoTopicFollow.TxHash, feedEvent.TxHash) {
+					event.TopicFollow = memoTopicFollow
+				}
+			}
 		default:
 			jerr.Newf("unable to match feed event type: %#v", feedEvent).Print()
 		}
@@ -177,7 +254,27 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 				event.Name = feedEventMemoSetName.Name
 			}
 		}
+		for _, feedEventMemoSetProfilePic := range feedEventMemoSetProfilePics {
+			if bytes.Equal(feedEventMemoSetProfilePic.PkHash, feedEvent.PkHash) {
+				event.ProfilePic = feedEventMemoSetProfilePic
+			}
+		}
 		events = append(events, event)
 	}
+	err = AttachReputationToEvents(events)
+	if err != nil {
+		jerr.Get("error attaching reputation to events", err).Print()
+	}
 	return events, nil
+}
+
+func AttachReputationToEvents(events []*Event) error {
+	for _, event := range events {
+		reputation, err := rep.GetReputation(event.SelfPkHash, event.FeedEvent.PkHash)
+		if err != nil {
+			return jerr.Get("error getting reputation", err)
+		}
+		event.Reputation = reputation
+	}
+	return nil
 }

@@ -293,6 +293,9 @@ a.disabled {
     margin: 0;
     padding-right: 25px;
 }
+.post .post-header-feed-item {
+    padding-bottom: 5px;
+}
 .post .post-header .block-explorer {
     position: absolute;
     list-style-type: none;
@@ -343,12 +346,21 @@ body.dark .post .post-header .block-explorer ul a {
 .post .actions .btn-leave {
     margin-left: 10px;
 }
-.post .feed-item-like {
+.post .feed-item {
     color: #555;
     font-style: italic;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
 }
-.post .feed-item-like .glyphicon {
+.post .feed-item .feed-item-glyphicon {
     margin-right: 5px;
+}
+.post .feed-item-like .feed-item-glyphicon {
+    color: #b00;
+}
+.post .feed-item-vote .feed-item-glyphicon {
+    color: #0b0;
 }
 .btn-warning {
     color: white;
@@ -450,14 +462,33 @@ span.page {
 
 .reputation-tooltip {
     position: relative;
+    font-size: 12px;
+}
+.reputation-tooltip .reputation-glyphicon {
+    margin-right: 2px;
+    font-size: 9px;
 }
 .reputation-tooltip a {
     font-weight: bold;
+    font-size: 12px;
 }
-.reputation-tooltip:hover > span {
+.reputation-tooltip.red {
+    color: #b00;
+}
+.reputation-tooltip.yellow {
+    color: #d90;
+}
+.reputation-tooltip.green {
+    color: #0b0;
+}
+.reputation-tooltip.blue {
+    color: #00b;
+}
+.reputation-tooltip:hover .bubble {
     display: block;
+    z-index: 1;
 }
-.reputation-tooltip span {
+.reputation-tooltip .bubble {
     position: absolute;
     display: none;
     color: #000;
@@ -472,7 +503,7 @@ span.page {
     padding: 5px;
     text-align: left;
 }
-.reputation-tooltip:hover > span {
+.reputation-tooltip:hover .bubble {
     display: block;
 }
 #broadcasting {

@@ -2,6 +2,7 @@ package db
 
 import (
 	"github.com/jchavannes/jgo/jerr"
+	"github.com/memocash/memo/app/bitcoin/wallet"
 	"time"
 )
 
@@ -55,6 +56,10 @@ func (f *FeedEvent) Save() error {
 		return jerr.Get("error updating feed event", result.Error)
 	}
 	return nil
+}
+
+func (f FeedEvent) GetAddress() wallet.Address {
+	return wallet.GetAddressFromPkHash(f.PkHash)
 }
 
 func GetRecentFeedForPkHash(pkHash []byte, offset uint) ([]*FeedEvent, error) {

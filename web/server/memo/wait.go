@@ -123,7 +123,7 @@ var waitSubmitRoute = web.Route{
 				r.Error(jerr.Get("error getting profile picture from db", err), http.StatusInternalServerError)
 				return
 			}
-			r.Write(strings.TrimLeft(res.UrlProfileView + "/" + setName.GetAddressString(), "/"))
+			r.Write(strings.TrimLeft(res.UrlProfileAccount + "/" + setName.GetAddressString(), "/"))
 		}
 	},
 }

@@ -1,16 +1,31 @@
 package feed_event
 
 import (
+	"github.com/memocash/memo/app/bitcoin/wallet"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/obj/rep"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/util"
+	"github.com/memocash/memo/app/util/format"
+	"strings"
 )
 
 type Event struct {
-	FeedEvent *db.FeedEvent
-	Name      string
-	Post      *profile.Post
-	SetName   *db.MemoSetName
+	FeedEvent        *db.FeedEvent
+	Name             string
+	SelfPkHash       []byte
+	ProfilePic       *db.MemoSetPic
+	Post             *profile.Post
+	PollOption       *db.MemoPollOption
+	PollVote         *db.MemoPollVote
+	SetName          *db.MemoSetName
+	SetProfile       *db.MemoSetProfile
+	SetProfilePic    *db.MemoSetPic
+	UserFollow       *db.MemoFollow
+	FollowName       string
+	FollowProfilePic *db.MemoSetPic
+	TopicFollow      *db.MemoTopicFollow
+	Reputation       *rep.Reputation
 }
 
 func (e *Event) TimeAgo() string {
@@ -18,6 +33,35 @@ func (e *Event) TimeAgo() string {
 		return util.GetTimeAgo(e.FeedEvent.Block.Timestamp)
 	}
 	return util.GetTimeAgo(e.FeedEvent.CreatedAt)
+}
+
+func (e *Event) GetAddressString() string {
+	return e.FeedEvent.GetAddress().GetEncoded()
+}
+
+func (e *Event) GetFollowName() string {
+	if e.FollowName == "" {
+		return e.FeedEvent.GetAddress().GetEncoded()
+	}
+	return e.FollowName
+}
+
+func (e *Event) GetFollowAddressString() string {
+	if e.UserFollow == nil {
+		return ""
+	}
+	address := wallet.GetAddressFromPkHash(e.UserFollow.FollowPkHash)
+	return address.GetEncoded()
+}
+
+func (e *Event) GetProfileText() string {
+	if e.SetProfile == nil {
+		return ""
+	}
+	var profileText = e.SetProfile.Profile
+	profileText = strings.TrimSpace(profileText)
+	profileText = format.AddLinks(profileText)
+	return profileText
 }
 
 func (e *Event) IsLike() bool {

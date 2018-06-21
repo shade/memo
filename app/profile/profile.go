@@ -12,8 +12,8 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/rep"
+	"github.com/memocash/memo/app/util/format"
 	"github.com/skip2/go-qrcode"
-	"regexp"
 	"strings"
 )
 
@@ -153,13 +153,13 @@ func (p *Profile) SetQr() error {
 }
 
 func (p Profile) GetText() string {
-	if p.Profile == "" {
+	var profile = p.Profile
+	if profile == "" {
 		return "Not set"
 	}
-	var re = regexp.MustCompile(`(http[s]?://[^\s]*)`)
-	s := re.ReplaceAllString(p.Profile, `<a href="$1" target="_blank">$1</a>`)
-	s = strings.Replace(s, "\n", "<br/>", -1)
-	return s
+	profile = strings.TrimSpace(profile)
+	profile = format.AddLinks(profile)
+	return profile
 }
 
 func GetProfiles(selfPkHash []byte, searchString string, offset int) ([]*Profile, error) {

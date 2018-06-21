@@ -84,6 +84,21 @@ func GetMemoFollow(txHash []byte) (*MemoFollow, error) {
 	return &memoFollow, nil
 }
 
+func GetMemoFollowsByTxHashes(txHashes [][]byte) ([]*MemoFollow, error) {
+	var memoFollows []*MemoFollow
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoFollows)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo follows", result.Error)
+	}
+	return memoFollows, nil
+}
+
 type memoFollowSortByDate []*MemoFollow
 
 func (txns memoFollowSortByDate) Len() int      { return len(txns) }

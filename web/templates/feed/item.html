@@ -1,15 +1,37 @@
 {{ if .Item.SetName }}
-<p>
-{{ .Item.Name }} set name to {{ .Item.SetName.Name }}
-</p>
+    {{ template "feed/set-name.html" . }}
+{{ else if .Item.IsSetProfile }}
+    {{ template "feed/set-profile.html" . }}
+{{ else if .Item.IsFollowUser }}
+    {{ template "feed/follow-user.html" . }}
 {{ else if .Item.IsLike }}
 {{ else if .Item.IsReply }}
 {{ else if .Item.IsPost }}
 {{ else if .Item.IsTopicPost }}
+{{ else if .Item.IsPollVote }}
 {{ else }}
-<p>{{ .Item.GetType }} - {{ .Item.Name }} - {{ .Item.TimeAgo }}</p>
+<p>
+{{ .Item.GetType }} &middot; <a href="profile/{{ .Item.GetAddressString }}">{{ .Item.Name }}</a> - {{ .Item.TimeAgo }}
+</p>
 {{ end }}
 
 {{ if .Item.Post }}
 {{ template "snippets/post.html" dict "Post" .Item.Post "FeedItem" .Item "Compress" false "TimeZone" .TimeZone "UserSettings" .UserSettings }}
+{{ end }}
+
+{{ if not .Item.ProfilePic }}
+<script type="text/javascript">
+    (function () {
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[0, 0, 0, 255]{{ end }};
+        var background = [0, 0, 0, 0];
+        var data = new Identicon('{{ .Item.GetAddressString }}', {
+            foreground: foreground,
+            background: background,
+            size: 24,
+            form: 'svg',
+            margin: 0
+        }).toString();
+        $(".identicon-{{ .Item.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+    })();
+</script>
 {{ end }}

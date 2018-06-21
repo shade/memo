@@ -85,6 +85,21 @@ func GetMemoSetProfile(txHash []byte) (*MemoSetProfile, error) {
 	return &memoSetProfile, nil
 }
 
+func GetSetProfilesByTxHashes(txHashes [][]byte) ([]*MemoSetProfile, error) {
+	var memoSetProfiles []*MemoSetProfile
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoSetProfiles)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo set profiles", result.Error)
+	}
+	return memoSetProfiles, nil
+}
+
 type memoSetProfileSortByDate []*MemoSetProfile
 
 func (txns memoSetProfileSortByDate) Len() int      { return len(txns) }

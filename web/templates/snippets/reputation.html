@@ -1,0 +1,8 @@
+<span class="reputation-tooltip {{ .GetClass }}">
+{{- if .IsDirectFollow -}} <span class="reputation-glyphicon glyphicon glyphicon-star" aria-hidden="true"></span> {{- end -}}
+{{ .GetPercentStringIncludingDirect }}
+    <span class="bubble">
+        Shared Connections is the percentage of people you follow who are following this person.
+        For more info visit the <a href="about#connectivity">about page</a>.
+    </span>
+</span>

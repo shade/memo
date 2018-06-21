@@ -1,9 +1,18 @@
 <div class="post rounded box-shadow" id="post-{{ .Post.Memo.GetTransactionHashString }}">
+{{ if .FeedItem }}
+{{ if .FeedItem.IsLike }}
+    <p class="feed-item-like">
+        <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
+    {{ .FeedItem.Name }} liked {{ .FeedItem.TimeAgo }}
+    </p>
+{{ end }}
+{{ end }}
     <div class="post-header">
         <p class="name">
         {{ if .Post.ProfilePic }}
             <a class="image-link" href="profile/{{ .Post.Memo.GetAddressString }}">
-                <img class="profile-pic profile-pic-24" src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
+                <img class="profile-pic profile-pic-24"
+                     src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
             </a>
         {{ else }}
             <span class="identicon-{{ .Post.Memo.GetAddressString }}">
@@ -30,23 +39,27 @@
             </span>
         {{ end }}
         {{ if and .Post.Memo.RootTxHash .Post.Memo.ParentTxHash }}
-            {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+        {{ T "replied_to" }} <a
+                href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
         {{ else if .Post.Memo.ParentTxHash }}
-            {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+        {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
         {{ else if .Post.Memo.IsVote }}
             voted in <a href="post/{{ .Post.Memo.GetTransactionHashString }}">poll</a>
+        {{ else if .Post.Memo.IsPoll }}
+            {{ T "created poll" }}
         {{ else }}
             {{ T "posted" }}
         {{ end }}
             &middot; <a title="{{ .Post.GetTimeString .TimeZone }}"
-               href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.GetTimeAgo }}</a>
+                        href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.GetTimeAgo }}</a>
         {{- if .Post.Memo.Topic }}
             in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
         {{ end }}
         </p>
         <ul class="block-explorer">
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-th"></span></a>
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"><span
+                        class="glyphicon glyphicon-th"></span></a>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li><a target="_blank"
                            href="https://explorer.bitcoin.com/bch/tx/{{ .Post.Memo.GetTransactionHashString }}">
@@ -63,20 +76,22 @@
 {{ if .Post.Parent }}
     <div class="reply">
         Replying to
-        {{ if .Post.Parent.ProfilePic }}
-            <a class="image-link" href="profile/{{ .Post.Parent.Memo.GetAddressString }}">
-                <img class="profile-pic profile-pic-24" src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
+    {{ if .Post.Parent.ProfilePic }}
+        <a class="image-link" href="profile/{{ .Post.Parent.Memo.GetAddressString }}">
+            <img class="profile-pic profile-pic-24"
+                 src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
+        </a>
+    {{ else }}
+        <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
                 <img class="identicon"/>
             </span>
-        {{ end }}
-        {{ if .Post.Memo.RootTxHash }}
-            <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s post</a>
-        {{ else }}
-            <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s post</a>
-        {{ end }}
+    {{ end }}
+    {{ if .Post.Memo.RootTxHash }}
+        <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}
+            's post</a>
+    {{ else }}
+        <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s post</a>
+    {{ end }}
         <p>{{ .Post.Parent.GetMessage }}</p>
     </div>
 {{ end }}
@@ -103,11 +118,11 @@
             &middot;
         {{ end }}
         {{ if gt .Post.ReplyCount 0 }}
-            {{ if .Post.Memo.RootTxHash }}
-                <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ (T "reply" (.Post.ReplyCount | ToInt)) }}</a>
-            {{ else }}
-                <a href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ (T "reply" (.Post.ReplyCount | ToInt)) }}</a>
-            {{ end }}
+        {{ if .Post.Memo.RootTxHash }}
+            <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ (T "reply" (.Post.ReplyCount | ToInt)) }}</a>
+        {{ else }}
+            <a href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ (T "reply" (.Post.ReplyCount | ToInt)) }}</a>
+        {{ end }}
         {{ end }}
         </i>
     </p>
@@ -119,14 +134,14 @@
            href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">
             <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>{{ T "view_topic" | UcFirst }}
         </a>
-     {{ end }}
+    {{ end }}
     {{ if .Post.IsLoggedIn }}
-        {{ if not .Post.Memo.Topic }}
+    {{ if not .Post.Memo.Topic }}
         <a id="reply-link-{{ .Post.Memo.GetTransactionHashString }}" class="btn btn-sm btn-default"
            href="memo/reply/{{ .Post.Memo.GetTransactionHashString }}">
             <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>{{ T "reply_verb" | Title }}
         </a>
-        {{ end }}
+    {{ end }}
         <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
         <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
         <div class="like" id="like-{{ .Post.Memo.GetTransactionHashString }}">

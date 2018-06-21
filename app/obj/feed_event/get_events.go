@@ -7,12 +7,31 @@ import (
 	"github.com/memocash/memo/app/profile"
 )
 
-func GetEventsForUser(pkHash []byte, offset uint) ([]*Event, error) {
-	var events []*Event
+func GetEventsForUser(userId uint, pkHash []byte, offset uint) ([]*Event, error) {
 	feedEvents, err := db.GetRecentFeedForPkHash(pkHash, uint(offset))
 	if err != nil {
 		return nil, jerr.Get("error getting recent feed for pk hash", err)
 	}
+	events, err := getEvents(feedEvents, userId, pkHash)
+	if err != nil {
+		return nil, jerr.Get("error getting events from feed events", err)
+	}
+	return events, nil
+}
+
+func GetAllEvents(userId uint, pkHash []byte, offset uint) ([]*Event, error) {
+	feedEvents, err := db.GetRecentFeedEvents(uint(offset))
+	if err != nil {
+		return nil, jerr.Get("error getting recent feed events", err)
+	}
+	events, err := getEvents(feedEvents, userId, pkHash)
+	if err != nil {
+		return nil, jerr.Get("error getting events from feed events", err)
+	}
+	return events, nil
+}
+
+func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event, error) {
 	var (
 		postTxHashes          [][]byte
 		likeTxHashes          [][]byte
@@ -88,6 +107,23 @@ func GetEventsForUser(pkHash []byte, offset uint) ([]*Event, error) {
 	if err != nil {
 		return nil, jerr.Get("error getting memo posts by tx hashes", err)
 	}
+	err = profile.SetShowMediaForPosts(posts, userId)
+	if err != nil {
+		return nil, jerr.Get("error setting show media for posts", err)
+	}
+	err = profile.AttachPollsToPosts(posts)
+	if err != nil {
+		return nil, jerr.Get("error attaching polls to posts", err)
+	}
+	err = profile.AttachParentToPosts(posts)
+	if err != nil {
+		return nil, jerr.Get("error attaching parents to posts", err)
+	}
+	err = profile.AttachLikesToPosts(posts)
+	if err != nil {
+		return nil, jerr.Get("error attaching parents to posts", err)
+	}
+	var events []*Event
 	for _, feedEvent := range feedEvents {
 		var event = &Event{
 			FeedEvent: feedEvent,

@@ -219,6 +219,7 @@ a.disabled {
     padding: 15px 0;
 }
 .post {
+    position: relative;
     background: #fff;
     padding: 10px 10px 0 10px;
     margin-bottom: 15px;
@@ -289,15 +290,14 @@ a.disabled {
     display: inline-block;
 }
 .post .post-header {
-    position: relative;
     margin: 0;
     padding-right: 25px;
 }
 .post .post-header .block-explorer {
     position: absolute;
     list-style-type: none;
-    top: -4px;
-    right: 0;
+    top: 5px;
+    right: 9px;
     padding: 0;
     font-size: 18px;
     color: #333;
@@ -342,6 +342,13 @@ body.dark .post .post-header .block-explorer ul a {
 }
 .post .actions .btn-leave {
     margin-left: 10px;
+}
+.post .feed-item-like {
+    color: #555;
+    font-style: italic;
+}
+.post .feed-item-like .glyphicon {
+    margin-right: 5px;
 }
 .btn-warning {
     color: white;
@@ -673,6 +680,7 @@ a.block-link {
 }
 img.imgur {
     max-width: 100%;
+    max-height: 400px;
     display: block;
     margin: 10px auto;
 }

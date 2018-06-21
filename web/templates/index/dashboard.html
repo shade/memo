@@ -20,6 +20,9 @@
 {{ end }}
 
 {{ if .FeedItems }}
+
+{{ template "feed/header.html" dict "Page" "feed" "IsLoggedIn" .IsLoggedIn }}
+
 {{ template "feed/items.html" . }}
 {{ end }}
 

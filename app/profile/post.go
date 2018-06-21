@@ -57,6 +57,7 @@ func (p Post) GetMessage() string {
 		msg = addGiphyImages(msg)
 		msg = addTwitterImages(msg)
 	}
+	msg = strings.TrimSpace(msg)
 	msg = addLinks(msg)
 	return msg
 }
@@ -123,6 +124,11 @@ func addLinks(msg string) string {
 	var re = regexp.MustCompile(`(^|[\s(])(http[s]?://[^\s]*[^.?!,)\s])`)
 	s := re.ReplaceAllString(msg, `$1<a href="$2" target="_blank">$2</a>`)
 	return strings.Replace(s, "\n", "<br/>", -1)
+}
+
+func removeTrailingWhiteSpace(msg string) string {
+	var re = regexp.MustCompile(`(<br\/>\s*)+$`)
+	return re.ReplaceAllString(msg, ``)
 }
 
 func (p Post) GetTimeString(timezone string) string {

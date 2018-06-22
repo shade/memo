@@ -80,6 +80,9 @@
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
@@ -190,6 +193,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
@@ -437,6 +443,9 @@
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
@@ -532,10 +541,15 @@
                 },
                 error: function (xhr) {
                     submitting = false;
+                    $creating.addClass("hidden");
+                    $form.show();
                     if (xhr.status === 401) {
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =

@@ -121,6 +121,9 @@
                         "Please verify your password is correct. " +
                         "If this problem persists, please try refreshing the page.");
                     return;
+                } else if (xhr.status === 402) {
+                    MemoApp.AddAlert("Please make sure your account has enough funds.");
+                    return;
                 }
                 var errorMessage =
                     "Error with request (option code " + xhr.status + "):\n" +

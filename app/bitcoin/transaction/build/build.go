@@ -10,6 +10,13 @@ import (
 	"sort"
 )
 
+const notEnoughValueErrorText = "unable to find enough value to spend"
+var notEnoughValueError = jerr.New(notEnoughValueErrorText)
+
+func IsNotEnoughValueError(err error) bool {
+	return jerr.HasError(err, notEnoughValueErrorText)
+}
+
 func Build(spendOutputs []memo.SpendOutput, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
 	spendableTxOuts, err := db.GetSpendableTransactionOutputsForPkHash(privateKey.GetPublicKey().GetAddress().GetScriptAddress())
 	if err != nil {
@@ -43,7 +50,7 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 	var totalInputValue int64
 	for {
 		if len(spendableTxOuts) == 0 {
-			return nil, nil, jerr.New("unable to find enough value to spend")
+			return nil, nil, notEnoughValueError
 		}
 		spendableTxOut := spendableTxOuts[0]
 		spendableTxOuts = spendableTxOuts[1:]

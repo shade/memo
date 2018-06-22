@@ -68,8 +68,12 @@ var setProfileSubmitRoute = web.Route{
 
 		tx, err := build.SetProfileText(profile, privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building set profile text tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building set profile text tx", err), statusCode)
 			return
 		}
 

@@ -61,7 +61,7 @@ func (r Reputation) GetPercentStringIncludingDirect() string {
 
 func GetReputation(selfPkHash []byte, pkHash []byte) (*Reputation, error) {
 	if len(selfPkHash) == 0 {
-		return &Reputation{}, nil
+		return nil, nil
 	}
 	cachedRep, err := cache.GetReputation(selfPkHash, pkHash)
 	if err == nil {

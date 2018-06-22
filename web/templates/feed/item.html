@@ -2,6 +2,8 @@
     {{ template "feed/set-name.html" . }}
 {{ else if .Item.IsSetProfile }}
     {{ template "feed/set-profile.html" . }}
+{{ else if .Item.IsSetProfilePic }}
+    {{ template "feed/set-profile-pic.html" . }}
 {{ else if .Item.IsFollowUser }}
     {{ template "feed/follow-user.html" . }}
 {{ else if .Item.TopicFollow }}
@@ -14,7 +16,7 @@
 {{ else if .Item.IsCreatePoll }}
 {{ else }}
 <p>
-{{ .Item.GetType }} - <a href="profile/{{ .Item.GetAddressString }}">{{ .Item.Name }}</a> - {{ .Item.TimeAgo }}
+{{ .Item.GetType }} - <a href="profile/{{ .Item.GetAddressString }}">{{ .Item.Name }}</a> &middot; {{ .Item.TimeAgo }}
 </p>
 {{ end }}
 
@@ -25,7 +27,7 @@
 {{ if not .Item.ProfilePic }}
 <script type="text/javascript">
     (function () {
-        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[0, 0, 0, 255]{{ end }};
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
         var background = [0, 0, 0, 0];
         var data = new Identicon('{{ .Item.GetAddressString }}', {
             foreground: foreground,

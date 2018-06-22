@@ -58,11 +58,11 @@ var viewRoute = web.Route{
 		var err error
 		switch pageType {
 		case PageAll:
-			events, err = feed_event.GetUserEvents(userId, userPkHash, uint(offset), nil)
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), nil)
 		case PagePosts:
-			events, err = feed_event.GetUserEvents(userId, userPkHash, uint(offset), db.PostEvents)
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), db.PostEvents)
 		case PageLikes:
-			events, err = feed_event.GetUserEvents(userId, userPkHash, uint(offset), []db.FeedEventType{
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), []db.FeedEventType{
 				db.FeedEventLike,
 			})
 		}
@@ -103,11 +103,6 @@ var viewRoute = web.Route{
 				r.Error(jerr.Get("error setting can follow for profile", err), http.StatusInternalServerError)
 				return
 			}
-		}
-		err = pf.SetBalances()
-		if err != nil {
-			r.Error(jerr.Get("error setting balances for profile", err), http.StatusInternalServerError)
-			return
 		}
 		err = pf.SetQr()
 		if err != nil {

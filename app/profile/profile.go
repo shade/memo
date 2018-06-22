@@ -69,7 +69,6 @@ func (p Profile) GetAddressString() string {
 }
 
 func (p Profile) GetCashAddressString() string {
-
 	addr, err := btcutil.NewAddressPubKeyHash(p.PkHash, &wallet.MainNetParamsOld)
 	if err != nil {
 		return ""
@@ -79,6 +78,11 @@ func (p Profile) GetCashAddressString() string {
 		return ""
 	}
 	return cashAddr.String()
+}
+
+func (p Profile) GetCashAddressOnlyString() string {
+	cashAddr := p.GetCashAddressString()
+	return strings.TrimPrefix(cashAddr, "bitcoincash:")
 }
 
 func (p *Profile) SetBalances() error {

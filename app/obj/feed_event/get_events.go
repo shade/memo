@@ -20,6 +20,18 @@ func GetEventsForUser(userId uint, pkHash []byte, offset uint) ([]*Event, error)
 	return events, nil
 }
 
+func GetUserEvents(userId uint, pkHash []byte, offset uint, eventTypes []db.FeedEventType) ([]*Event, error) {
+	feedEvents, err := db.GetRecentFeedUserEvents(pkHash, uint(offset), eventTypes)
+	if err != nil {
+		return nil, jerr.Get("error getting recent user feed for pk hash", err)
+	}
+	events, err := getEvents(feedEvents, userId, pkHash)
+	if err != nil {
+		return nil, jerr.Get("error getting events from feed events", err)
+	}
+	return events, nil
+}
+
 func GetAllEvents(userId uint, pkHash []byte, offset uint) ([]*Event, error) {
 	feedEvents, err := db.GetRecentFeedEvents(uint(offset))
 	if err != nil {

@@ -23,6 +23,13 @@ const (
 	FeedEventFollowTopic   FeedEventType = 11
 )
 
+var PostEvents = []FeedEventType{
+	FeedEventPost,
+	FeedEventReply,
+	FeedEventTopicPost,
+	FeedEventCreatePoll,
+}
+
 type FeedEvent struct {
 	Id          uint   `gorm:"primary_key"`
 	Block       *Block `gorm:"foreignkey:BlockHeight"`
@@ -114,6 +121,28 @@ func GetRecentFeedEvents(offset uint) ([]*FeedEvent, error) {
 		Offset(offset).
 		Order("block_height != 0, block_height DESC, id DESC").
 		Find(&feedEvents)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting feed events", result.Error)
+	}
+	return feedEvents, nil
+}
+
+func GetRecentFeedUserEvents(pkHash []byte, offset uint, eventTypes []FeedEventType) ([]*FeedEvent, error) {
+	var feedEvents []*FeedEvent
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	query := db.
+		Limit(25).
+		Preload(BlockTable).
+		Where("pk_hash = ?", pkHash).
+		Offset(offset).
+		Order("block_height != 0, block_height DESC, id DESC")
+	if eventTypes != nil {
+		query = query.Where("event_type IN (?)", eventTypes)
+	}
+	result := query.Find(&feedEvents)
 	if result.Error != nil {
 		return nil, jerr.Get("error getting feed events", result.Error)
 	}

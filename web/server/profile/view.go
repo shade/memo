@@ -54,14 +54,20 @@ var viewRoute = web.Route{
 		if ! util.StringInSlice(pageType, profilePages) {
 			pageType = PageAll
 		}
+		var events []*feed_event.Event
+		var err error
 		switch pageType {
 		case PageAll:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, uint(offset), nil)
 		case PagePosts:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, uint(offset), db.PostEvents)
 		case PageLikes:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, uint(offset), []db.FeedEventType{
+				db.FeedEventLike,
+			})
 		}
-		events, err := feed_event.GetEventsForUser(userId, userPkHash, uint(offset))
 		if err != nil {
-			r.Error(jerr.Get("error getting events", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error getting user events", err), http.StatusInternalServerError)
 			return
 		}
 		r.Helper["FeedItems"] = events

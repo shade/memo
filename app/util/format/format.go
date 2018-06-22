@@ -46,7 +46,7 @@ func AddGiphyImages(msg string) string {
 }
 
 func AddTwitterImages(msg string) string {
-	var re = regexp.MustCompile(`(http[s]?://pbs.twimg.com/media/([A-Za-z0-9_]+)).jpg`)
+	var re = regexp.MustCompile(`(http[s]?://pbs.twimg.com/media/([A-Za-z0-9_-]+)).jpg`)
 	msg = re.ReplaceAllString(msg, `<a href="https://pbs.twimg.com/media/$2.jpg" target="_blank"><img class="imgur" src="https://pbs.twimg.com/media/$2.jpg"/></a>`)
 	return msg
 }

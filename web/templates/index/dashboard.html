@@ -1,0 +1,16 @@
+{{ template "snippets/header.html" . }}
+
+{{ if not .FeedItems }}
+<h3>Feed Empty</h3>
+<p>Start following others to see their posts here</p>
+
+{{ else }}
+
+{{ template "feed/header.html" dict "Page" "feed" "IsLoggedIn" .IsLoggedIn }}
+{{ template "feed/items.html" . }}
+
+{{ end }}
+
+<br/>
+
+{{ template "snippets/footer.html" . }}

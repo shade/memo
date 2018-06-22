@@ -59,6 +59,21 @@ func GetMemoPollVote(txHash []byte) (*MemoPollVote, error) {
 	return &memoPollVote, nil
 }
 
+func GetMemoPollVotesByTxHashes(txHashes [][]byte) ([]*MemoPollVote, error) {
+	var memoPollVotes []*MemoPollVote
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoPollVotes)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo poll votes", result.Error)
+	}
+	return memoPollVotes, nil
+}
+
 func GetVotesForOptions(questionTxHash []byte, single bool) ([]*MemoPollVote, error) {
 	db, err := getDb()
 	if err != nil {
@@ -97,4 +112,22 @@ func GetCountMemoPollVote() (uint, error) {
 		return 0, jerr.Get("error getting total count", err)
 	}
 	return cnt, nil
+}
+
+func GetPollVotes(offset uint) ([]*MemoPollVote, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoPollVotes []*MemoPollVote
+	result := db.
+		Preload(BlockTable).
+		Limit(25).
+		Offset(offset).
+		Order("id ASC").
+		Find(&memoPollVotes)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoPollVotes, nil
 }

@@ -1,7 +1,6 @@
 package topics
 
 import (
-	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
@@ -57,8 +56,8 @@ var createSubmitRoute = web.Route{
 			return
 		}
 
-		fmt.Println(transaction.GetTxInfo(tx))
-		transaction.QueueTx(tx)
-		r.Write(tx.TxHash().String())
+		transaction.GetTxInfo(tx).Print()
+		transaction.QueueTx(tx.MsgTx)
+		r.Write(tx.MsgTx.TxHash().String())
 	},
 }

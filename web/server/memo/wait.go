@@ -11,7 +11,6 @@ import (
 	"github.com/memocash/memo/app/res"
 	"net/http"
 	"strings"
-	"time"
 )
 
 var waitRoute = web.Route{
@@ -79,19 +78,19 @@ var waitSubmitRoute = web.Route{
 			}
 			r.Write(strings.TrimLeft(res.UrlMemoPost + "/" + post.GetTransactionHashString(), "/"))
 		case memo.CodeSetName:
-			setName, err := db.GetMemoSetName(txHash.CloneBytes())
+			_, err := db.GetMemoSetName(txHash.CloneBytes())
 			if err != nil {
 				r.Error(jerr.Get("error getting set name from db", err), http.StatusInternalServerError)
 				return
 			}
-			r.Write(strings.TrimLeft(res.UrlProfileView + "/" + setName.GetAddressString(), "/"))
+			r.Write(strings.TrimLeft(res.UrlProfileAccount, "/"))
 		case memo.CodeSetProfile:
-			setProfile, err := db.GetMemoSetProfile(txHash.CloneBytes())
+			_, err := db.GetMemoSetProfile(txHash.CloneBytes())
 			if err != nil {
 				r.Error(jerr.Get("error getting set profile from db", err), http.StatusInternalServerError)
 				return
 			}
-			r.Write(strings.TrimLeft(res.UrlProfileView + "/" + setProfile.GetAddressString(), "/"))
+			r.Write(strings.TrimLeft(res.UrlProfileAccount, "/"))
 		case memo.CodeReply:
 			post, err := db.GetMemoPost(txHash.CloneBytes())
 			if err != nil {
@@ -119,14 +118,12 @@ var waitSubmitRoute = web.Route{
 				r.Error(jerr.Getf(err, "error waiting for transaction (%s)", txHashString), http.StatusInternalServerError)
 				return
 			}
-			setName, err := db.GetMemoSetPic(txHash.CloneBytes())
+			_, err := db.GetMemoSetPic(txHash.CloneBytes())
 			if err != nil {
 				r.Error(jerr.Get("error getting profile picture from db", err), http.StatusInternalServerError)
 				return
 			}
-			// Give it a little extra time to generate the image
-			time.Sleep(time.Second)
-			r.Write(strings.TrimLeft(res.UrlProfileView + "/" + setName.GetAddressString(), "/"))
+			r.Write(strings.TrimLeft(res.UrlProfileAccount, "/"))
 		}
 	},
 }

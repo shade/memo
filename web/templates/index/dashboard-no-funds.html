@@ -1,0 +1,34 @@
+{{ template "snippets/header.html" . }}
+
+<div class="col-sm-8 col-sm-offset-2">
+    <h3>
+        You need some Bitcoin Cash to get started
+    </h3>
+    <p>
+        <b>Step 1.</b> Copy your address below or scan the QR code
+    </p>
+    <p>
+        <b>Step 2.</b> Paste the address into your bitcoin cash wallet to send yourself some funds.
+        If you don't have any BCH <a target="_blank" href="https://free.bitcoin.com">visit the bitcoin.com faucet</a> to
+        get
+        some for free!
+    </p>
+
+    <div class="center">
+        <a href="{{ .Profile.GetCashAddressString }}">{{ .Profile.GetCashAddressOnlyString }}</a><br>
+        <img src="data:image/png;base64,{{ .Profile.Qr }}"/>
+        <br/>
+        <span class="click-for-qr">Legacy Address</span>
+        <br/>
+    {{ .Profile.GetAddressString }}
+        <br/>
+        <br/>
+        <br/>
+        <p>
+            <a class="btn btn-default btn-lg" href="all">View All Activity</a>
+        </p>
+    </div>
+    <br/>
+</div>
+
+{{ template "snippets/footer.html" . }}

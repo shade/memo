@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/spf13/cobra"
-	"net/http"
-	"regexp"
-	"os"
 	"io"
-	"strconv"
+	"net/http"
+	"os"
 	"os/exec"
+	"regexp"
+	"strconv"
 )
 
-var profilePic = &cobra.Command{
+var profilePicDevCmd = &cobra.Command{
 	Use: "profile-pic",
 	RunE: func(c *cobra.Command, args []string) error {
 

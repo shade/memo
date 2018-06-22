@@ -243,6 +243,9 @@ a.disabled {
     font-weight: bold;
     font-size: 18px;
 }
+.post .name .profile.profile-feed-item {
+    font-weight: normal;
+}
 
 .post .post {
     margin: 0 -9px 5px -5px;
@@ -255,7 +258,11 @@ a.disabled {
     color: #888;
 }
 .post .reply p {
-    margin: 12px 0 5px;
+    margin: 12px 0 0;
+    font-size: 18px;
+}
+.post .reply.reply-feed-item p {
+    font-size: 14px;
 }
 .post .reply.vote p {
     margin: 5px 0 5px;
@@ -274,6 +281,9 @@ a.disabled {
 .post .message {
     margin: 5px 0 5px;
     font-size: 28px;
+}
+.post .message.message-feed-item {
+    font-size: 24px;
 }
 .post .message.profile-text {
     padding-bottom: 10px;
@@ -362,7 +372,6 @@ body.dark .post .post-header .block-explorer ul a {
 }
 .post .feed-item {
     color: #555;
-    font-style: italic;
     padding-bottom: 8px;
     margin-bottom: 8px;
     border-bottom: 1px solid #ddd;
@@ -473,7 +482,7 @@ body.dark table.table {
     text-decoration: none;
     color: #000;
     display: inline-block;
-    margin-right: 10px;
+    margin: 10px 5px 0;
 }
 .posts-nav a:hover,
 .posts-nav a.sel {

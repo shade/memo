@@ -20,7 +20,7 @@ var personalizedRoute = web.Route{
 		offset := r.Request.GetUrlParameterInt("offset")
 		timeRange := r.Request.GetUrlParameter("range")
 		if timeRange == "" {
-			timeRange = profile.TimeRange1Hour
+			timeRange = profile.TimeRange24Hours
 		} else if ! profile.StringIsTimeRange(timeRange) {
 			r.Error(jerr.New("range not valid time range"), http.StatusUnprocessableEntity)
 			return

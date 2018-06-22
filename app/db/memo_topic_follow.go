@@ -61,6 +61,21 @@ func GetMemoTopicFollow(txHash []byte) (*MemoTopicFollow, error) {
 	return &memoFollowTopic, nil
 }
 
+func GetMemoTopicFollowsByTxHashes(txHashes [][]byte) ([]*MemoTopicFollow, error) {
+	var memoTopicFollows []*MemoTopicFollow
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoTopicFollows)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo topic follows", result.Error)
+	}
+	return memoTopicFollows, nil
+}
+
 func GetMemoTopicFollowCountForUser(pkHash []byte) (uint, error) {
 	if len(pkHash) == 0 {
 		return 0, nil
@@ -180,4 +195,22 @@ func GetCountMemoTopicFollow() (uint, error) {
 		return 0, jerr.Get("error getting total count", err)
 	}
 	return cnt, nil
+}
+
+func GetTopicFollows(offset uint) ([]*MemoTopicFollow, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoTopicFollows []*MemoTopicFollow
+	result := db.
+		Preload(BlockTable).
+		Limit(25).
+		Offset(offset).
+		Order("id ASC").
+		Find(&memoTopicFollows)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoTopicFollows, nil
 }

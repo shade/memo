@@ -14,12 +14,17 @@ const (
 	MaxTxFee          = 425
 	OutputFeeP2PKH    = 34
 	OutputFeeOpReturn = 20
+	OutputOpDataFee   = 3
 	InputFeeP2PKH     = 148
 	BaseTxFee         = 10
 )
 
+const DustMinimumOutput int64 = 546
+
+type PollType string
+
 const (
-	PollTypeOne  = "one"
-	PollTypeAny  = "any"
-	PollTypeRank = "rank"
+	PollTypeOne  PollType = "one"
+	PollTypeAny  PollType = "any"
+	PollTypeRank PollType = "rank"
 )

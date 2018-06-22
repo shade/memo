@@ -18,9 +18,9 @@ func onTx(n *Node, msg *wire.MsgTx) {
 	}
 	if savedTxn {
 		if memoTxn {
-			fmt.Println("Saved unconfirmed memo txn")
+			fmt.Printf("Saved unconfirmed memo txn: %s\n", msg.TxHash().String())
 		} else {
-			fmt.Println("Saved unconfirmed txn")
+			fmt.Printf("Saved unconfirmed txn: %s\n", msg.TxHash().String())
 		}
 	}
 }

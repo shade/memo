@@ -46,20 +46,20 @@
 
         var pollType = $form.find("[name=poll-type] option:selected").val();
         if (pollType.length === 0) {
-            alert("Error getting poll type.");
+            MemoApp.AddAlert("Error getting poll type.");
             return;
         }
 
         var question = $question.val();
         if (maxQuestionBytes - MemoApp.utf8ByteLength(question) < 0) {
-            alert("Maximum question size is " + maxQuestionBytes + " bytes." +
+            MemoApp.AddAlert("Maximum question size is " + maxQuestionBytes + " bytes." +
                 " Note that some characters are more than 1 byte." +
                 " Emojis are usually 4 bytes, for example.");
             return;
         }
 
         if (question.length === 0) {
-            alert("Must enter a question.");
+            MemoApp.AddAlert("Must enter a question.");
             return;
         }
 
@@ -71,14 +71,14 @@
 
         var $optionInputs = $options.find("[name=option]");
         if ($optionInputs.length < 2) {
-            alert("Error, not enough options.");
+            MemoApp.AddAlert("Error, not enough options.");
             return;
         }
         var options = [];
         for (var i = 0; i < $optionInputs.length; i++) {
             var option = $optionInputs.eq(i).val();
             if (maxOptionBytes - MemoApp.utf8ByteLength(option) < 0) {
-                alert("Maximum option size is " + maxOptionBytes + " bytes." +
+                MemoApp.AddAlert("Maximum option size is " + maxOptionBytes + " bytes." +
                     " Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
@@ -109,7 +109,7 @@
             success: function (txHash) {
                 submitting = false;
                 if (!txHash || txHash.length === 0) {
-                    alert("Server error. Please try refreshing the page.");
+                    MemoApp.AddAlert("Server error. Please try refreshing the page.");
                     return
                 }
                 window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -117,7 +117,7 @@
             error: function (xhr) {
                 submitting = false;
                 if (xhr.status === 401) {
-                    alert("Error unlocking key. " +
+                    MemoApp.AddAlert("Error unlocking key. " +
                         "Please verify your password is correct. " +
                         "If this problem persists, please try refreshing the page.");
                     return;
@@ -126,7 +126,7 @@
                     "Error with request (option code " + xhr.status + "):\n" +
                     (xhr.optionText !== "" ? xhr.optionText + "\n" : "") +
                     "If this problem persists, try refreshing the page.";
-                alert(errorMessage);
+                MemoApp.AddAlert(errorMessage);
             }
         });
     }

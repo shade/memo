@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jchavannes/btcd/peer"
 	"github.com/jchavannes/btcd/wire"
+	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"github.com/memocash/memo/app/config"
 	"github.com/memocash/memo/app/db"
@@ -34,6 +35,7 @@ func (n *Node) Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	transaction.EnableBatchPostProcessing()
 	bitcoinNodeConfig := config.GetBitcoinNode()
 	n.NodeStatus = nodeStatus
 	p, err := peer.NewOutboundPeer(&peer.Config{

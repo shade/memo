@@ -9,7 +9,8 @@ import (
 )
 
 type Reputation struct {
-	rep *cache.Reputation
+	rep    *cache.Reputation
+	IsSelf bool
 }
 
 func (r Reputation) HasReputation() bool {
@@ -32,7 +33,26 @@ func (r Reputation) GetPercentString() string {
 	if r.rep.TotalFollowing == 0 {
 		return "n/a"
 	}
-	return fmt.Sprintf("%.0f%%", float32(r.rep.TrustedFollowers)/float32(r.rep.TotalFollowing)*100)
+	return fmt.Sprintf("%.0f%%", r.GetPercentage()*100)
+}
+
+func (r Reputation) GetPercentage() float32 {
+	return float32(r.rep.TrustedFollowers) / float32(r.rep.TotalFollowing)
+}
+
+func (r Reputation) GetClass() string {
+	if r.rep.DirectFollow || r.IsSelf{
+		return "blue"
+	}
+	percentage := r.GetPercentage()
+	switch {
+	case percentage > 0.20:
+		return "green"
+	case percentage > 0.05:
+		return "yellow"
+	default:
+		return "red"
+	}
 }
 
 func (r Reputation) GetPercentStringIncludingDirect() string {
@@ -46,7 +66,8 @@ func GetReputation(selfPkHash []byte, pkHash []byte) (*Reputation, error) {
 	cachedRep, err := cache.GetReputation(selfPkHash, pkHash)
 	if err == nil {
 		return &Reputation{
-			rep: cachedRep,
+			rep:    cachedRep,
+			IsSelf: bytes.Equal(selfPkHash, pkHash),
 		}, nil
 	} else if ! cache.IsMissError(err) {
 		return nil, jerr.Get("error getting reputation from cache", err)
@@ -95,5 +116,6 @@ TrustedFollowersLoop:
 	}
 	return &Reputation{
 		rep: rep,
+		IsSelf: bytes.Equal(selfPkHash, pkHash),
 	}, nil
 }

@@ -85,6 +85,21 @@ func GetMemoSetProfile(txHash []byte) (*MemoSetProfile, error) {
 	return &memoSetProfile, nil
 }
 
+func GetSetProfilesByTxHashes(txHashes [][]byte) ([]*MemoSetProfile, error) {
+	var memoSetProfiles []*MemoSetProfile
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoSetProfiles)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo set profiles", result.Error)
+	}
+	return memoSetProfiles, nil
+}
+
 type memoSetProfileSortByDate []*MemoSetProfile
 
 func (txns memoSetProfileSortByDate) Len() int      { return len(txns) }
@@ -139,4 +154,22 @@ func GetCountMemoSetProfile() (uint, error) {
 		return 0, jerr.Get("error getting total count", err)
 	}
 	return cnt, nil
+}
+
+func GetSetProfiles(offset uint) ([]*MemoSetProfile, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoSetProfiles []*MemoSetProfile
+	result := db.
+		Preload(BlockTable).
+		Limit(25).
+		Offset(offset).
+		Order("id ASC").
+		Find(&memoSetProfiles)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoSetProfiles, nil
 }

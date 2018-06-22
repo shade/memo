@@ -1,7 +1,6 @@
 package memo
 
 import (
-	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
@@ -109,8 +108,6 @@ var setPicSubmitRoute = web.Route{
 		}
 		response.Body.Close()
 
-		//pic.FetchProfilePic(url, address.GetAddress().String())
-
 		pkHash := privateKey.GetPublicKey().GetAddress().GetScriptAddress()
 		mutex.Lock(pkHash)
 
@@ -121,8 +118,8 @@ var setPicSubmitRoute = web.Route{
 			return
 		}
 
-		fmt.Println(transaction.GetTxInfo(tx))
-		transaction.QueueTx(tx)
-		r.Write(tx.TxHash().String())
+		transaction.GetTxInfo(tx).Print()
+		transaction.QueueTx(tx.MsgTx)
+		r.Write(tx.MsgTx.TxHash().String())
 	},
 }

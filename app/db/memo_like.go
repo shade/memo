@@ -85,6 +85,21 @@ func GetMemoLike(txHash []byte) (*MemoLike, error) {
 	return &memoLike, nil
 }
 
+func GetMemoLikesByTxHashes(txHashes [][]byte) ([]*MemoLike, error) {
+	var memoLikes []*MemoLike
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoLikes)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo likes", result.Error)
+	}
+	return memoLikes, nil
+}
+
 type memoLikeSortByDate []*MemoLike
 
 func (txns memoLikeSortByDate) Len() int      { return len(txns) }
@@ -267,6 +282,24 @@ func GetRecentLikes(offset uint) ([]*MemoLike, error) {
 		Limit(25).
 		Offset(offset).
 		Order("id DESC").
+		Find(&memoLikes)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoLikes, nil
+}
+
+func GetLikes(offset uint) ([]*MemoLike, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoLikes []*MemoLike
+	result := db.
+		Preload(BlockTable).
+		Limit(25).
+		Offset(offset).
+		Order("id ASC").
 		Find(&memoLikes)
 	if result.Error != nil {
 		return nil, jerr.Get("error running query", result.Error)

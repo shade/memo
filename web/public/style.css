@@ -181,6 +181,19 @@ a.disabled {
     padding: 0;
     margin:5px 5px 0;
 }
+.navbar .alert-banner {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    margin-left: -200px;
+    width: 400px;
+    background: #ff8080;
+    border-radius: 0 0 5px 5px;
+}
+.navbar .alert-banner p {
+    margin: 0;
+    padding: 10px;
+}
 .nav-item.notifications span {
     top: 3px;
 }
@@ -205,6 +218,7 @@ a.disabled {
     padding: 15px 0;
 }
 .post {
+    position: relative;
     background: #fff;
     padding: 10px 10px 0 10px;
     margin-bottom: 15px;
@@ -249,6 +263,9 @@ a.disabled {
     margin: 5px 0 5px;
     font-size: 28px;
 }
+.post .message.profile-text {
+    padding-bottom: 10px;
+}
 .post .likes {
     margin: 0 0 10px;
 }
@@ -275,15 +292,17 @@ a.disabled {
     display: inline-block;
 }
 .post .post-header {
-    position: relative;
     margin: 0;
     padding-right: 25px;
+}
+.post .post-header-feed-item {
+    padding-bottom: 5px;
 }
 .post .post-header .block-explorer {
     position: absolute;
     list-style-type: none;
-    top: -4px;
-    right: 0;
+    top: 5px;
+    right: 9px;
     padding: 0;
     font-size: 18px;
     color: #333;
@@ -328,6 +347,22 @@ body.dark .post .post-header .block-explorer ul a {
 }
 .post .actions .btn-leave {
     margin-left: 10px;
+}
+.post .feed-item {
+    color: #555;
+    font-style: italic;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+}
+.post .feed-item .feed-item-glyphicon {
+    margin-right: 5px;
+}
+.post .feed-item-like .feed-item-glyphicon {
+    color: #b00;
+}
+.post .feed-item-vote .feed-item-glyphicon {
+    color: #0b0;
 }
 .btn-warning {
     color: white;
@@ -447,14 +482,33 @@ span.page {
 
 .reputation-tooltip {
     position: relative;
+    font-size: 12px;
+}
+.reputation-tooltip .reputation-glyphicon {
+    margin-right: 2px;
+    font-size: 9px;
 }
 .reputation-tooltip a {
     font-weight: bold;
+    font-size: 12px;
 }
-.reputation-tooltip:hover > span {
+.reputation-tooltip.red {
+    color: #b00;
+}
+.reputation-tooltip.yellow {
+    color: #d90;
+}
+.reputation-tooltip.green {
+    color: #0b0;
+}
+.reputation-tooltip.blue {
+    color: #00b;
+}
+.reputation-tooltip:hover .bubble {
     display: block;
+    z-index: 1;
 }
-.reputation-tooltip span {
+.reputation-tooltip .bubble {
     position: absolute;
     display: none;
     color: #000;
@@ -469,7 +523,7 @@ span.page {
     padding: 5px;
     text-align: left;
 }
-.reputation-tooltip:hover > span {
+.reputation-tooltip:hover .bubble {
     display: block;
 }
 #broadcasting {
@@ -560,7 +614,6 @@ body.dark .topics-table .glyphicon {
 }
 .topic-post .name a {
     display: inline-block;
-    margin-right: 5px;
     color: #000;
     text-decoration: none;
 }
@@ -572,11 +625,8 @@ body.dark .topics-table .glyphicon {
     font-size: 12px;
     color: #888;
 }
-.topic-post .reputation {
-    display: inline-block;
-    margin-right: 5px;
+.topic-post .reputation-tooltip {
     font-weight: normal;
-    font-style: italic;
     font-size: 12px;
 }
 .topic-post .like {
@@ -677,6 +727,7 @@ a.block-link {
 }
 img.imgur {
     max-width: 100%;
+    max-height: 400px;
     display: block;
     margin: 10px auto;
 }

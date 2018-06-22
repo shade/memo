@@ -34,12 +34,20 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 			memosSaved++
 		}
 	}
-	fmt.Printf("Block - height: %5d, found: %5d, saved: %5d, memos: %5d (%s)\n",
+	_, errors := transaction.ProcessNotifications()
+	for _, err := range errors {
+		fmt.Println(err.Error())
+	}
+	_, errors = transaction.UpdateRootTxHashes()
+	for _, err := range errors {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("Block - height: %5d (%s), found: %4d, saved: %4d, memos: %4d\n",
 		dbBlock.Height,
+		dbBlock.Timestamp.String(),
 		len(block.Transactions()),
 		txnsSaved,
 		memosSaved,
-		dbBlock.Timestamp.String(),
 	)
 	if dbBlock.Height == n.NodeStatus.HeightChecked + 1 {
 		n.NodeStatus.HeightChecked = dbBlock.Height
@@ -70,6 +78,7 @@ func queueBlocks(n *Node) {
 	if len(blocks) == 0 {
 		if ! n.BlocksSyncComplete {
 			n.BlocksSyncComplete = true
+			transaction.DisableBatchPostProcessing()
 			fmt.Println("Block sync complete")
 			queueMempool(n)
 		}

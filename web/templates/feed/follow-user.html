@@ -1,4 +1,4 @@
-<div class="post rounded box-shadow" id="post-{{ .Post.Memo.GetTransactionHashString }}">
+<div class="post rounded box-shadow" id="post-{{ .Item.FeedEvent.GetTransactionHashString }}">
     <div class="post-header post-header-feed-item">
         <p class="name">
         {{ if .Item.ProfilePic }}
@@ -21,7 +21,7 @@
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
-            followed
+            {{ if .Item.UserFollow.Unfollow }}unfollowed{{ else }}followed{{ end }}
         {{ if .Item.FollowProfilePic }}
             <a class="image-link" href="profile/{{ .Item.GetFollowAddressString }}">
                 <img class="profile-pic profile-pic-24"
@@ -39,8 +39,12 @@
             {{ .Item.GetFollowAddressString }}
         {{- end -}}
             </a>
+        {{ if .Item.FollowReputation }}
+            {{ template "snippets/reputation.html" .Item.FollowReputation }}
+        {{ end }}
             &middot; {{ .Item.TimeAgo }}
         </p>
+    {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
     </div>
 </div>
 

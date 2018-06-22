@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/jchavannes/btcd/chaincfg/chainhash"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"time"
@@ -60,6 +61,15 @@ func (f *FeedEvent) Save() error {
 
 func (f FeedEvent) GetAddress() wallet.Address {
 	return wallet.GetAddressFromPkHash(f.PkHash)
+}
+
+func (f FeedEvent) GetTransactionHashString() string {
+	hash, err := chainhash.NewHash(f.TxHash)
+	if err != nil {
+		jerr.Get("error getting chainhash from feed event", err).Print()
+		return ""
+	}
+	return hash.String()
 }
 
 func GetRecentFeedForPkHash(pkHash []byte, offset uint) ([]*FeedEvent, error) {

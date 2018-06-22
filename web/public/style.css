@@ -264,6 +264,9 @@ a.disabled {
     margin: 5px 0 5px;
     font-size: 28px;
 }
+.post .message.profile-text {
+    padding-bottom: 10px;
+}
 .post .likes {
     margin: 0 0 10px;
 }

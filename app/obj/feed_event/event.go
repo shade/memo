@@ -28,6 +28,7 @@ type Event struct {
 	FollowProfilePic *db.MemoSetPic
 	TopicFollow      *db.MemoTopicFollow
 	Reputation       *rep.Reputation
+	FollowReputation *rep.Reputation
 }
 
 func (e *Event) TimeAgo() string {

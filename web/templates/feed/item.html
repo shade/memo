@@ -11,6 +11,7 @@
 {{ else if .Item.IsPost }}
 {{ else if .Item.IsTopicPost }}
 {{ else if .Item.IsPollVote }}
+{{ else if .Item.IsCreatePoll }}
 {{ else }}
 <p>
 {{ .Item.GetType }} - <a href="profile/{{ .Item.GetAddressString }}">{{ .Item.Name }}</a> - {{ .Item.TimeAgo }}

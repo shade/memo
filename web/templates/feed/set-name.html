@@ -8,8 +8,8 @@
             </a>
         {{ else }}
             <span class="identicon-{{ .Item.GetAddressString }}">
-        <img class="identicon"/>
-    </span>
+                <img class="identicon"/>
+            </span>
         {{ end }}
             <a class="profile" href="profile/{{ .Item.GetAddressString }}">{{ $len := len .Item.Name }}
         {{- if gt $len 0 -}}
@@ -24,5 +24,6 @@
             set name to <b>{{ .Item.SetName.Name }}</b>
             &middot; {{ .Item.TimeAgo }}
         </p>
+    {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
     </div>
 </div>

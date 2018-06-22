@@ -8,8 +8,8 @@
             </a>
         {{ else }}
             <span class="identicon-{{ .Item.GetAddressString }}">
-        <img class="identicon"/>
-    </span>
+                <img class="identicon"/>
+            </span>
         {{ end }}
             <a class="profile" href="profile/{{ .Item.GetAddressString }}">{{ $len := len .Item.Name }}
         {{- if gt $len 0 -}}
@@ -21,8 +21,10 @@
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
-            followed topic <b><a href="topic/{{ .Item.GetTopicUrl }}">{{ .Item.TopicFollow.Topic }}</a></b>
+        {{ if .Item.TopicFollow.Unfollow }}unfollowed{{ else }}followed{{ end }}
+            topic <b><a href="topic/{{ .Item.GetTopicUrl }}">{{ .Item.TopicFollow.Topic }}</a></b>
             &middot; {{ .Item.TimeAgo }}
         </p>
+    {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
     </div>
 </div>

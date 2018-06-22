@@ -8,8 +8,8 @@
             </a>
         {{ else }}
             <span class="identicon-{{ .Item.GetAddressString }}">
-        <img class="identicon"/>
-    </span>
+                <img class="identicon"/>
+            </span>
         {{ end }}
             <a class="profile" href="profile/{{ .Item.GetAddressString }}">{{ $len := len .Item.Name }}
         {{- if gt $len 0 -}}
@@ -21,8 +21,11 @@
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
-            set profile to <b>{{ .Item.GetProfileText }}</b>
-            &middot; {{ .Item.TimeAgo }}
+            set profile &middot; {{ .Item.TimeAgo }}
         </p>
+    {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
     </div>
+    <p class="message profile-text">
+    {{ .Item.GetProfileText }}
+    </p>
 </div>

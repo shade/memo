@@ -24,7 +24,7 @@
         {{ if .FeedItem.Reputation }}
             {{ template "snippets/reputation.html" .FeedItem.Reputation }}
         {{ end }}
-            liked post
+            liked {{ if .Post.Parent }}reply{{ else if .Post.Memo.Topic }}topic post{{ else }}post{{ end }}
         {{ if .FeedItem.MemoLike.TipAmount }}
             &middot; {{ formatBigInt .FeedItem.MemoLike.TipAmount }} sat tip
         {{ end }}
@@ -105,22 +105,11 @@
             in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
         {{ end }}
         </p>
-        <ul class="block-explorer">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"><span
-                        class="glyphicon glyphicon-th"></span></a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a target="_blank"
-                           href="https://explorer.bitcoin.com/bch/tx/{{ .Post.Memo.GetTransactionHashString }}">
-                        Bitcoin.com Explorer
-                    </a></li>
-                    <li><a target="_blank"
-                           href="https://blockchair.com/bitcoin-cash/transaction/{{ .Post.Memo.GetTransactionHashString }}">
-                        Blockchair
-                    </a></li>
-                </ul>
-            </li>
-        </ul>
+    {{ if .FeedItem }}
+        {{ template "posts/snippets/block-explorer.html" .FeedItem.FeedEvent.GetTransactionHashString }}
+    {{ else }}
+        {{ template "posts/snippets/block-explorer.html" .Post.Memo.GetTransactionHashString }}
+    {{ end }}
     </div>
 {{ if .Post.Parent }}
     <div class="reply">

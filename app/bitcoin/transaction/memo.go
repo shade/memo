@@ -12,7 +12,6 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/html-parser"
-	"github.com/memocash/memo/app/obj/feed_event"
 	"github.com/memocash/memo/app/profile/pic"
 )
 
@@ -39,91 +38,87 @@ func SaveMemo(txn *db.Transaction, out *db.TransactionOut, block *db.Block) erro
 	if err != nil {
 		return jerr.Get("error getting pk hash from input", err)
 	}
-	var blockId uint
-	if block != nil {
-		blockId = block.Id
-	}
 	// Used for ordering
 	var parentHash []byte
 	if len(txn.TxIn) == 1 {
 		parentHash = txn.TxIn[0].PreviousOutPointHash
 	}
-	err = saveMemoTest(txn, out, blockId, inputAddress)
+	err = saveMemoTest(txn, out, block, inputAddress)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error saving memo_test", err)
 	}
 	switch out.PkScript[3] {
 	case memo.CodePost:
-		err = saveMemoPost(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoPost(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_post", err)
 		}
 	case memo.CodeSetName:
-		err = saveMemoSetName(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoSetName(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_set_name", err)
 		}
 	case memo.CodeFollow:
-		err = saveMemoFollow(txn, out, blockId, inputAddress, parentHash, false)
+		err = saveMemoFollow(txn, out, block, inputAddress, parentHash, false)
 		if err != nil {
 			return jerr.Get("error saving memo_follow", err)
 		}
 	case memo.CodeUnfollow:
-		err = saveMemoFollow(txn, out, blockId, inputAddress, parentHash, true)
+		err = saveMemoFollow(txn, out, block, inputAddress, parentHash, true)
 		if err != nil {
 			return jerr.Get("error saving memo_follow", err)
 		}
 	case memo.CodeLike:
-		err = saveMemoLike(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoLike(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_like", err)
 		}
 	case memo.CodeReply:
-		err = saveMemoReply(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoReply(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_post reply", err)
 		}
 	case memo.CodeSetProfile:
-		err = saveMemoSetProfile(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoSetProfile(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_set_profile", err)
 		}
 	case memo.CodeTopicMessage:
-		err = saveMemoTopicMessage(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoTopicMessage(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_post topic message", err)
 		}
 	case memo.CodeTopicFollow:
-		err = saveMemoTopicFollow(false, txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoTopicFollow(false, txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo follow topic", err)
 		}
 	case memo.CodeTopicUnfollow:
-		err = saveMemoTopicFollow(true, txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoTopicFollow(true, txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo unfollow topic", err)
 		}
 	case memo.CodePollCreate:
-		err = saveMemoPollQuestion(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoPollQuestion(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_poll_question (single)", err)
 		}
 	case memo.CodePollOption:
-		err = saveMemoPollOption(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoPollOption(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo poll option", err)
 		}
 	case memo.CodePollVote:
-		err = saveMemoPollVote(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoPollVote(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo poll vote", err)
 		}
-		err = saveMemoVotePost(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoVotePost(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo poll vote post", err)
 		}
 	case memo.CodeSetProfilePicture:
-		err = saveMemoSetPic(txn, out, blockId, inputAddress, parentHash)
+		err = saveMemoSetPic(txn, out, block, inputAddress, parentHash)
 		if err != nil {
 			return jerr.Get("error saving memo_set_pic", err)
 		}
@@ -132,10 +127,14 @@ func SaveMemo(txn *db.Transaction, out *db.TransactionOut, block *db.Block) erro
 	return nil
 }
 
-func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash) error {
+func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash) error {
 	memoTest, err := db.GetMemoTest(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_test", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoTest != nil {
 		if memoTest.BlockId != 0 || blockId == 0 {
@@ -162,20 +161,26 @@ func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 	return nil
 }
 
-func saveMemoPost(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoPost(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPost, err := db.GetMemoPost(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_post", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPost != nil {
 		if memoPost.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPost.BlockId = blockId
+		memoPost.Block = block
 		err = memoPost.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_post", err)
 		}
+		addMemoPostFeedEvent(memoPost)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -194,34 +199,36 @@ func saveMemoPost(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 		Address:    inputAddress.EncodeAddress(),
 		Message:    html_parser.EscapeWithEmojis(message),
 		BlockId:    blockId,
+		Block:      block,
 	}
 	err = memoPost.Save()
 	if err != nil {
 		return jerr.Get("error saving memo_post", err)
 	}
-	go func() {
-		err := feed_event.AddPost(memoPost)
-		if err != nil {
-			jerr.Get("error adding post feed event", err).Print()
-		}
-	}()
+	addMemoPostFeedEvent(memoPost)
 	return nil
 }
 
-func saveMemoSetName(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoSetName(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoSetName, err := db.GetMemoSetName(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_set_name", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoSetName != nil {
 		if memoSetName.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoSetName.BlockId = blockId
+		memoSetName.Block = block
 		err = memoSetName.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_set_name", err)
 		}
+		addMemoSetNameFeedEvent(memoSetName)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -240,34 +247,36 @@ func saveMemoSetName(txn *db.Transaction, out *db.TransactionOut, blockId uint, 
 		Address:    inputAddress.EncodeAddress(),
 		Name:       html_parser.EscapeWithEmojis(name),
 		BlockId:    blockId,
+		Block:      block,
 	}
 	err = memoSetName.Save()
 	if err != nil {
 		return jerr.Get("error saving memo_set_name", err)
 	}
-	go func() {
-		err := feed_event.AddSetName(memoSetName)
-		if err != nil {
-			jerr.Get("error adding set name feed event", err).Print()
-		}
-	}()
+	addMemoSetNameFeedEvent(memoSetName)
 	return nil
 }
 
-func saveMemoSetPic(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoSetPic(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoSetPic, err := db.GetMemoSetPic(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_set_pic", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoSetPic != nil {
 		if memoSetPic.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoSetPic.BlockId = blockId
+		memoSetPic.Block = block
 		err = memoSetPic.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_set_pic", err)
 		}
+		addMemoSetProfilePicFeedEvent(memoSetPic)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -286,6 +295,7 @@ func saveMemoSetPic(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 		Address:    inputAddress.EncodeAddress(),
 		Url:        url,
 		BlockId:    blockId,
+		Block:      block,
 	}
 	go func() {
 		err = pic.FetchProfilePic(memoSetPic.Url, memoSetPic.GetAddressString())
@@ -303,29 +313,30 @@ func saveMemoSetPic(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 			jerr.Get("error clearing has pic cache", err).Print()
 		}
 	}()
-	go func() {
-		err := feed_event.AddSetProfilePic(memoSetPic)
-		if err != nil {
-			jerr.Get("error adding set pic feed event", err).Print()
-		}
-	}()
+	addMemoSetProfilePicFeedEvent(memoSetPic)
 	return nil
 }
 
-func saveMemoFollow(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte, unfollow bool) error {
+func saveMemoFollow(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte, unfollow bool) error {
 	memoFollow, err := db.GetMemoFollow(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_follow", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoFollow != nil {
 		if memoFollow.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoFollow.BlockId = blockId
+		memoFollow.Block = block
 		err = memoFollow.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_follow", err)
 		}
+		addMemoFollowFeedEvent(memoFollow)
 		return nil
 	}
 	address := wallet.GetAddressFromPkHash(out.PkScript[5:])
@@ -340,6 +351,7 @@ func saveMemoFollow(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 		Address:      inputAddress.EncodeAddress(),
 		FollowPkHash: address.GetScriptAddress(),
 		BlockId:      blockId,
+		Block:        block,
 		Unfollow:     unfollow,
 	}
 	err = memoFollow.Save()
@@ -353,29 +365,30 @@ func saveMemoFollow(txn *db.Transaction, out *db.TransactionOut, blockId uint, i
 	if !unfollow {
 		addFollowNotification(memoFollow)
 	}
-	go func() {
-		err := feed_event.AddFollow(memoFollow)
-		if err != nil {
-			jerr.Get("error adding follow feed event", err).Print()
-		}
-	}()
+	addMemoFollowFeedEvent(memoFollow)
 	return nil
 }
 
-func saveMemoLike(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoLike(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoLike, err := db.GetMemoLike(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_like", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoLike != nil {
 		if memoLike.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoLike.BlockId = blockId
+		memoLike.Block = block
 		err = memoLike.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_like", err)
 		}
+		addMemoLikeFeedEvent(memoLike)
 		return nil
 	}
 
@@ -403,6 +416,7 @@ func saveMemoLike(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 		Address:    inputAddress.EncodeAddress(),
 		LikeTxHash: txHash.CloneBytes(),
 		BlockId:    blockId,
+		Block:      block,
 		TipPkHash:  tipPkHash,
 		TipAmount:  tipAmount,
 	}
@@ -411,29 +425,30 @@ func saveMemoLike(txn *db.Transaction, out *db.TransactionOut, blockId uint, inp
 		return jerr.Get("error saving memo_like", err)
 	}
 	addLikeNotification(memoLike)
-	go func() {
-		err := feed_event.AddLike(memoLike)
-		if err != nil {
-			jerr.Get("error adding like feed event", err).Print()
-		}
-	}()
+	addMemoLikeFeedEvent(memoLike)
 	return nil
 }
 
-func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPost, err := db.GetMemoPost(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_reply", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPost != nil {
 		if memoPost.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPost.BlockId = blockId
+		memoPost.Block = block
 		err = memoPost.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_reply", err)
 		}
+		addMemoPostFeedEvent(memoPost)
 		return nil
 	}
 	if len(out.PkScript) < 38 {
@@ -462,6 +477,7 @@ func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, in
 		ParentTxHash: txHash.CloneBytes(),
 		Message:      html_parser.EscapeWithEmojis(string(messageRaw)),
 		BlockId:      blockId,
+		Block:        block,
 	}
 	err = memoPost.Save()
 	if err != nil {
@@ -469,29 +485,30 @@ func saveMemoReply(txn *db.Transaction, out *db.TransactionOut, blockId uint, in
 	}
 	addReplyNotification(memoPost)
 	updateRootTxHash(memoPost)
-	go func() {
-		err := feed_event.AddPost(memoPost)
-		if err != nil {
-			jerr.Get("error adding reply feed event", err).Print()
-		}
-	}()
+	addMemoPostFeedEvent(memoPost)
 	return nil
 }
 
-func saveMemoTopicMessage(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoTopicMessage(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPost, err := db.GetMemoPost(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo topic message", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPost != nil {
 		if memoPost.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPost.BlockId = blockId
+		memoPost.Block = block
 		err = memoPost.Save()
 		if err != nil {
 			return jerr.Get("error saving memo topic message", err)
 		}
+		addMemoPostFeedEvent(memoPost)
 		return nil
 	}
 
@@ -518,34 +535,36 @@ func saveMemoTopicMessage(txn *db.Transaction, out *db.TransactionOut, blockId u
 		Topic:      topicName,
 		Message:    message,
 		BlockId:    blockId,
+		Block:      block,
 	}
 	err = memoPost.Save()
 	if err != nil {
 		return jerr.Get("error saving memo topic message", err)
 	}
-	go func() {
-		err := feed_event.AddPost(memoPost)
-		if err != nil {
-			jerr.Get("error adding topic message feed event", err).Print()
-		}
-	}()
+	addMemoPostFeedEvent(memoPost)
 	return nil
 }
 
-func saveMemoTopicFollow(unfollow bool, txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoTopicFollow(unfollow bool, txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoFollowTopic, err := db.GetMemoTopicFollow(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo follow topic", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoFollowTopic != nil {
 		if memoFollowTopic.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoFollowTopic.BlockId = blockId
+		memoFollowTopic.Block = block
 		err = memoFollowTopic.Save()
 		if err != nil {
 			return jerr.Get("error saving memo follow topic", err)
 		}
+		addMemoTopicFollowFeedEvent(memoFollowTopic)
 		return nil
 	}
 
@@ -568,35 +587,37 @@ func saveMemoTopicFollow(unfollow bool, txn *db.Transaction, out *db.Transaction
 		ParentHash: parentHash,
 		Topic:      topicName,
 		BlockId:    blockId,
+		Block:      block,
 		Unfollow:   unfollow,
 	}
 	err = memoFollowTopic.Save()
 	if err != nil {
 		return jerr.Get("error saving memo follow topic", err)
 	}
-	go func() {
-		err := feed_event.AddTopicFollow(memoFollowTopic)
-		if err != nil {
-			jerr.Get("error adding topic follow feed event", err).Print()
-		}
-	}()
+	addMemoTopicFollowFeedEvent(memoFollowTopic)
 	return nil
 }
 
-func saveMemoSetProfile(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoSetProfile(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoSetProfile, err := db.GetMemoSetProfile(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_set_profile", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoSetProfile != nil {
 		if memoSetProfile.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoSetProfile.BlockId = blockId
+		memoSetProfile.Block = block
 		err = memoSetProfile.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_set_profile", err)
 		}
+		addMemoSetProfileFeedEvent(memoSetProfile)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -615,34 +636,36 @@ func saveMemoSetProfile(txn *db.Transaction, out *db.TransactionOut, blockId uin
 		Address:    inputAddress.EncodeAddress(),
 		Profile:    html_parser.EscapeWithEmojis(profile),
 		BlockId:    blockId,
+		Block:      block,
 	}
 	err = memoSetProfile.Save()
 	if err != nil {
 		return jerr.Get("error saving memo_set_profile", err)
 	}
-	go func() {
-		err := feed_event.AddSetProfile(memoSetProfile)
-		if err != nil {
-			jerr.Get("error adding set profile feed event", err).Print()
-		}
-	}()
+	addMemoSetProfileFeedEvent(memoSetProfile)
 	return nil
 }
 
-func saveMemoPollQuestion(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoPollQuestion(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPost, err := db.GetMemoPost(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_post", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPost != nil {
 		if memoPost.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPost.BlockId = blockId
+		memoPost.Block = block
 		err = memoPost.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_poll_question", err)
 		}
+		addMemoPostFeedEvent(memoPost)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -673,6 +696,7 @@ func saveMemoPollQuestion(txn *db.Transaction, out *db.TransactionOut, blockId u
 		ParentHash: parentHash,
 		Address:    inputAddress.EncodeAddress(),
 		BlockId:    blockId,
+		Block:      block,
 		IsPoll:     true,
 	}
 	err = memoPost.Save()
@@ -688,25 +712,25 @@ func saveMemoPollQuestion(txn *db.Transaction, out *db.TransactionOut, blockId u
 	if err != nil {
 		return jerr.Get("error saving memo_set_profile", err)
 	}
-	go func() {
-		err := feed_event.AddPost(memoPost)
-		if err != nil {
-			jerr.Get("error adding poll question feed event", err).Print()
-		}
-	}()
+	addMemoPostFeedEvent(memoPost)
 	return nil
 }
 
-func saveMemoPollOption(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoPollOption(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPollOption, err := db.GetMemoPollOption(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_poll_option", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPollOption != nil {
 		if memoPollOption.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPollOption.BlockId = blockId
+		memoPollOption.Block = block
 		err = memoPollOption.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_poll_option", err)
@@ -740,6 +764,7 @@ func saveMemoPollOption(txn *db.Transaction, out *db.TransactionOut, blockId uin
 		PollTxHash: pollTxHash.CloneBytes(),
 		ParentHash: parentHash,
 		BlockId:    blockId,
+		Block:      block,
 	}
 	err = memoPollOption.Save()
 	if err != nil {
@@ -748,20 +773,26 @@ func saveMemoPollOption(txn *db.Transaction, out *db.TransactionOut, blockId uin
 	return nil
 }
 
-func saveMemoPollVote(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoPollVote(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPollVote, err := db.GetMemoPollVote(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_poll_vote", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPollVote != nil {
 		if memoPollVote.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPollVote.BlockId = blockId
+		memoPollVote.Block = block
 		err = memoPollVote.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_poll_vote", err)
 		}
+		addMemoPollVoteFeedEvent(memoPollVote)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -805,34 +836,36 @@ func saveMemoPollVote(txn *db.Transaction, out *db.TransactionOut, blockId uint,
 		TipPkHash:    tipPkHash,
 		ParentHash:   parentHash,
 		BlockId:      blockId,
+		Block:        block,
 	}
 	err = memoPollVote.Save()
 	if err != nil {
 		return jerr.Get("error saving memo_post for poll vote", err)
 	}
-	go func() {
-		err := feed_event.AddPollVote(memoPollVote)
-		if err != nil {
-			jerr.Get("error adding poll vote feed event", err).Print()
-		}
-	}()
+	addMemoPollVoteFeedEvent(memoPollVote)
 	return nil
 }
 
-func saveMemoVotePost(txn *db.Transaction, out *db.TransactionOut, blockId uint, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
+func saveMemoVotePost(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {
 	memoPost, err := db.GetMemoPost(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error getting memo_post for poll vote", err)
+	}
+	var blockId uint
+	if block != nil {
+		blockId = block.Id
 	}
 	if memoPost != nil {
 		if memoPost.BlockId != 0 || blockId == 0 {
 			return nil
 		}
 		memoPost.BlockId = blockId
+		memoPost.Block = block
 		err = memoPost.Save()
 		if err != nil {
 			return jerr.Get("error saving memo_post for poll vote", err)
 		}
+		addMemoPostFeedEvent(memoPost)
 		return nil
 	}
 	pushData, err := txscript.PushedData(out.PkScript)
@@ -857,12 +890,14 @@ func saveMemoVotePost(txn *db.Transaction, out *db.TransactionOut, blockId uint,
 		ParentHash: parentHash,
 		Address:    inputAddress.EncodeAddress(),
 		BlockId:    blockId,
+		Block:      block,
 		IsVote:     true,
 	}
 	err = memoPost.Save()
 	if err != nil {
 		return jerr.Get("error saving memo_post for poll vote", err)
 	}
+	addMemoPostFeedEvent(memoPost)
 	return nil
 }
 

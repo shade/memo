@@ -276,6 +276,13 @@ func AttachReputationToEvents(events []*Event) error {
 			return jerr.Get("error getting reputation", err)
 		}
 		event.Reputation = reputation
+		if event.FeedEvent.EventType == db.FeedEventFollowUser {
+			followReputation, err := rep.GetReputation(event.SelfPkHash, event.UserFollow.FollowPkHash)
+			if err != nil {
+				return jerr.Get("error getting follow reputation", err)
+			}
+			event.FollowReputation = followReputation
+		}
 	}
 	return nil
 }

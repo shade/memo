@@ -1,29 +1,14 @@
 {{ template "snippets/header.html" . }}
 
-{{ if eq .Balance 0 }}
-<h3>
-    You need some Bitcoin Cash (BCH) to get started
-</h3>
-<p>
-    <b>Step 1.</b> Copy your address below<br/>
-</p>
-<p>
-    <b>Step 2.</b> Paste your address into your bitcoin cash wallet to send yourself some funds.
-    If you don't have any BCH <a target="_blank" href="https://free.bitcoin.com">visit the bitcoin.com faucet</a> to get
-    some for free!
-</p>
-{{ end }}
-
-{{ if and (not .FeedItems) (not (eq .Balance 0)) }}
+{{ if not .FeedItems }}
 <h3>Feed Empty</h3>
 <p>Start following others to see their posts here</p>
-{{ end }}
 
-{{ if .FeedItems }}
+{{ else }}
 
 {{ template "feed/header.html" dict "Page" "feed" "IsLoggedIn" .IsLoggedIn }}
-
 {{ template "feed/items.html" . }}
+
 {{ end }}
 
 <br/>

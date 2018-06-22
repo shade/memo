@@ -116,6 +116,7 @@ func getMemoOutputFee(spendOutput memo.SpendOutput) (int64, error) {
 	case memo.SpendOutputTypeMemoMessage,
 		memo.SpendOutputTypeMemoLike,
 		memo.SpendOutputTypeMemoSetName,
+		memo.SpendOutputTypeMemoSetProfile,
 		memo.SpendOutputTypeMemoSetProfilePic,
 		memo.SpendOutputTypeMemoFollow, memo.SpendOutputTypeMemoUnfollow,
 		memo.SpendOutputTypeMemoTopicFollow, memo.SpendOutputTypeMemoTopicUnfollow:

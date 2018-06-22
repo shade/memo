@@ -59,10 +59,9 @@ var createSubmitRoute = web.Route{
 
 		for _, memoTx := range memoTxns {
 			transaction.GetTxInfo(memoTx).Print()
-			//transaction.QueueTx(memoTx.MsgTx)
+			transaction.QueueTx(memoTx.MsgTx)
 		}
 
-		mutex.Unlock(key.PkHash) // remove after testing
 		r.Write(memoTxns[len(memoTxns)-1].MsgTx.TxHash().String())
 	},
 }

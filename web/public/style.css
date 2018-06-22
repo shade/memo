@@ -774,6 +774,13 @@ img.imgur {
     font-style: italic;
     margin: 5px 0;
 }
+#password-warning {
+    font-size: 12px;
+    margin-left: 5px;
+}
+#password-warning span {
+    font-weight: bold;
+}
 .disclaimer {
     padding-left: 25px;
 }

@@ -554,7 +554,7 @@ span.page {
 .reputation-tooltip:hover .bubble {
     display: block;
 }
-#broadcasting {
+#broadcasting, #creating {
     display: inline-block;
     padding: 12px 10px 0 10px;
 }

@@ -59,7 +59,6 @@ video {
     height:100%;
 }
 
-
 hr.no-margin {
     margin: 0;
 }
@@ -79,6 +78,9 @@ select {
 }
 .center {
     text-align: center;
+}
+.right {
+    text-align: right;
 }
 .clear {
     clear: both;
@@ -194,6 +196,15 @@ a.disabled {
 .navbar .alert-banner p {
     margin: 0;
     padding: 10px;
+}
+.nav.right {
+    text-align: right;
+}
+.nav.nav-pills > li > a {
+    margin-bottom: 5px;
+}
+.nav>li>a.btn:focus,
+.nav>li>a.btn:hover {
 }
 .nav-item.notifications span {
     top: 3px;
@@ -396,6 +407,13 @@ table.table {
 body.dark table.table {
     background-color: transparent;
 }
+.profile {
+    position: relative;
+}
+.profile .identicon {
+    width: 128px;
+    height: 128px;
+}
 .profile .btn {
     word-break: break-word;
 }
@@ -406,6 +424,7 @@ body.dark table.table {
     word-break: break-word;
 }
 .profile #qr-code {
+    display: none;
     margin-top: 5px;
 }
 .profile #qr-code img {
@@ -416,6 +435,32 @@ body.dark table.table {
 
 .profile .click-for-qr {
     font-size: 12px;
+}
+.profile .pic {
+    position: absolute;
+    top: 0
+}
+.profile .title {
+    min-height: 138px;
+    padding-left: 148px;
+    word-break: break-word;
+}
+.profile h3 {
+    margin: 0 0 10px;
+}
+.profile table.table {
+    font-size: 12px;
+}
+.profile table.table td {
+    word-break: break-word;
+}
+.profile .dropdown {
+    vertical-align: top;
+    display: inline-block;
+    word-break: break-word;
+}
+.profile .dropdown .btn {
+    margin-bottom: 10px;
 }
 
 .byte-count.red {

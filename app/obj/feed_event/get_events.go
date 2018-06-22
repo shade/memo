@@ -3,6 +3,7 @@ package feed_event
 import (
 	"bytes"
 	"github.com/jchavannes/jgo/jerr"
+	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/rep"
 	"github.com/memocash/memo/app/profile"
@@ -14,6 +15,18 @@ func GetEventsForUser(userId uint, pkHash []byte, offset uint) ([]*Event, error)
 		return nil, jerr.Get("error getting recent feed for pk hash", err)
 	}
 	events, err := getEvents(feedEvents, userId, pkHash)
+	if err != nil {
+		return nil, jerr.Get("error getting events from feed events", err)
+	}
+	return events, nil
+}
+
+func GetUserEvents(userId uint, userPkHash []byte, pkHash []byte, offset uint, eventTypes []db.FeedEventType) ([]*Event, error) {
+	feedEvents, err := db.GetRecentFeedUserEvents(pkHash, uint(offset), eventTypes)
+	if err != nil {
+		return nil, jerr.Get("error getting recent user feed for pk hash", err)
+	}
+	events, err := getEvents(feedEvents, userId, userPkHash)
 	if err != nil {
 		return nil, jerr.Get("error getting events from feed events", err)
 	}
@@ -167,11 +180,23 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 	if err != nil {
 		return nil, jerr.Get("error attaching profile pics to posts", err)
 	}
+	settings, err := cache.GetUserSettings(userId)
+	if err != nil {
+		return nil, jerr.Get("error getting user settings", err)
+	}
+	var showMedia bool
+	if settings.Integrations == db.SettingIntegrationsAll {
+		showMedia = true
+		for _, post := range posts {
+			post.ShowMedia = true
+		}
+	}
 	var events []*Event
 	for _, feedEvent := range feedEvents {
 		var event = &Event{
 			FeedEvent:  feedEvent,
 			SelfPkHash: pkHash,
+			ShowMedia:  showMedia,
 		}
 		switch feedEvent.EventType {
 		case db.FeedEventPost, db.FeedEventTopicPost, db.FeedEventReply, db.FeedEventCreatePoll:

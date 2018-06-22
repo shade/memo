@@ -1,6 +1,7 @@
 package index
 
 import (
+	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
@@ -51,7 +52,7 @@ var indexRoute = web.Route{
 		}
 		page := offset/25 + 1
 		r.Helper["Page"] = page
-		r.Helper["OffsetLink"] = res.UrlIndex
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlIndex)
 		r.Helper["PrevOffset"] = prevOffset
 		r.Helper["NextOffset"] = offset + 25
 

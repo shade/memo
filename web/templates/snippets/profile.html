@@ -1,142 +1,135 @@
-<table class="table left profile table-striped">
-    <tr>
-        <th>{{ T "name" }}</th>
-        <td class="name">
-        {{ if .Profile.Pic }}
-            <a class="image-link" href="/img/profilepics/{{ .Profile.GetAddressString }}-640x640.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}" target="_blank">
-                <img class="profile-pic" src="/img/profilepics/{{ .Profile.GetAddressString }}-128x128.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"/>
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .Profile.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-        {{ end }}
-        {{ .Profile.Name }}
-        </td>
-    </tr>
-    <tr>
-        <th>{{ T "address" }}</th>
-        <td class="address">
-        {{ .Profile.GetCashAddressString }}<br>
-            <span class="click-for-qr"><a href="#" id="qr-code-link">Show QR code &amp; legacy address</a></span>
-            <div id="qr-code">
-                <img src="data:image/png;base64,{{ .Profile.Qr }}"/>
-                <br/>
-                <span class="click-for-qr">Legacy Address</span> <br>
-            {{ .Profile.GetAddressString }}
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <th>{{ T "followers" }}</th>
-        <td>
-            <a href="profile/followers/{{ .Profile.GetAddressString }}">
-            {{ .Profile.FollowerCount }}
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <th>{{ T "following" }}</th>
-        <td>
-            <a href="profile/following/{{ .Profile.GetAddressString }}">
-            {{ .Profile.FollowingCount }}
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <th>{{ T "topics_following" | UcFirst }}</th>
-        <td>
-            <a href="profile/topics-following/{{ .Profile.GetAddressString }}">
-            {{ .Profile.TopicsFollowingCount }}
-            </a>
-        </td>
-    </tr>
-{{ if .Profile.Reputation }}
-    <tr>
-        <th>{{ T "connections" }}</th>
-        <td>
-            <span class="reputation-tooltip">
-        {{ if .Profile.IsSelf }}
-            <b>This is you!</b>
-        {{ end }}
-        {{ if .Profile.Reputation.IsDirectFollow }}
-            You follow <b>{{ .Profile.Name }}</b>! -
-            <i>{{ .Profile.Reputation.GetTrustedFollowers }} of {{ .Profile.Reputation.GetTotalFollowing }}
-                ({{ .Profile.Reputation.GetPercentString }})</i>
-        {{ else }}
-        {{ .Profile.Reputation.GetTrustedFollowers }} of the {{ .Profile.Reputation.GetTotalFollowing }}
-            users you follow are following this person
-            ({{ .Profile.Reputation.GetPercentString }}).
-        {{ end }}
-            <span>
-                    Shared Connections is the percentage of people you follow who are following this person.
-                    For more info visit the <a href="about#connectivity">about page</a>.
+<div class="profile">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="pic">
+            {{ if .Profile.Pic }}
+                <a class="image-link"
+                   href="/img/profilepics/{{ .Profile.GetAddressString }}-640x640.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"
+                   target="_blank">
+                    <img class="profile-pic"
+                         src="/img/profilepics/{{ .Profile.GetAddressString }}-128x128.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"/>
+                </a>
+            {{ else }}
+                <span class="profile-identicon-{{ .Profile.GetAddressString }}">
+                    <img class="identicon"/>
                 </span>
-            </span>
-        </td>
-    </tr>
-{{ end }}
-{{ if .Profile.HasBalance }}
-    <tr>
-        <th>{{ T "balance" }}</th>
-        <td>{{ formatBigInt .Profile.Balance }} satoshis ({{ formatBigFloat .Profile.BalanceBCH }} BCH)</td>
-    </tr>
-{{ end }}
-    <tr>
-        <th>{{ T "profile" }}</th>
-        <td>
-        {{ .Profile.GetText }}
-        </td>
-    </tr>
-    <tr>
-        <th>{{ T "actions" }}</th>
-        <td>
-            <ul class="nav nav-pills">
-            {{ if .Profile.CanFollow }}
-                <li><a href="memo/follow/{{ .Profile.GetAddressString }}">{{ T "follow" 1 }} {{ .Profile.Name }}</a></li>
-            {{ else if .Profile.CanUnfollow }}
-                <li><a href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }} {{ .Profile.Name }}</a></li>
             {{ end }}
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Block Explorer</a>
-                    <ul class="dropdown-menu dropdown-menu-center">
+            </div>
+            <div class="title">
+                <h3>
+                {{ .Profile.Name }}
+                {{ if .Profile.Reputation }}
+                {{ template "snippets/reputation.html" .Profile.Reputation }}
+                {{ if .Profile.IsSelf }}
+                    <span style="font-size:12px;">This is you!</span>
+                {{ end }}
+                {{ end }}
+                </h3>
+                <p>
+                {{ .Profile.GetText }}
+                </p>
+            {{ if .Profile.CanFollow }}
+                <span>
+                        <a class="btn btn-sm btn-primary"
+                           href="memo/follow/{{ .Profile.GetAddressString }}">{{ T "follow" 1 }}</a>
+                    </span>
+            {{ else if .Profile.CanUnfollow }}
+                <span>
+                        <a class="btn btn-sm btn-default"
+                           href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }}</a>
+                    </span>
+            {{ end }}
+            {{ if not .Profile.IsSelf }}
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-sm btn-default" data-toggle="dropdown" href="#">
+                        &nbsp;<span class="glyphicon glyphicon-th"></span>&nbsp;
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right">
                         <li><a target="_blank"
                                href="https://explorer.bitcoin.com/bch/address/{{ .Profile.GetAddressString }}">
-                        {{ T "view_address_on_block_explorer" }}
+                        {{ T "Bitcoin.com" }}
                         </a></li>
-                    {{ if .Profile.NameSet }}
                         <li><a target="_blank"
-                               href="https://explorer.bitcoin.com/bch/tx/{{ .Profile.GetNameTx }}">
-                        {{ T "view_name_on_block_explorer" }}
+                               href="https://blockchair.com/bitcoin-cash/address/{{ .Profile.GetAddressString }}">
+                        {{ T "Blockchair" }}
                         </a></li>
-                    {{ end }}
                     </ul>
-                </li>
-            </ul>
-        </td>
-    </tr>
-</table>
-
-<style type="text/css">
-    #qr-code {
-        display: none;
-    }
-</style>
+                </div>
+            {{ end }}
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <table class="table left profile table-striped table-condensed">
+                <tbody>
+                <tr>
+                    <td colspan="2">
+                        <a href="{{ .Profile.GetCashAddressString }}">{{ .Profile.GetCashAddressOnlyString }}</a><br>
+                        <span class="click-for-qr">
+                            <a href="#" id="qr-code-link">Show QR code &amp; legacy address</a>
+                        </span>
+                        <div id="qr-code">
+                            <img src="data:image/png;base64,{{ .Profile.Qr }}"/>
+                            <br/>
+                            <span class="click-for-qr">Legacy Address</span>
+                            <br/>
+                        {{ .Profile.GetAddressString }}
+                        </div>
+                    </td>
+                </tr>
+                {{ if .Profile.HasBalance }}
+                <tr>
+                    <td colspan="2">
+                    {{ formatBigInt .Profile.Balance }} satoshis
+                        ({{ formatBigFloat .Profile.BalanceBCH }} BCH)
+                    </td>
+                </tr>
+                {{ end }}
+                {{ if or (not .Profile.IsSelf) (not .Profile.HasBalance) }}
+                <tr>
+                    <th>{{ T "followers" }}</th>
+                    <td>
+                        <a href="profile/followers/{{ .Profile.GetAddressString }}">
+                        {{ .Profile.FollowerCount }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{ T "following" }}</th>
+                    <td>
+                        <a href="profile/following/{{ .Profile.GetAddressString }}">
+                        {{ .Profile.FollowingCount }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{ T "topics_following" | UcFirst }}</th>
+                    <td>
+                        <a href="profile/topics-following/{{ .Profile.GetAddressString }}">
+                        {{ .Profile.TopicsFollowingCount }}
+                        </a>
+                    </td>
+                </tr>
+                {{ end }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
-    (function() {
+    (function () {
         $("#qr-code-link").click(function (e) {
             e.preventDefault();
             $("#qr-code").toggle();
         });
-        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[0, 0, 0, 255]{{ end }};
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
         var background = [0, 0, 0, 0];
         var data = new Identicon('{{ .Profile.GetAddressString }}', {
             foreground: foreground,
             background: background,
-            size: 24,
+            size: 128,
             margin: 0
         }).toString();
-        $(".identicon-{{ .Profile.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+        $(".profile-identicon-{{ .Profile.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
     })();
 </script>

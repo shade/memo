@@ -1,10 +1,10 @@
 <p class="pagination">
 
     <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
-       href="{{ .OffsetLink }}?offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
+       href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
     <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="{{ .OffsetLink }}?offset={{ .NextOffset }}">{{ T "next" }}
-        ></a>
+    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="{{ .OffsetLink }}&offset={{ .NextOffset }}">
+    {{ T "next" }}></a>
 </p>
 
 {{ $tz := .TimeZone }}
@@ -15,8 +15,8 @@
 
 <p class="pagination">
     <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
-       href="{{ .OffsetLink }}?offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
+       href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
     <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="{{ .OffsetLink }}?offset={{ .NextOffset }}">{{ T "next" }}
-        ></a>
+    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="{{ .OffsetLink }}&offset={{ .NextOffset }}">
+    {{ T "next" }}></a>
 </p>

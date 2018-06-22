@@ -29,6 +29,7 @@ type Event struct {
 	TopicFollow      *db.MemoTopicFollow
 	Reputation       *rep.Reputation
 	FollowReputation *rep.Reputation
+	ShowMedia        bool
 }
 
 func (e *Event) TimeAgo() string {
@@ -65,6 +66,15 @@ func (e *Event) GetProfileText() string {
 	profileText = strings.TrimSpace(profileText)
 	profileText = format.AddLinks(profileText)
 	return profileText
+}
+
+func (e *Event) GetProfilePicMessage() string {
+	var msg = e.SetProfilePic.Url
+	if e.ShowMedia {
+		msg = format.AddImgurImages(msg)
+	}
+	msg = strings.TrimSpace(msg)
+	return msg
 }
 
 func (e *Event) GetTopicUrl() string {

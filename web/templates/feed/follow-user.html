@@ -21,7 +21,7 @@
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
-            {{ if .Item.UserFollow.Unfollow }}unfollowed{{ else }}followed{{ end }}
+        {{ if .Item.UserFollow.Unfollow }}unfollowed{{ else }}followed{{ end }}
         {{ if .Item.FollowProfilePic }}
             <a class="image-link" href="profile/{{ .Item.GetFollowAddressString }}">
                 <img class="profile-pic profile-pic-24"
@@ -51,7 +51,7 @@
 {{ if not .Item.ProfilePic }}
 <script type="text/javascript">
     (function () {
-        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[0, 0, 0, 255]{{ end }};
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
         var background = [0, 0, 0, 0];
         var data = new Identicon('{{ .Item.GetAddressString }}', {
             foreground: foreground,
@@ -68,7 +68,7 @@
 {{ if not .Item.FollowProfilePic }}
 <script type="text/javascript">
     (function () {
-        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[0, 0, 0, 255]{{ end }};
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
         var background = [0, 0, 0, 0];
         var data = new Identicon('{{ .Item.GetFollowAddressString }}', {
             foreground: foreground,

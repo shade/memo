@@ -1,0 +1,9 @@
+{{ $page := .Page }}
+{{ if .IsLoggedIn }}
+<br/>
+<p class="posts-nav">
+    <a {{ if eq $page "feed" }}class="sel"{{ end }} href="/">{{ T "Feed" }}</a>
+    <a {{ if eq $page "all" }}class="sel"{{ end }} href="/all">{{ T "All" }}</a>
+    <!--<a {{ if eq $page "personalized" }}class="sel"{{ end }} href="posts/personalized">{{ T "Popular" }}</a>-->
+</p>
+{{ end }}

@@ -52,7 +52,7 @@
         </td>
     {{ if $isLoggedIn }}
         <td>
-        {{ .Reputation.GetPercentStringIncludingDirect }}
+        {{ template "snippets/reputation.html" .Reputation }}
         </td>
     {{ end }}
     </tr>

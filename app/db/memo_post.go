@@ -34,7 +34,7 @@ type MemoPost struct {
 	UpdatedAt    time.Time
 }
 
-func (m MemoPost) Save() error {
+func (m *MemoPost) Save() error {
 	result := save(&m)
 	if result.Error != nil {
 		return jerr.Get("error saving memo test", result.Error)
@@ -111,6 +111,22 @@ func GetMemoPost(txHash []byte) (*MemoPost, error) {
 		return nil, jerr.Get("error getting memo post", err)
 	}
 	return &memoPost, nil
+}
+
+func GetPostsByTxHashes(txHashes [][]byte) ([]*MemoPost, error) {
+	var memoPosts []*MemoPost
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Preload(BlockTable).
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoPosts)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo posts", result.Error)
+	}
+	return memoPosts, nil
 }
 
 func GetMemoPostById(id uint) (*MemoPost, error) {
@@ -299,9 +315,9 @@ func GetPosts(offset uint) ([]*MemoPost, error) {
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
 	}
-	db = db.Preload(BlockTable)
 	var memoPosts []*MemoPost
 	result := db.
+		Preload(BlockTable).
 		Limit(25).
 		Offset(offset).
 		Order("id ASC").

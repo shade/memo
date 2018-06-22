@@ -13,6 +13,7 @@ func GetRoutes() []web.Route {
 		viewRoute,
 		followersRoute,
 		followingRoute,
+		accountRoute,
 		settingsRoute,
 		settingsSubmitRoute,
 		notificationsRoute,

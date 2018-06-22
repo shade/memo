@@ -1,8 +1,6 @@
 package transaction
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/jchavannes/btcd/txscript"
 	"github.com/jchavannes/btcd/wire"
@@ -12,35 +10,11 @@ import (
 	"github.com/memocash/memo/app/db"
 )
 
-const DustMinimumOutput int64 = 546
-
-type SpendOutputType uint
-
-const (
-	SpendOutputTypeP2PK             SpendOutputType = iota
-	SpendOutputTypeReturn
-	SpendOutputTypeMemoMessage
-	SpendOutputTypeMemoSetName
-	SpendOutputTypeMemoFollow
-	SpendOutputTypeMemoUnfollow
-	SpendOutputTypeMemoLike
-	SpendOutputTypeMemoReply
-	SpendOutputTypeMemoSetProfile
-	SpendOutputTypeMemoTopicMessage
-	SpendOutputTypeMemoTopicFollow
-	SpendOutputTypeMemoTopicUnfollow
-	SpendOutputTypeMemoPollQuestionSingle
-	SpendOutputTypeMemoPollQuestionMulti
-	SpendOutputTypeMemoPollOption
-	SpendOutputTypeMemoPollVote
-	SpendOutputTypeMemoSetProfilePic
-)
-
-func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spendOutputs []SpendOutput) (*wire.MsgTx, error) {
+func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spendOutputs []memo.SpendOutput) (*wire.MsgTx, error) {
 	var txOuts []*wire.TxOut
 	for _, spendOutput := range spendOutputs {
 		switch spendOutput.Type {
-		case SpendOutputTypeP2PK:
+		case memo.SpendOutputTypeP2PK:
 			pkScript, err := txscript.NewScriptBuilder().
 				AddOp(txscript.OP_DUP).
 				AddOp(txscript.OP_HASH160).
@@ -51,9 +25,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating pay to addr output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeReturn:
+		case memo.SpendOutputTypeReturn:
 			pkScript, err := txscript.NewScriptBuilder().
 				AddOp(txscript.OP_RETURN).
 				AddData(spendOutput.Data).
@@ -61,9 +34,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating op return output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(0, pkScript))
-		case SpendOutputTypeMemoMessage:
+		case memo.SpendOutputTypeMemoMessage:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("message size too large")
 			}
@@ -78,9 +50,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo message output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoSetName:
+		case memo.SpendOutputTypeMemoSetName:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("name too large")
 			}
@@ -95,9 +66,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo set name output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoFollow:
+		case memo.SpendOutputTypeMemoFollow:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("data too large")
 			}
@@ -112,9 +82,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo follow output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoUnfollow:
+		case memo.SpendOutputTypeMemoUnfollow:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("data too large")
 			}
@@ -129,9 +98,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo unfollow output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoLike:
+		case memo.SpendOutputTypeMemoLike:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("data too large")
 			}
@@ -146,9 +114,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo like output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoReply:
+		case memo.SpendOutputTypeMemoReply:
 			if len(spendOutput.Data) > memo.MaxReplySize {
 				return nil, jerr.New("data too large")
 			}
@@ -164,9 +131,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo reply output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoSetProfile:
+		case memo.SpendOutputTypeMemoSetProfile:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("profile too large")
 			}
@@ -178,9 +144,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo set profile output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoTopicMessage:
+		case memo.SpendOutputTypeMemoTopicMessage:
 			if len(spendOutput.Data)+len(spendOutput.RefData) > memo.MaxTagMessageSize {
 				return nil, jerr.New("data too large")
 			}
@@ -196,9 +161,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo tag message output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoTopicFollow:
+		case memo.SpendOutputTypeMemoTopicFollow:
 			if len(spendOutput.Data) > memo.MaxTagMessageSize {
 				return nil, jerr.New("data too large")
 			}
@@ -213,9 +177,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo topic follow output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoTopicUnfollow:
+		case memo.SpendOutputTypeMemoTopicUnfollow:
 			if len(spendOutput.Data) > memo.MaxTagMessageSize {
 				return nil, jerr.New("data too large")
 			}
@@ -230,9 +193,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo topic unfollow output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoPollQuestionSingle, SpendOutputTypeMemoPollQuestionMulti:
+		case memo.SpendOutputTypeMemoPollQuestionSingle, memo.SpendOutputTypeMemoPollQuestionMulti:
 			var question = spendOutput.Data
 			var optionCount = spendOutput.RefData
 			if len(question) > memo.MaxPollQuestionSize {
@@ -246,9 +208,9 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			}
 			var pollType byte
 			switch spendOutput.Type {
-			case SpendOutputTypeMemoPollQuestionSingle:
+			case memo.SpendOutputTypeMemoPollQuestionSingle:
 				pollType = memo.CodePollTypeSingle
-			case SpendOutputTypeMemoPollQuestionMulti:
+			case memo.SpendOutputTypeMemoPollQuestionMulti:
 				pollType = memo.CodePollTypeMulti
 			default:
 				return nil, jerr.New("invalid poll type")
@@ -263,9 +225,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo question output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoPollOption:
+		case memo.SpendOutputTypeMemoPollOption:
 			var option = spendOutput.Data
 			var parentTxHash = spendOutput.RefData
 			if len(option) > memo.MaxPollOptionSize {
@@ -286,9 +247,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo option output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoPollVote:
+		case memo.SpendOutputTypeMemoPollVote:
 			if len(spendOutput.Data) != 32 {
 				return nil, jerr.New("invalid txn hash")
 			}
@@ -304,9 +264,8 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo poll vote output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
-		case SpendOutputTypeMemoSetProfilePic:
+		case memo.SpendOutputTypeMemoSetProfilePic:
 			if len(spendOutput.Data) > memo.MaxPostSize {
 				return nil, jerr.New("url too large")
 			}
@@ -321,7 +280,6 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			if err != nil {
 				return nil, jerr.Get("error creating memo set pic output", err)
 			}
-			fmt.Printf("pkScript: %x\n", pkScript)
 			txOuts = append(txOuts, wire.NewTxOut(spendOutput.Amount, pkScript))
 		}
 	}
@@ -362,14 +320,6 @@ func Create(spendOuts []*db.TransactionOut, privateKey *wallet.PrivateKey, spend
 			return nil, jerr.Get("error signing transaction", err)
 		}
 		txIns[i].SignatureScript = signature
-		fmt.Printf("Signature: %x\n", signature)
 	}
-
-	writer := new(bytes.Buffer)
-	err := tx.BtcEncode(writer, 1)
-	if err != nil {
-		return nil, jerr.Get("error encoding transaction", err)
-	}
-	fmt.Printf("Txn: %s\nHex: %x\n", tx.TxHash().String(), writer.Bytes())
 	return tx, nil
 }

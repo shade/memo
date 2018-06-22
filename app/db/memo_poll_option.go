@@ -66,6 +66,21 @@ func GetMemoPollOption(txHash []byte) (*MemoPollOption, error) {
 	return &memoPollOption, nil
 }
 
+func GetMemoPollOptionsByTxHashes(txHashes [][]byte) ([]*MemoPollOption, error) {
+	var memoPollOptions []*MemoPollOption
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoPollOptions)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo poll options", result.Error)
+	}
+	return memoPollOptions, nil
+}
+
 func GetMemoPollOptionByOption(pollTxHash []byte, option string) (*MemoPollOption, error) {
 	var memoPollOption MemoPollOption
 	err := find(&memoPollOption, MemoPollOption{

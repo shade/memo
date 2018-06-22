@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/memocash/memo/app/bitcoin/main-node"
 	"github.com/spf13/cobra"
 	"os"
-	"fmt"
 	"time"
 )
 
@@ -17,6 +17,7 @@ var mainNodeCmd = &cobra.Command{
 			main_node.Start()
 			main_node.WaitForDisconnect()
 			fmt.Println("Disconnected.")
+			main_node.BitcoinNode = main_node.Node{}
 		}
 		os.Exit(1)
 		return nil

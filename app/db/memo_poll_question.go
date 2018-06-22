@@ -44,6 +44,21 @@ func GetMemoPollQuestion(txHash []byte) (*MemoPollQuestion, error) {
 	return &memoPollQuestion, nil
 }
 
+func GetMemoPollQuestions(txHashes [][]byte) ([]*MemoPollQuestion, error) {
+	var memoPollQuestions []*MemoPollQuestion
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoPollQuestions)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo poll questions", result.Error)
+	}
+	return memoPollQuestions, nil
+}
+
 func GetCountMemoPollQuestion() (uint, error) {
 	cnt, err := count(&MemoPollQuestion{})
 	if err != nil {

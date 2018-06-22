@@ -1,4 +1,4 @@
-package server
+package index
 
 import (
 	"github.com/jchavannes/jgo/jerr"
@@ -82,6 +82,6 @@ var statsRoute = web.Route{
 			memoPollVoteCount +
 			memoTopicFollowCount)
 
-		r.Render()
+		r.RenderTemplate(res.TmplStats)
 	},
 }

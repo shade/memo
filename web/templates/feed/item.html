@@ -1,4 +1,4 @@
-{{ if .Item.SetName }}
+{{ if .Item.IsSetName }}
     {{ template "feed/set-name.html" . }}
 {{ else if .Item.IsSetProfile }}
     {{ template "feed/set-profile.html" . }}

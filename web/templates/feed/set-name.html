@@ -21,7 +21,7 @@
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
-            set name to <b>{{ .Item.SetName.Name }}</b>
+            set name to <b>{{ .Item.GetSetName }}</b>
             &middot; {{ .Item.TimeAgo }}
         </p>
     {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}

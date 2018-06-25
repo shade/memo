@@ -93,7 +93,7 @@
         {{ else if .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
         {{ else if .Post.Memo.IsVote }}
-            voted in <a href="post/{{ .Post.Memo.GetTransactionHashString }}">poll</a>
+            voted in <a href="post/{{ .Post.VoteQuestion.GetTransactionHashString }}">poll</a>
         {{ else if .Post.Memo.IsPoll }}
             {{ T "created poll" }}
         {{ else }}

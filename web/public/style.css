@@ -530,13 +530,13 @@ span.page {
     font-size: 12px;
 }
 .reputation-tooltip.red {
-    color: #b00;
+    color: #c73838;
 }
 .reputation-tooltip.yellow {
-    color: #d90;
+    color: #c7af38;
 }
 .reputation-tooltip.green {
-    color: #0b0;
+    color: #487521;
 }
 .reputation-tooltip.blue {
     color: #00b;

@@ -25,8 +25,8 @@ type TransactionIn struct {
 	Transaction           *Transaction    `gorm:"foreignkey:TransactionHash"`
 	KeyPkHash             []byte          `gorm:"index:pk_hash"`
 	Key                   *Key            `gorm:"foreignkey:KeyPkHash"`
-	PreviousOutPointHash  []byte
-	PreviousOutPointIndex uint32
+	PreviousOutPointHash  []byte          `gorm:"unique_index:previous_out"`
+	PreviousOutPointIndex uint32          `gorm:"unique_index:previous_out"`
 	SignatureScript       []byte
 	UnlockString          string
 	Sequence              uint32
@@ -127,13 +127,14 @@ func GetTransactionInputByHashString(hashString string) (*TransactionIn, error) 
 	return &txIn, nil
 }
 
-func GetTransactionInputsForPkHash(pkHash []byte) ([]*TransactionIn, error) {
-	var transactionIns []*TransactionIn
-	err := find(&transactionIns, TransactionIn{
-		KeyPkHash: pkHash,
+func GetTransactionInput(txHash []byte, index uint32) (*TransactionIn, error) {
+	var transactionIn TransactionIn
+	err := find(&transactionIn, TransactionIn{
+		PreviousOutPointHash:  txHash,
+		PreviousOutPointIndex: index,
 	})
 	if err != nil {
 		return nil, jerr.Get("error finding transaction inputs", err)
 	}
-	return transactionIns, nil
+	return &transactionIn, nil
 }

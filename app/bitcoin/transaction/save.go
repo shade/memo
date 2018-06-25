@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"bytes"
 	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/cache"
@@ -104,14 +103,14 @@ func newTxn(txn *db.Transaction, block *db.Block) error {
 	txn.BlockId = blockId
 	//fmt.Printf("Found new txn: %s, block id: %d\n", txn.GetChainHash().String(), blockId)
 	for _, in := range txn.TxIn {
-		err := updateExistingOutputs(in)
+		err := updateExistingOutput(in)
 		if err != nil {
 			return jerr.Get("error updating existing outputs", err)
 		}
 	}
 
 	for _, out := range txn.TxOut {
-		err := updateExistingInputs(out, txn.Hash)
+		err := updateExistingInput(out, txn.Hash)
 		if err != nil {
 			return jerr.Get("error updating existing inputs", err)
 		}
@@ -125,35 +124,30 @@ func newTxn(txn *db.Transaction, block *db.Block) error {
 	return nil
 }
 
-func updateExistingOutputs(in *db.TransactionIn) error {
-	existingOutputs, err := db.GetTransactionOutputsForPkHash(in.KeyPkHash)
+func updateExistingOutput(in *db.TransactionIn) error {
+	existingTxOut, err := db.GetTransactionOutput(in.PreviousOutPointHash, in.PreviousOutPointIndex)
 	if err != nil {
-		return jerr.Get("error getting existing outputs", err)
+		if db.IsRecordNotFoundError(err) {
+			return nil
+		}
+		return jerr.Get("error getting existing output", err)
 	}
-	for _, existingTxOut := range existingOutputs {
-		if ! bytes.Equal(in.PreviousOutPointHash, existingTxOut.Transaction.Hash) {
-			continue
-		}
-		if uint32(existingTxOut.Index) == in.PreviousOutPointIndex {
-			existingTxOut.TxnInHashString = in.HashString
-			err := existingTxOut.Save()
-			if err != nil {
-				return jerr.Get("error saving existing transaction output", err)
-			}
-		}
+	existingTxOut.TxnInHashString = in.HashString
+	err = existingTxOut.Save()
+	if err != nil {
+		return jerr.Get("error saving existing transaction output", err)
 	}
 	return nil
 }
 
-func updateExistingInputs(out *db.TransactionOut, txHash []byte) error {
-	existingInputs, err := db.GetTransactionInputsForPkHash(out.KeyPkHash)
+func updateExistingInput(out *db.TransactionOut, txHash []byte) error {
+	existingInput, err := db.GetTransactionInput(txHash, out.Index)
 	if err != nil {
-		return jerr.Get("error getting existing inputs", err)
-	}
-	for _, existingTxIn := range existingInputs {
-		if bytes.Equal(txHash, existingTxIn.PreviousOutPointHash) && out.Index == existingTxIn.PreviousOutPointIndex {
-			out.TxnInHashString = existingTxIn.HashString
+		if db.IsRecordNotFoundError(err) {
+			return nil
 		}
+		return jerr.Get("error getting existing input", err)
 	}
+	out.TxnInHashString = existingInput.HashString
 	return nil
 }

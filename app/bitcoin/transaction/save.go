@@ -101,7 +101,6 @@ func newTxn(txn *db.Transaction, block *db.Block) error {
 		blockId = block.Id
 	}
 	txn.BlockId = blockId
-	//fmt.Printf("Found new txn: %s, block id: %d\n", txn.GetChainHash().String(), blockId)
 	for _, in := range txn.TxIn {
 		err := updateExistingOutput(in)
 		if err != nil {

@@ -106,8 +106,12 @@ var likeSubmitRoute = web.Route{
 
 		tx, err := build.Like(likeTxBytes, tip, privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building like tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building like tx", err), statusCode)
 			return
 		}
 

@@ -48,8 +48,12 @@ var followSubmitRoute = web.Route{
 			tx, err = build.FollowTopic(topicName, privateKey)
 		}
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building topic follow tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building topic follow tx", err), statusCode)
 			return
 		}
 

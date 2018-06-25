@@ -117,8 +117,12 @@ var replySubmitRoute = web.Route{
 
 		tx, err := build.MemoReply(txHash.CloneBytes(), message, privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building reply tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building reply tx", err), statusCode)
 			return
 		}
 

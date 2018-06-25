@@ -100,8 +100,12 @@ var unfollowSubmitRoute = web.Route{
 
 		tx, err := build.UnfollowUser(followAddress.GetScriptAddress(), privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building unfollow tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building unfollow tx", err), statusCode)
 			return
 		}
 

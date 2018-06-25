@@ -7,13 +7,27 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/obj/feed_event"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/res"
+	"github.com/memocash/memo/app/util"
 	"net/http"
 )
 
+const (
+	PageAll   = "all"
+	PagePosts = "posts"
+	PageLikes = "likes"
+)
+
+var profilePages = []string{
+	PageAll,
+	PagePosts,
+	PageLikes,
+}
+
 var viewRoute = web.Route{
-	Pattern:    res.UrlProfileView + "/" + urlAddress.UrlPart(),
+	Pattern: res.UrlProfileView + "/" + urlAddress.UrlPart(),
 	Handler: func(r *web.Response) {
 		addressString := r.Request.GetUrlNamedQueryVariable(urlAddress.Id)
 		address := wallet.GetAddressFromString(addressString)
@@ -36,32 +50,27 @@ var viewRoute = web.Route{
 		}
 
 		offset := r.Request.GetUrlParameterInt("offset")
-		posts, err := profile.GetPostsForHash(pkHash, userPkHash, uint(offset))
+		pageType := r.Request.GetUrlParameter("p")
+		if ! util.StringInSlice(pageType, profilePages) {
+			pageType = PageAll
+		}
+		var events []*feed_event.Event
+		var err error
+		switch pageType {
+		case PageAll:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), nil)
+		case PagePosts:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), db.PostEvents)
+		case PageLikes:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), []db.FeedEventType{
+				db.FeedEventLike,
+			})
+		}
 		if err != nil {
-			r.Error(jerr.Get("error getting posts for hash", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error getting user events", err), http.StatusInternalServerError)
 			return
 		}
-		err = profile.AttachParentToPosts(posts)
-		if err != nil {
-			r.Error(jerr.Get("error attaching parent to post", err), http.StatusInternalServerError)
-			return
-		}
-		err = profile.AttachLikesToPosts(posts)
-		if err != nil {
-			r.Error(jerr.Get("error attaching likes to posts", err), http.StatusInternalServerError)
-			return
-		}
-		err = profile.AttachPollsToPosts(posts)
-		if err != nil {
-			r.Error(jerr.Get("error attaching polls to posts", err), http.StatusInternalServerError)
-			return
-		}
-		err = profile.SetShowMediaForPosts(posts, userId)
-		if err != nil {
-			r.Error(jerr.Get("error setting show media for posts", err), http.StatusInternalServerError)
-			return
-		}
-		r.Helper["Posts"] = posts
+		r.Helper["FeedItems"] = events
 
 		pf, err := profile.GetProfile(pkHash, userPkHash)
 		if err != nil {
@@ -102,9 +111,9 @@ var viewRoute = web.Route{
 		}
 
 		r.Helper["Profile"] = pf
+		r.Helper["PageType"] = pageType
 
-		memoLikes, err := profile.GetLikesForPkHash(pkHash)
-		r.Helper["Likes"] = memoLikes
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s/%s?p=%s", res.UrlProfileView, address.GetEncoded(), pageType)
 		r.Helper["Title"] = fmt.Sprintf("Memo - %s's Profile", pf.Name)
 		res.SetPageAndOffset(r, offset)
 		r.RenderTemplate(res.UrlProfileView)

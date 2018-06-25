@@ -23,10 +23,10 @@ func onTx(n *Node, msg *wire.MsgTx) {
 		if memoTxn {
 			n.MemoTxnsFound++
 			if block == nil {
-				fmt.Println("Saved unconfirmed memo txn")
+				fmt.Printf("Saved unconfirmed memo txn: %s\n", msg.TxHash().String())
 			}
 		} else if block == nil {
-			fmt.Println("Saved unconfirmed txn")
+			fmt.Printf("Saved unconfirmed txn: %s\n", msg.TxHash().String())
 		}
 	}
 }

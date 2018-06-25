@@ -1,12 +1,6 @@
 {{ template "snippets/header.html" . }}
 
-<div class="center">
-    <h2>Feed</h2>
-
-    <p>
-        <a href="/">Back to Dashboard</a>
-    </p>
-</div>
+{{ template "posts/header.html" dict "Page" "feed" "Username" .Username }}
 
 {{ template "snippets/feed.html" . }}
 

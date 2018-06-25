@@ -10,6 +10,13 @@ import (
 	"sort"
 )
 
+const notEnoughValueErrorText = "unable to find enough value to spend"
+var notEnoughValueError = jerr.New(notEnoughValueErrorText)
+
+func IsNotEnoughValueError(err error) bool {
+	return jerr.HasError(err, notEnoughValueErrorText)
+}
+
 func Build(spendOutputs []memo.SpendOutput, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
 	spendableTxOuts, err := db.GetSpendableTransactionOutputsForPkHash(privateKey.GetPublicKey().GetAddress().GetScriptAddress())
 	if err != nil {
@@ -43,7 +50,7 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 	var totalInputValue int64
 	for {
 		if len(spendableTxOuts) == 0 {
-			return nil, nil, jerr.New("unable to find enough value to spend")
+			return nil, nil, notEnoughValueError
 		}
 		spendableTxOut := spendableTxOuts[0]
 		spendableTxOuts = spendableTxOuts[1:]
@@ -74,7 +81,7 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 
 	var change = totalInputValue - fee - totalOutputValue
 	if change < memo.DustMinimumOutput {
-		return nil, nil, jerr.New("not enough funds")
+		return nil, nil, jerr.New("change value below dust minimum input")
 	}
 	address := privateKey.GetPublicKey().GetAddress()
 	spendOutputs = append([]memo.SpendOutput{{
@@ -116,6 +123,7 @@ func getMemoOutputFee(spendOutput memo.SpendOutput) (int64, error) {
 	case memo.SpendOutputTypeMemoMessage,
 		memo.SpendOutputTypeMemoLike,
 		memo.SpendOutputTypeMemoSetName,
+		memo.SpendOutputTypeMemoSetProfile,
 		memo.SpendOutputTypeMemoSetProfilePic,
 		memo.SpendOutputTypeMemoFollow, memo.SpendOutputTypeMemoUnfollow,
 		memo.SpendOutputTypeMemoTopicFollow, memo.SpendOutputTypeMemoTopicUnfollow:

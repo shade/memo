@@ -5,63 +5,14 @@
 
 {{ template "snippets/profile.html" dict "Profile" .Profile "UserSettings" .UserSettings }}
 
-{{ if .Likes }}
-
-<p>
-{{ len .Likes }} {{ T "like" 2 }} - <a href="#" id="show-hide-likes">{{ T "show" | UcFirst }}</a>
+{{ $pageType := .PageType }}
+<p class="posts-nav">
+    <a {{ if eq $pageType "all" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=all">{{ T "All Activity" }}</a>
+    <a {{ if eq $pageType "posts" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=posts">{{ T "Posts" }}</a>
+    <a {{ if eq $pageType "likes" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=likes">{{ T "Likes" }}</a>
 </p>
 
-<div id="likes" style="display:none">
-    <h3>{{ T "like" 2 | UcFirst }}</h3>
-    <ul>
-    {{ range .Likes }}
-        <li>
-            Liked <a href="post/{{ .GetPostTransactionHashString }}">{{ .Name }}'s post</a>
-            - {{ formatBigInt .Amount }} satoshis
-            ({{ .GetTimeString $tz }})
-            <a target="_blank"
-               href="https://explorer.bitcoin.com/bch/tx/{{ .GetTransactionHashString }}">View on Block Explorer</a>
-        </li>
-    {{ end }}
-    </ul>
-</div>
-
-<script type="text/javascript">
-    $(function () {
-        MemoApp.Form.LikesToggle($("#show-hide-likes"), $("#likes"));
-    });
-</script>
-{{ end }}
-
-<div class="center">
-{{ if not .Posts }}
-    <h3>No Posts Yet</h3>
-{{ else }}
-    <h3>{{ T "posts" }} by {{ .Profile.Name }}</h3>
-{{ end }}
-</div>
-
-{{ if and (eq .NextOffset 25) (lt (len .Posts) 25) }}{{ else }}
-<p class="pagination">
-    <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}"
-       href="profile/{{ .Profile.GetAddressString }}?offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>
-    <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .Posts) 25 }}disabled{{ end }}"
-       href="profile/{{ .Profile.GetAddressString }}?offset={{ .NextOffset }}">{{ T "next" }} &gt;</a>
-</p>
-{{ end }}
-
-{{ template "snippets/posts.html" dict "Posts" .Posts "TimeZone" .TimeZone "UserSettings" .UserSettings }}
-
-{{ if and (eq .NextOffset 25) (lt (len .Posts) 25) }}{{ else }}
-<p class="pagination">
-    <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}"
-       href="profile/{{ .Profile.GetAddressString }}?offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>
-    <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .Posts) 25 }}disabled{{ end }}"
-       href="profile/{{ .Profile.GetAddressString }}?offset={{ .NextOffset }}">{{ T "next" }} &gt;</a>
-</p>
-{{ end }}
+{{ template "feed/items.html" . }}
 
 <br/>
 

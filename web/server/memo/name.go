@@ -68,8 +68,12 @@ var setNameSubmitRoute = web.Route{
 
 		tx, err := build.SetName(name, privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building set name tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building set name tx", err), statusCode)
 			return
 		}
 

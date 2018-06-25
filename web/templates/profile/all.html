@@ -54,7 +54,7 @@
     {{ end }}
         <script type="text/javascript">
             (function () {
-                var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[0, 0, 0, 255]{{ end }};
+                var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
                 var background = [0, 0, 0, 0];
                 var data = new Identicon('{{ .GetAddressString }}', {
                     foreground: foreground,

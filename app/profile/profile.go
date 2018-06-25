@@ -12,8 +12,8 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/rep"
+	"github.com/memocash/memo/app/util/format"
 	"github.com/skip2/go-qrcode"
-	"regexp"
 	"strings"
 )
 
@@ -69,7 +69,6 @@ func (p Profile) GetAddressString() string {
 }
 
 func (p Profile) GetCashAddressString() string {
-
 	addr, err := btcutil.NewAddressPubKeyHash(p.PkHash, &wallet.MainNetParamsOld)
 	if err != nil {
 		return ""
@@ -81,37 +80,19 @@ func (p Profile) GetCashAddressString() string {
 	return cashAddr.String()
 }
 
+func (p Profile) GetCashAddressOnlyString() string {
+	cashAddr := p.GetCashAddressString()
+	return strings.TrimPrefix(cashAddr, "bitcoincash:")
+}
+
 func (p *Profile) SetBalances() error {
 	bal, err := cache.GetBalance(p.PkHash)
-	if err == nil {
-		p.Balance = bal
-		p.BalanceBCH = float64(bal) * 1e-8
-		p.hasBalance = true
-		return nil
-	} else if ! cache.IsMissError(err) {
-		jerr.Get("error getting balance from cache", err).Print()
-	}
-	outs, err := db.GetTransactionOutputsForPkHash(p.PkHash)
 	if err != nil {
-		return jerr.Get("error getting outs", err)
+		return jerr.Get("error getting balance from cache", err)
 	}
-	var balance int64
-	var balanceBCH float64
-
-	for _, out := range outs {
-		if out.TxnInHashString != "" {
-			continue
-		}
-		balance += out.Value
-		balanceBCH += out.ValueInBCH()
-	}
-	p.Balance = balance
-	p.BalanceBCH = balanceBCH
+	p.Balance = bal
+	p.BalanceBCH = float64(bal) * 1e-8
 	p.hasBalance = true
-	err = cache.SetBalance(p.PkHash, p.Balance)
-	if err != nil {
-		jerr.Get("error setting balance in cache", err).Print()
-	}
 	return nil
 }
 
@@ -176,13 +157,13 @@ func (p *Profile) SetQr() error {
 }
 
 func (p Profile) GetText() string {
-	if p.Profile == "" {
-		return "Not set"
+	var profile = p.Profile
+	if profile == "" {
+		return "Profile not set"
 	}
-	var re = regexp.MustCompile(`(http[s]?://[^\s]*)`)
-	s := re.ReplaceAllString(p.Profile, `<a href="$1" target="_blank">$1</a>`)
-	s = strings.Replace(s, "\n", "<br/>", -1)
-	return s
+	profile = strings.TrimSpace(profile)
+	profile = format.AddLinks(profile)
+	return profile
 }
 
 func GetProfiles(selfPkHash []byte, searchString string, offset int) ([]*Profile, error) {

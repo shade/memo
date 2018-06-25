@@ -28,7 +28,7 @@ var signupRoute = web.Route{
 			r.SetRedirect(res.GetUrlWithBaseUrl(res.UrlIndex, r))
 			return
 		}
-		r.Render()
+		r.RenderTemplate(res.TmplSignup)
 	},
 }
 

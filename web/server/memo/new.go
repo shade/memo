@@ -69,8 +69,12 @@ var newSubmitRoute = web.Route{
 
 		tx, err := build.MemoMessage(message, privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building new memo tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building new memo tx", err), statusCode)
 			return
 		}
 

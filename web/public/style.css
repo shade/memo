@@ -59,7 +59,6 @@ video {
     height:100%;
 }
 
-
 hr.no-margin {
     margin: 0;
 }
@@ -79,6 +78,9 @@ select {
 }
 .center {
     text-align: center;
+}
+.right {
+    text-align: right;
 }
 .clear {
     clear: both;
@@ -195,6 +197,15 @@ a.disabled {
     margin: 0;
     padding: 10px;
 }
+.nav.right {
+    text-align: right;
+}
+.nav.nav-pills > li > a {
+    margin-bottom: 5px;
+}
+.nav>li>a.btn:focus,
+.nav>li>a.btn:hover {
+}
 .nav-item.notifications span {
     top: 3px;
 }
@@ -219,6 +230,7 @@ a.disabled {
     padding: 15px 0;
 }
 .post {
+    position: relative;
     background: #fff;
     padding: 10px 10px 0 10px;
     margin-bottom: 15px;
@@ -230,6 +242,9 @@ a.disabled {
 .post .name .profile {
     font-weight: bold;
     font-size: 18px;
+}
+.post .name .profile.profile-feed-item {
+    font-weight: normal;
 }
 
 .post .post {
@@ -243,7 +258,11 @@ a.disabled {
     color: #888;
 }
 .post .reply p {
-    margin: 12px 0 5px;
+    margin: 12px 0 0;
+    font-size: 18px;
+}
+.post .reply.reply-feed-item p {
+    font-size: 14px;
 }
 .post .reply.vote p {
     margin: 5px 0 5px;
@@ -262,6 +281,12 @@ a.disabled {
 .post .message {
     margin: 5px 0 5px;
     font-size: 28px;
+}
+.post .message.message-feed-item {
+    font-size: 24px;
+}
+.post .message.profile-text {
+    padding-bottom: 10px;
 }
 .post .likes {
     margin: 0 0 10px;
@@ -289,15 +314,17 @@ a.disabled {
     display: inline-block;
 }
 .post .post-header {
-    position: relative;
     margin: 0;
     padding-right: 25px;
+}
+.post .post-header-feed-item {
+    padding-bottom: 5px;
 }
 .post .post-header .block-explorer {
     position: absolute;
     list-style-type: none;
-    top: -4px;
-    right: 0;
+    top: 5px;
+    right: 9px;
     padding: 0;
     font-size: 18px;
     color: #333;
@@ -343,6 +370,21 @@ body.dark .post .post-header .block-explorer ul a {
 .post .actions .btn-leave {
     margin-left: 10px;
 }
+.post .feed-item {
+    color: #555;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #ddd;
+}
+.post .feed-item .feed-item-glyphicon {
+    margin-right: 5px;
+}
+.post .feed-item-like .feed-item-glyphicon {
+    color: #b00;
+}
+.post .feed-item-vote .feed-item-glyphicon {
+    color: #0b0;
+}
 .btn-warning {
     color: white;
     background-color: #548d1d;
@@ -374,6 +416,13 @@ table.table {
 body.dark table.table {
     background-color: transparent;
 }
+.profile {
+    position: relative;
+}
+.profile .identicon {
+    width: 128px;
+    height: 128px;
+}
 .profile .btn {
     word-break: break-word;
 }
@@ -384,6 +433,7 @@ body.dark table.table {
     word-break: break-word;
 }
 .profile #qr-code {
+    display: none;
     margin-top: 5px;
 }
 .profile #qr-code img {
@@ -394,6 +444,32 @@ body.dark table.table {
 
 .profile .click-for-qr {
     font-size: 12px;
+}
+.profile .pic {
+    position: absolute;
+    top: 0
+}
+.profile .title {
+    min-height: 138px;
+    padding-left: 148px;
+    word-break: break-word;
+}
+.profile h3 {
+    margin: 0 0 10px;
+}
+.profile table.table {
+    font-size: 12px;
+}
+.profile table.table td {
+    word-break: break-word;
+}
+.profile .dropdown {
+    vertical-align: top;
+    display: inline-block;
+    word-break: break-word;
+}
+.profile .dropdown .btn {
+    margin-bottom: 10px;
 }
 
 .byte-count.red {
@@ -406,7 +482,7 @@ body.dark table.table {
     text-decoration: none;
     color: #000;
     display: inline-block;
-    margin-right: 10px;
+    margin: 10px 5px 0;
 }
 .posts-nav a:hover,
 .posts-nav a.sel {
@@ -443,14 +519,33 @@ span.page {
 
 .reputation-tooltip {
     position: relative;
+    font-size: 12px;
+}
+.reputation-tooltip .reputation-glyphicon {
+    margin-right: 2px;
+    font-size: 9px;
 }
 .reputation-tooltip a {
     font-weight: bold;
+    font-size: 12px;
 }
-.reputation-tooltip:hover > span {
+.reputation-tooltip.red {
+    color: #c73838;
+}
+.reputation-tooltip.yellow {
+    color: #c7af38;
+}
+.reputation-tooltip.green {
+    color: #487521;
+}
+.reputation-tooltip.blue {
+    color: #00b;
+}
+.reputation-tooltip:hover .bubble {
     display: block;
+    z-index: 1;
 }
-.reputation-tooltip span {
+.reputation-tooltip .bubble {
     position: absolute;
     display: none;
     color: #000;
@@ -465,10 +560,10 @@ span.page {
     padding: 5px;
     text-align: left;
 }
-.reputation-tooltip:hover > span {
+.reputation-tooltip:hover .bubble {
     display: block;
 }
-#broadcasting {
+#broadcasting, #creating {
     display: inline-block;
     padding: 12px 10px 0 10px;
 }
@@ -556,7 +651,6 @@ body.dark .topics-table .glyphicon {
 }
 .topic-post .name a {
     display: inline-block;
-    margin-right: 5px;
     color: #000;
     text-decoration: none;
 }
@@ -568,11 +662,8 @@ body.dark .topics-table .glyphicon {
     font-size: 12px;
     color: #888;
 }
-.topic-post .reputation {
-    display: inline-block;
-    margin-right: 5px;
+.topic-post .reputation-tooltip {
     font-weight: normal;
-    font-style: italic;
     font-size: 12px;
 }
 .topic-post .like {
@@ -673,6 +764,7 @@ a.block-link {
 }
 img.imgur {
     max-width: 100%;
+    max-height: 400px;
     display: block;
     margin: 10px auto;
 }
@@ -690,6 +782,13 @@ img.imgur {
     font-size: 12px;
     font-style: italic;
     margin: 5px 0;
+}
+#password-warning {
+    font-size: 12px;
+    margin-left: 5px;
+}
+#password-warning span {
+    font-weight: bold;
 }
 .disclaimer {
     padding-left: 25px;

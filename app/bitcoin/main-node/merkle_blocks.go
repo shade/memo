@@ -19,7 +19,15 @@ func onMerkleBlock(n *Node, msg *wire.MsgMerkleBlock) {
 	for _, transactionHash := range transactionHashes {
 		n.BlockHashes[transactionHash.GetTxId().String()] = dbBlock
 	}
-	fmt.Printf("Got merkle block - height: %5d, timestamp: %s, hashes: %3d (Prev block - saved: %5d, memos: %5d)\n",
+	_, errors := transaction.ProcessNotifications()
+	for _, err := range errors {
+		fmt.Println(err.Error())
+	}
+	_, errors = transaction.UpdateRootTxHashes()
+	for _, err := range errors {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("Merkle block height: %5d (%s), hashes: %4d (Prev saved: %4d, memos: %4d)\n",
 		dbBlock.Height,
 		dbBlock.Timestamp.String(),
 		len(transactionHashes),
@@ -62,6 +70,7 @@ func queueMerkleBlocks(n *Node, first bool) {
 	if len(blocks) == 0 {
 		if ! n.BlocksSyncComplete {
 			n.BlocksSyncComplete = true
+			transaction.DisableBatchPostProcessing()
 			fmt.Println("Block sync complete")
 			queueMempool(n)
 		}

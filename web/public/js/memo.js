@@ -649,7 +649,7 @@
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
                                 success: function (html) {
-                                    $("#post-" + txHash).replaceWith(html);
+                                    $("#post-" + formHash).replaceWith(html);
                                 },
                                 error: function (xhr) {
                                     MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");

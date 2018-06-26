@@ -7,7 +7,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/script"
 	"github.com/memocash/memo/app/bitcoin/wallet"
-	"github.com/memocash/memo/app/util"
+	"github.com/memocash/memo/app/db/obj"
 	"html"
 	"net/url"
 	"time"
@@ -498,31 +498,7 @@ func GetCountMemoPosts() (uint, uint, uint, uint, error) {
 	return postCount, votePostCount, topicPostCount, replyPostCount, nil
 }
 
-type Topic struct {
-	Name         string
-	RecentTime   time.Time
-	CountPosts   int
-	CountFollows int
-	UnreadPosts  bool
-}
-
-func (t Topic) GetUrlEncoded() string {
-	return url.QueryEscape(t.Name)
-}
-
-func (t Topic) GetTimeAgo() string {
-	return util.GetTimeAgo(t.RecentTime)
-}
-
-type TopicOrderType int
-
-const (
-	TopicOrderTypeRecent    TopicOrderType = iota
-	TopicOrderTypeFollowers
-	TopicOrderTypePosts
-)
-
-func GetUniqueTopics(offset uint, searchString string, pkHash []byte, orderType TopicOrderType) ([]*Topic, error) {
+func GetTopicInfoFromPosts(topicNames ...string) ([]*obj.Topic, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -542,42 +518,20 @@ func GetUniqueTopics(offset uint, searchString string, pkHash []byte, orderType 
 		Joins("LEFT JOIN memo_topic_follows ON (memo_posts.topic = memo_topic_follows.topic)").
 		Joins(joinSelect).
 		Joins("LEFT JOIN blocks ON (memo_posts.block_id = blocks.id)").
-		Group("memo_posts.topic").
-		Where("(memo_topic_follows.id IS NULL OR sq.id IS NOT NULL)").
-		Limit(25).
-		Offset(offset)
-	if searchString != "" {
-		query = query.Where("memo_posts.topic LIKE ?", fmt.Sprintf("%%%s%%", searchString))
+		Group("memo_posts.topic")
+	if len(topicNames) > 0 {
+		query = query.Where("memo_posts.topic IN (?)", topicNames)
 	} else {
-		query = query.Where("memo_posts.topic IS NOT NULL AND memo_posts.topic != ''")
+		query = query.Where("IFNULL(memo_posts.topic, '') != ''")
 	}
-	if len(pkHash) > 0 {
-		joinQuery := "JOIN (" +
-			"SELECT MAX(id) AS id " +
-			"FROM memo_topic_follows " +
-			"WHERE pk_hash = ? " +
-			"GROUP BY topic" +
-			") sq2 ON (sq2.id = memo_topic_follows2.id)"
-		query = query.
-			Joins("JOIN memo_topic_follows AS memo_topic_follows2 ON (memo_topic_follows.topic = memo_topic_follows2.topic)").
-			Joins(joinQuery, pkHash).
-			Where("memo_topic_follows2.unfollow = 0")
-	}
-	switch orderType {
-	case TopicOrderTypeFollowers:
-		query = query.Order("follower_count DESC")
-	case TopicOrderTypePosts:
-		query = query.Order("post_count DESC")
-	}
-	query = query.Order("max_time DESC")
 	rows, err := query.Rows()
 	if err != nil {
 		return nil, jerr.Get("error getting distinct topics", err)
 	}
 	defer rows.Close()
-	var topics []*Topic
+	var topics []*obj.Topic
 	for rows.Next() {
-		var topic Topic
+		var topic obj.Topic
 		err := rows.Scan(&topic.Name, &topic.RecentTime, &topic.CountPosts, &topic.CountFollows)
 		if err != nil {
 			return nil, jerr.Get("error scanning row with topic", err)
@@ -587,12 +541,12 @@ func GetUniqueTopics(offset uint, searchString string, pkHash []byte, orderType 
 	return topics, nil
 }
 
-func AttachUnreadToTopics(topics []*Topic, userPkhash []byte) error {
+func AttachUnreadToTopics(topics []*obj.Topic, userPkHash []byte) error {
 	var topicNames []string
 	for _, topic := range topics {
 		topicNames = append(topicNames, topic.Name)
 	}
-	lastTopicPostIds, err := GetLastTopicPostIds(userPkhash, topicNames)
+	lastTopicPostIds, err := GetLastTopicPostIds(userPkHash, topicNames)
 	if err != nil {
 		return jerr.Get("error getting last topic post ids", err)
 	}

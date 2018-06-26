@@ -25,5 +25,6 @@ func Execute() {
 	memoCmd.AddCommand(addFollowerNotificationsCmd)
 	memoCmd.AddCommand(profilePicDevCmd)
 	memoCmd.AddCommand(populateFeedCmd)
+	memoCmd.AddCommand(populateTopicInfoCmd)
 	memoCmd.Execute()
 }

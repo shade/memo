@@ -542,6 +542,7 @@ func saveMemoTopicMessage(txn *db.Transaction, out *db.TransactionOut, block *db
 		return jerr.Get("error saving memo topic message", err)
 	}
 	addMemoPostFeedEvent(memoPost)
+	updateTopicInfo(topicName)
 	return nil
 }
 
@@ -595,6 +596,7 @@ func saveMemoTopicFollow(unfollow bool, txn *db.Transaction, out *db.Transaction
 		return jerr.Get("error saving memo follow topic", err)
 	}
 	addMemoTopicFollowFeedEvent(memoFollowTopic)
+	updateTopicInfo(topicName)
 	return nil
 }
 

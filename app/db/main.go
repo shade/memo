@@ -15,14 +15,7 @@ import (
 const (
 	BlockTable          = "Block"
 	KeyTable            = "Key"
-	TxInTable           = "TxIn"
-	TxInKeyTable        = "TxIn.Key"
-	TxInTxnOutTable     = "TxIn.TxnOut"
-	TxInTxnOutTxnTable  = "TxIn.TxnOut.Transaction"
 	TxOutTable          = "TxOut"
-	TxOutKeyTable       = "TxOut.Key"
-	TxOutTxnInTable     = "TxOut.TxnIn"
-	TxOutTxnInTxnTable  = "TxOut.TxnIn.Transaction"
 	TransactionTable    = "Transaction"
 	TransactionBlockTbl = "Transaction.Block"
 )
@@ -60,6 +53,7 @@ var dbInterfaces = []interface{}{
 	UserTopicView{},
 	MemoSetPic{},
 	FeedEvent{},
+	TopicInfo{},
 }
 
 func getDb() (*gorm.DB, error) {

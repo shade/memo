@@ -7,6 +7,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/db/obj"
 	"github.com/memocash/memo/app/html-parser"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -19,7 +20,7 @@ var mostFollowedRoute = web.Route{
 		preHandler(r)
 		offset := r.Request.GetUrlParameterInt("offset")
 		searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
-		topics, err := db.GetUniqueTopics(uint(offset), searchString, []byte{}, db.TopicOrderTypeFollowers)
+		topics, err := db.GetTopicInfo(uint(offset), searchString, []byte{}, obj.TopicOrderTypeFollowers)
 		if err != nil {
 			r.Error(jerr.Get("error getting topics from db", err), http.StatusInternalServerError)
 			return

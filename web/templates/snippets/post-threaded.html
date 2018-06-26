@@ -119,7 +119,7 @@
 
     <script type="text/javascript">
         $(function () {
-            MemoApp.Form.LikesToggle($("#show-hide-likes-{{ .Post.Memo.GetTransactionHashString }}"), $("#likes-{{ .Post.Memo.GetTransactionHashString }}"));
+            MemoApp.Form.LikesToggle($("#show-hide-likes-{{ $postUnique }}"), $("#likes-{{ $postUnique }}"));
         });
     </script>
 {{ end }}

@@ -529,16 +529,16 @@ span.page {
     font-weight: bold;
     font-size: 12px;
 }
-.reputation-tooltip.red {
+.red {
     color: #c73838;
 }
-.reputation-tooltip.yellow {
+.yellow {
     color: #c7af38;
 }
-.reputation-tooltip.green {
+.green {
     color: #487521;
 }
-.reputation-tooltip.blue {
+.blue {
     color: #00b;
 }
 .reputation-tooltip:hover .bubble {

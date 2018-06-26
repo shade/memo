@@ -1,0 +1,83 @@
+<div class="post rounded box-shadow" id="post-{{ .Item.FeedEvent.GetTransactionHashString }}">
+    <div class="post-header post-header-feed-item">
+        <p class="name">
+        {{ if .Item.ProfilePic }}
+            <a class="image-link" href="profile/{{ .Item.GetAddressString }}">
+                <img class="profile-pic profile-pic-24"
+                     src="/img/profilepics/{{ .Item.GetAddressString }}-24x24.{{ .Item.ProfilePic.GetExtension }}?id={{ .Item.ProfilePic.Id }}">
+            </a>
+        {{ else }}
+            <span class="identicon-{{ .Item.GetAddressString }}">
+                <img class="identicon"/>
+            </span>
+        {{ end }}
+            <a class="profile" href="profile/{{ .Item.GetAddressString }}">{{ $len := len .Item.Name }}
+        {{- if gt $len 0 -}}
+            {{ .Item.Name }}
+        {{- else -}}
+            {{ .Item.GetAddressString }}
+        {{- end -}}
+            </a>
+        {{ if .Item.Reputation }}
+            {{ template "snippets/reputation.html" .Item.Reputation }}
+        {{ end }}
+        {{ if .Item.UserFollow.Unfollow }}unfollowed{{ else }}followed{{ end }}
+        {{ if .Item.FollowProfilePic }}
+            <a class="image-link" href="profile/{{ .Item.GetFollowAddressString }}">
+                <img class="profile-pic profile-pic-24"
+                     src="/img/profilepics/{{ .Item.GetFollowAddressString }}-24x24.{{ .Item.FollowProfilePic.GetExtension }}?id={{ .Item.FollowProfilePic.Id }}">
+            </a>
+        {{ else }}
+            <span class="identicon-{{ .Item.GetFollowAddressString }}">
+                <img class="identicon"/>
+            </span>
+        {{ end }}
+            <a class="profile" href="profile/{{ .Item.GetFollowAddressString }}">{{ $len := len .Item.FollowName }}
+        {{- if gt $len 0 -}}
+            {{ .Item.FollowName }}
+        {{- else -}}
+            {{ .Item.GetFollowAddressString }}
+        {{- end -}}
+            </a>
+        {{ if .Item.FollowReputation }}
+            {{ template "snippets/reputation.html" .Item.FollowReputation }}
+        {{ end }}
+            &middot; {{ .Item.TimeAgo }}
+        </p>
+    {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
+    </div>
+</div>
+
+{{ if not .Item.ProfilePic }}
+<script type="text/javascript">
+    (function () {
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+        var background = [0, 0, 0, 0];
+        var data = new Identicon('{{ .Item.GetAddressString }}', {
+            foreground: foreground,
+            background: background,
+            size: 24,
+            form: 'svg',
+            margin: 0
+        }).toString();
+        $(".identicon-{{ .Item.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+    })();
+</script>
+{{ end }}
+
+{{ if not .Item.FollowProfilePic }}
+<script type="text/javascript">
+    (function () {
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+        var background = [0, 0, 0, 0];
+        var data = new Identicon('{{ .Item.GetFollowAddressString }}', {
+            foreground: foreground,
+            background: background,
+            size: 24,
+            form: 'svg',
+            margin: 0
+        }).toString();
+        $(".identicon-{{ .Item.GetFollowAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+    })();
+</script>
+{{ end }}

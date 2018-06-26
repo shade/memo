@@ -3,23 +3,44 @@ package res
 import "github.com/jchavannes/jgo/web"
 
 const (
-	UrlIndex        = "/"
+	UrlIndex           = "/"
+	UrlProtocol        = "/protocol"
+	UrlGuides          = "/guides"
+	UrlDisclaimer      = "/disclaimer"
+	UrlIntroducing     = "/introducing-memo"
+	UrlOpenSource      = "/open-sourcing-memo"
+	UrlNeedFunds       = "/need-funds"
+	UrlNewPosts        = "/new-posts"
+	UrlStats           = "/stats"
+	UrlFeed            = "/feed"
+	UrlAbout           = "/about"
+	UrlNotFound        = "/404"
+	UrlMemoSetLanguage = "/set-language"
+	UrlAll             = "/all"
+
+	TmplAll              = "/index/all"
+	TmplAbout            = "/index/about"
+	TmplDashboard        = "/index/dashboard"
+	TmplDashboardNoFunds = "/index/dashboard-no-funds"
+	TmplDisclaimer       = "/index/disclaimer"
+	TmplFeed             = "/index/feed"
+	TmplGuides           = "/index/guides"
+	TmplIntroducing      = "/index/introducing-memo"
+	TmplNeedFunds        = "/index/need-funds"
+	TmplOpenSource       = "/index/open-source"
+	TmplProtocol         = "/index/protocol"
+	TmplStats            = "/index/stats"
+)
+
+const (
 	UrlSignup       = "/signup"
 	UrlSignupSubmit = "/signup-submit"
 	UrlLogin        = "/login"
 	UrlLoginSubmit  = "/login-submit"
 	UrlLogout       = "/logout"
-	UrlProtocol     = "/protocol"
-	UrlGuides       = "/guides"
-	UrlDisclaimer   = "/disclaimer"
-	UrlIntroducing  = "/introducing-memo"
-	UrlOpenSource   = "/open-sourcing-memo"
-	UrlNeedFunds    = "/need-funds"
-	UrlNewPosts     = "/new-posts"
-	UrlStats        = "/stats"
-	UrlFeed         = "/feed"
-	UrlAbout        = "/about"
-	UrlNotFound     = "/404"
+
+	TmplSignup = "/auth/signup"
+	TmplLogin  = "/auth/login"
 )
 
 const (
@@ -66,6 +87,7 @@ const (
 	UrlProfileFollowers       = "/profile/followers"
 	UrlProfileFollowing       = "/profile/following"
 	UrlProfileSettings        = "/settings"
+	UrlProfileAccount         = "/account"
 	UrlProfileCoins           = "/coins"
 	UrlProfileSettingsSubmit  = "/settings-submit"
 	UrlProfileNotifications   = "/notifications"
@@ -73,6 +95,7 @@ const (
 
 	TmplProfiles             = "/profile/all"
 	TmplProfileSettings      = "/profile/settings"
+	TmplProfileAccount       = "/profile/account"
 	TmplProfileCoins         = "/profile/coins"
 	TmplProfileNotifications = "/profile/notifications"
 )

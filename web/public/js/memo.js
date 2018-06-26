@@ -43,13 +43,13 @@
 
             var message = $message.val();
             if (maxPostBytes - MemoApp.utf8ByteLength(message) < 0) {
-                alert("Maximum post message is " + maxPostBytes + " bytes. Note that some characters are more than 1 byte." +
+                MemoApp.AddAlert("Maximum post message is " + maxPostBytes + " bytes. Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
             }
 
             if (message.length === 0) {
-                alert("Must enter a message.");
+                MemoApp.AddAlert("Must enter a message.");
                 return;
             }
 
@@ -70,7 +70,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -78,16 +78,19 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -122,13 +125,13 @@
 
             var name = $name.val();
             if (maxNameBytes - MemoApp.utf8ByteLength(name) < 0) {
-                alert("Maximum name is " + maxNameBytes + " bytes. Note that some characters are more than 1 byte." +
+                MemoApp.AddAlert("Maximum name is " + maxNameBytes + " bytes. Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
             }
 
             if (name.length === 0) {
-                alert("Must enter a name.");
+                MemoApp.AddAlert("Must enter a name.");
                 return;
             }
 
@@ -149,7 +152,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -157,16 +160,19 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -205,20 +211,20 @@
 
             var url = $url.val();
             if (maxPostBytes - MemoApp.utf8ByteLength(url) < 0) {
-                alert("Maximum name is " + maxNameBytes + " bytes. Note that some characters are more than 1 byte." +
+                MemoApp.AddAlert("Maximum name is " + maxNameBytes + " bytes. Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
             }
 
             if (url.length === 0) {
-                alert("Must enter a URL.");
+                MemoApp.AddAlert("Must enter a URL.");
                 return;
             }
             var imgurJpg = /^https:\/\/i\.imgur\.com\/[a-zA-Z0-9]+\.(jpg|png)$/;
             var imgurLink = /^https:\/\/imgur\.com\/[a-zA-Z0-9]+$/;
             var imgurJpgErroMsg = "Please enter an imgur URL in the form https://imgur.com/abcd or https://i.imgur.com/abcd.jpg";
-            if(!imgurJpg.test(url) && !imgurLink.test(url)) {
-                alert(imgurJpgErroMsg);
+            if (!imgurJpg.test(url) && !imgurLink.test(url)) {
+                MemoApp.AddAlert(imgurJpgErroMsg);
                 return;
             }
 
@@ -244,7 +250,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         $submit.prop('disabled', false);
                         $url.prop('disabled', false);
                         $broadcasting.addClass('hidden');
@@ -256,17 +262,20 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     } else if (xhr.status === 422) {
-                        alert(imgurJpgErroMsg);
+                        MemoApp.AddAlert(imgurJpgErroMsg);
                     } else {
                         var errorMessage =
                             "Error with request (response code " + xhr.status + "):\n" +
                             (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                             "If this problem persists, try refreshing the page.";
-                        alert(errorMessage);
+                        MemoApp.AddAlert(errorMessage);
                     }
                     $submit.prop('disabled', false);
                     $url.prop('disabled', false);
@@ -307,7 +316,7 @@
 
             var profile = $profile.val();
             if (maxProfileTextBytes - MemoApp.utf8ByteLength(profile) < 0) {
-                alert("Maximum profile text is " + maxProfileTextBytes + " bytes. Note that some characters are more than 1 byte." +
+                MemoApp.AddAlert("Maximum profile text is " + maxProfileTextBytes + " bytes. Note that some characters are more than 1 byte." +
                     " Emojis are usually 4 bytes, for example.");
                 return;
             }
@@ -335,7 +344,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -343,16 +352,19 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -370,7 +382,7 @@
 
             var address = $form.find("[name=address]").val();
             if (address.length === 0) {
-                alert("Form error, address not set.");
+                MemoApp.AddAlert("Form error, address not set.");
                 return;
             }
 
@@ -391,7 +403,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -399,16 +411,19 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -427,7 +442,7 @@
 
             var address = $form.find("[name=address]").val();
             if (address.length === 0) {
-                alert("Form error, address not set.");
+                MemoApp.AddAlert("Form error, address not set.");
                 return;
             }
 
@@ -448,7 +463,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (txHash === undefined || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -456,16 +471,19 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -483,13 +501,13 @@
 
             var txHash = $form.find("[name=tx-hash]").val();
             if (txHash.length === 0) {
-                alert("Form error, tx hash not set.");
+                MemoApp.AddAlert("Form error, tx hash not set.");
                 return;
             }
 
             var tip = $form.find("[name=tip]").val();
             if (tip.length !== 0 && tip < 546) {
-                alert("Must enter a tip greater than 546 (the minimum dust limit).");
+                MemoApp.AddAlert("Must enter a tip greater than 546 (the minimum dust limit).");
                 return;
             }
 
@@ -511,7 +529,7 @@
                 success: function (txHash) {
                     submitting = false;
                     if (!txHash || txHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + MemoApp.URL.MemoWait + "/" + txHash
@@ -519,31 +537,35 @@
                 error: function (xhr) {
                     submitting = false;
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
     };
     /**
      * @param {string} txHash
+     * @param {string} formHash
      * @param {boolean} threaded
      */
-    MemoApp.Form.ReplyMemo = function (txHash, threaded) {
-        var $post = $("#post-" + txHash);
-        var $form = $("#reply-form-" + txHash);
-        var $replyCancel = $("#reply-cancel-" + txHash);
+    MemoApp.Form.ReplyMemo = function (txHash, formHash, threaded) {
+        var $post = $("#post-" + formHash);
+        var $form = $("#reply-form-" + formHash);
+        var $replyCancel = $("#reply-cancel-" + formHash);
         var $message = $form.find("[name=message]");
         var $msgByteCount = $form.find(".message-byte-count");
-        var $replyLink = $("#reply-link-" + txHash);
+        var $replyLink = $("#reply-link-" + formHash);
         var $broadcasting = $post.find(".broadcasting:eq(0)");
         var $creating = $post.find(".creating:eq(0)");
         $message.on("input", function () {
@@ -560,7 +582,7 @@
             }
         }
 
-        $replyCancel.click(function(e) {
+        $replyCancel.click(function (e) {
             e.preventDefault();
             $form.addClass("hidden");
         });
@@ -575,13 +597,13 @@
 
             var message = $message.val();
             if (maxReplyBytes - MemoApp.utf8ByteLength(message) < 0) {
-                alert("Maximum reply message is " + maxReplyBytes + " bytes. Note that some characters are more than 1 byte. " +
+                MemoApp.AddAlert("Maximum reply message is " + maxReplyBytes + " bytes. Note that some characters are more than 1 byte. " +
                     "Emojis are usually 4 bytes, for example.");
                 return;
             }
 
             if (message.length === 0) {
-                alert("Must enter a message.");
+                MemoApp.AddAlert("Must enter a message.");
                 return;
             }
 
@@ -607,7 +629,7 @@
                 success: function (replyTxHash) {
                     submitting = false;
                     if (!replyTxHash || replyTxHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     $creating.addClass("hidden");
@@ -630,7 +652,7 @@
                                     $("#post-" + txHash).replaceWith(html);
                                 },
                                 error: function (xhr) {
-                                    alert("error getting post via ajax (status: " + xhr.status + ")");
+                                    MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
                                 }
                             });
                         },
@@ -643,22 +665,23 @@
                 },
                 error: function (xhr) {
                     submitting = false;
+                    $creating.addClass("hidden");
+                    $replyLink.show();
+                    $form.show();
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
                     } else if (xhr.status === 402) {
-                        alert("Please make sure your account has enough funds. " +
-                            "Unable to find a spendable transaction output. " +
-                            "You may need to consolidate dust.")
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });
@@ -683,7 +706,7 @@
             e.preventDefault();
             var txHash = $form.find("[name=tx-hash]").val();
             if (txHash.length === 0) {
-                alert("Form error, tx hash not set.");
+                MemoApp.AddAlert("Form error, tx hash not set.");
                 return;
             }
 
@@ -695,7 +718,7 @@
                 },
                 success: function (url) {
                     if (!url || url.length === 0) {
-                        alert("Error with broadcast. Please try again.");
+                        MemoApp.AddAlert("Error with broadcast. Please try again.");
                         return
                     }
                     window.location = MemoApp.GetBaseUrl() + url
@@ -714,27 +737,28 @@
     };
 
     /**
-     * @param {string} txHash
+     * @param {string} formHash
      */
-    MemoApp.Form.ReplyLink = function(txHash) {
-        var $replyLink = $("#reply-link-" + txHash);
-        var $replyForm = $("#reply-form-" + txHash);
-        $replyLink.click(function(e) {
+    MemoApp.Form.ReplyLink = function (formHash) {
+        var $replyLink = $("#reply-link-" + formHash);
+        var $replyForm = $("#reply-form-" + formHash);
+        $replyLink.click(function (e) {
             e.preventDefault();
             $replyForm.removeClass("hidden");
         });
     };
 
     /**
-     * @param {jQuery} $like
      * @param {string} txHash
+     * @param {string} formHash
      * @param {boolean} threaded
      */
-    MemoApp.Form.NewLike = function ($like, txHash, threaded) {
-        var $likeLink = $("#like-link-" + txHash);
-        var $likeCancel = $("#like-cancel-" + txHash);
-        var $likeInfo = $("#like-info-" + txHash);
-        var $likeForm = $("#like-form-" + txHash);
+    MemoApp.Form.NewLike = function (txHash, formHash, threaded) {
+        var $like = $("#like-" + formHash);
+        var $likeLink = $("#like-link-" + formHash);
+        var $likeCancel = $("#like-cancel-" + formHash);
+        var $likeInfo = $("#like-info-" + formHash);
+        var $likeForm = $("#like-form-" + formHash);
         var $creating = $like.parent().find(".creating:eq(0)");
         var $broadcasting = $like.parent().find(".broadcasting:eq(0)");
 
@@ -758,7 +782,7 @@
 
             var tip = $likeForm.find("[name=tip]").val();
             if (tip.length !== 0 && tip < 546) {
-                alert("Must enter a tip greater than 546 (the minimum dust limit).");
+                MemoApp.AddAlert("Must enter a tip greater than 546 (the minimum dust limit).");
                 return;
             }
             $creating.removeClass("hidden");
@@ -782,7 +806,7 @@
                 success: function (likeTxHash) {
                     submitting = false;
                     if (!likeTxHash || likeTxHash.length === 0) {
-                        alert("Server error. Please try refreshing the page.");
+                        MemoApp.AddAlert("Server error. Please try refreshing the page.");
                         return
                     }
                     $creating.addClass("hidden");
@@ -802,10 +826,10 @@
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
                                 success: function (html) {
-                                    $("#post-" + txHash).replaceWith(html);
+                                    $("#post-" + formHash).replaceWith(html);
                                 },
                                 error: function (xhr) {
-                                    alert("error getting post via ajax (status: " + xhr.status + ")");
+                                    MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
                                 }
                             });
                         },
@@ -818,22 +842,23 @@
                 },
                 error: function (xhr) {
                     submitting = false;
+                    $creating.addClass("hidden");
+                    $broadcasting.addClass("hidden");
+                    $likeForm.show();
                     if (xhr.status === 401) {
-                        alert("Error unlocking key. " +
+                        MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
                     } else if (xhr.status === 402) {
-                        alert("Please make sure your account has enough funds. " +
-                            "Unable to find a spendable transaction output. " +
-                            "You may need to consolidate dust.");
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
                         (xhr.responseText !== "" ? xhr.responseText + "\n" : "") +
                         "If this problem persists, try refreshing the page.";
-                    alert(errorMessage);
+                    MemoApp.AddAlert(errorMessage);
                 }
             });
         });

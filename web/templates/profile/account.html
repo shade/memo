@@ -29,16 +29,6 @@
     <a class="btn btn-default" href="key/delete-account">{{ T "Delete_Account" }}</a>
 </div>
 
-{{ if and (not .Posts) (not (eq .Profile.Balance 0)) }}
-<h3>Feed Empty</h3>
-<p>Start following others to see their posts here</p>
-{{ end }}
-
-{{ if .Posts }}
-<h3 class="center">Feed</h3>
-{{ template "snippets/feed.html" . }}
-{{ end }}
-
 <br/>
 
 {{ template "snippets/footer.html" . }}

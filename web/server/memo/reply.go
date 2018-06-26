@@ -1,13 +1,12 @@
 package memo
 
 import (
-	"fmt"
 	"github.com/jchavannes/btcd/chaincfg/chainhash"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
-	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/bitcoin/transaction/build"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/mutex"
 	"github.com/memocash/memo/app/profile"
@@ -113,35 +112,22 @@ var replySubmitRoute = web.Route{
 			return
 		}
 
-		address := key.GetAddress()
-		var fee = int64(memo.MaxTxFee - memo.MaxReplySize + len([]byte(message)))
-		var minInput = fee + transaction.DustMinimumOutput
+		pkHash := privateKey.GetPublicKey().GetAddress().GetScriptAddress()
+		mutex.Lock(pkHash)
 
-		mutex.Lock(key.PkHash)
-		txOut, err := db.GetSpendableTxOut(key.PkHash, minInput)
+		tx, err := build.MemoReply(txHash.CloneBytes(), message, privateKey)
 		if err != nil {
-			mutex.Unlock(key.PkHash)
-			r.Error(jerr.Get("error getting spendable tx out", err), http.StatusPaymentRequired)
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
+			mutex.Unlock(pkHash)
+			r.Error(jerr.Get("error building reply tx", err), statusCode)
 			return
 		}
 
-		tx, err := transaction.Create([]*db.TransactionOut{txOut}, privateKey, []transaction.SpendOutput{{
-			Type:    transaction.SpendOutputTypeP2PK,
-			Address: address,
-			Amount:  txOut.Value - fee,
-		}, {
-			Type:    transaction.SpendOutputTypeMemoReply,
-			RefData: txHash.CloneBytes(),
-			Data:    []byte(message),
-		}})
-		if err != nil {
-			mutex.Unlock(key.PkHash)
-			r.Error(jerr.Get("error creating tx", err), http.StatusInternalServerError)
-			return
-		}
-
-		fmt.Println(transaction.GetTxInfo(tx))
-		transaction.QueueTx(tx)
-		r.Write(tx.TxHash().String())
+		transaction.GetTxInfo(tx).Print()
+		transaction.QueueTx(tx.MsgTx)
+		r.Write(tx.MsgTx.TxHash().String())
 	},
 }

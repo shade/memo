@@ -9,7 +9,7 @@
             e.preventDefault();
             var password = $form.find("[name=password]").val();
             if (password.length === 0) {
-                alert("Must enter a password.");
+                MemoApp.AddAlert("Must enter a password.");
                 return;
             }
 
@@ -28,7 +28,7 @@
                  */
                 error: function (xhr) {
                     if (xhr.status === 401) {
-                        alert("Error unlocking. Please try again.");
+                        MemoApp.AddAlert("Error unlocking. Please try again.");
                     } else {
                         MemoApp.Form.ErrorHandler(xhr);
                     }
@@ -45,21 +45,21 @@
             e.preventDefault();
             var oldPassword = $form.find("[name=old-password]").val();
             if (oldPassword.length === 0) {
-                alert("Must enter a password.");
+                MemoApp.AddAlert("Must enter a password.");
                 return;
             }
             var newPassword = $form.find("[name=new-password]").val();
             if (newPassword.length === 0) {
-                alert("Must enter a new password.");
+                MemoApp.AddAlert("Must enter a new password.");
                 return;
             }
             var retypeNewPassword = $form.find("[name=retype-new-password]").val();
             if (retypeNewPassword.length === 0) {
-                alert("Must retype new password.");
+                MemoApp.AddAlert("Must retype new password.");
                 return;
             }
             if (retypeNewPassword !== newPassword) {
-                alert("Passwords do not match.");
+                MemoApp.AddAlert("Passwords do not match.");
                 return;
             }
 
@@ -79,7 +79,7 @@
                  */
                 error: function (xhr) {
                     if (xhr.status === 401) {
-                        alert("Error unlocking. Please try again.");
+                        MemoApp.AddAlert("Error unlocking. Please try again.");
                     } else {
                         MemoApp.Form.ErrorHandler(xhr);
                     }
@@ -96,16 +96,16 @@
             e.preventDefault();
             var password = $form.find("[name=password]").val();
             if (password.length === 0) {
-                alert("Must enter your password.");
+                MemoApp.AddAlert("Must enter your password.");
                 return;
             }
             var confirmText = $form.find("[name=confirm]").val();
             if (confirmText.length === 0) {
-                alert("Must confirm account deletion.");
+                MemoApp.AddAlert("Must confirm account deletion.");
                 return;
             }
             if ("delete account" !== confirmText.toLowerCase()) {
-                alert("Please type 'DELETE ACCOUNT' to confirm deletion.");
+                MemoApp.AddAlert("Please type 'DELETE ACCOUNT' to confirm deletion.");
                 return;
             }
 
@@ -131,7 +131,7 @@
                  */
                 error: function (xhr) {
                     if (xhr.status === 401) {
-                        alert("Error with password. Please try again.");
+                        MemoApp.AddAlert("Error with password. Please try again.");
                     } else {
                         MemoApp.Form.ErrorHandler(xhr);
                     }

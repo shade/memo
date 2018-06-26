@@ -26,7 +26,6 @@
             MemoApp.InitCsrf("{{ .CsrfToken }}");
             MemoApp.SetBaseUrl("{{ .BaseUrl }}");
             MemoApp.Form.LogoutButton($("#header-logout"));
-            MemoApp.SetLanguageEvents();
         });
     </script>
 </head>
@@ -102,6 +101,7 @@
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a href="account">{{ T "Account" }}</a></li>
                         <li><a href="profile/{{ .UserAddress }}">{{ T "profile" }}</a></li>
                         <li><a href="settings">{{ T "Settings" }}</a></li>
                         <li class="divider"></li>
@@ -113,6 +113,8 @@
             </ul>
         {{ end }}
         </div>
+    </div>
+    <div class="alert-banner">
     </div>
 </nav>
 {{ end }}

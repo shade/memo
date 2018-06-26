@@ -8,26 +8,26 @@ import (
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/rep"
 	"github.com/memocash/memo/app/util"
-	"regexp"
+	"github.com/memocash/memo/app/util/format"
 	"strings"
 	"time"
 )
 
 type Post struct {
-	Name          string
-	Memo          *db.MemoPost
-	Parent        *Post
-	Likes         []*Like
-	HasLiked      bool
-	SelfPkHash    []byte
-	ReplyCount    uint
-	Replies       []*Post
-	Reputation    *rep.Reputation
-	ShowMedia     bool
-	Poll          *Poll
-	VoteQuestion  *db.MemoPost
-	VoteOption    *db.MemoPollOption
-	ProfilePic    *db.MemoSetPic
+	Name         string
+	Memo         *db.MemoPost
+	Parent       *Post
+	Likes        []*Like
+	HasLiked     bool
+	SelfPkHash   []byte
+	ReplyCount   uint
+	Replies      []*Post
+	Reputation   *rep.Reputation
+	ShowMedia    bool
+	Poll         *Poll
+	VoteQuestion *db.MemoPost
+	VoteOption   *db.MemoPollOption
+	ProfilePic   *db.MemoSetPic
 }
 
 func (p Post) IsSelf() bool {
@@ -52,12 +52,13 @@ func (p Post) GetTotalTip() int64 {
 func (p Post) GetMessage() string {
 	var msg = p.Memo.Message
 	if p.ShowMedia {
-		msg = addYoutubeVideos(msg)
-		msg = addImgurImages(msg)
-		msg = addGiphyImages(msg)
-		msg = addTwitterImages(msg)
+		msg = format.AddYoutubeVideos(msg)
+		msg = format.AddImgurImages(msg)
+		msg = format.AddGiphyImages(msg)
+		msg = format.AddTwitterImages(msg)
 	}
-	msg = addLinks(msg)
+	msg = strings.TrimSpace(msg)
+	msg = format.AddLinks(msg)
 	return msg
 }
 
@@ -70,59 +71,6 @@ func (p Post) IsPoll() bool {
 		return true
 	}
 	return false
-}
-
-func addYoutubeVideos(msg string) string {
-	var re = regexp.MustCompile(`(http[s]?://youtu\.be/)([A-Za-z0-9_\-\?=]+)`)
-	msg = re.ReplaceAllString(msg, `<div class="video-wrapper"><div class="video-container"><iframe frameborder="0" src="https://www.youtube.com/embed/$2"></iframe></div></div>`)
-	re = regexp.MustCompile(`(http[s]?://y2u\.be/)([A-Za-z0-9_\-\?=]+)`)
-	msg = re.ReplaceAllString(msg, `<div class="video-wrapper"><div class="video-container"><iframe frameborder="0" src="https://www.youtube.com/embed/$2"></iframe></div></div>`)
-	re = regexp.MustCompile(`(http[s]?://(www\.)?youtube\.com/watch\?v=)([A-Za-z0-9_\-\?=]+)`)
-	msg = re.ReplaceAllString(msg, `<div class="video-wrapper"><div class="video-container"><iframe frameborder="0" src="https://www.youtube.com/embed/$3"></iframe></div></div>`)
-	return msg
-}
-
-func addImgurImages(msg string) string {
-	// Album link
-	if strings.Contains(msg, "imgur.com/a/") || strings.Contains(msg, "imgur.com/gallery/") {
-		return msg
-	}
-	containsRex := regexp.MustCompile(`\.jpg|\.jpeg|\.png|\.gif|\.gifv`)
-	if strings.Contains(msg, ".mp4") {
-		var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?imgur\.com/)([^\s]*)`)
-		msg = re.ReplaceAllString(msg, `<div class="video-wrapper"><div class="video-container"><video controls><source src="https://i.imgur.com/$3" type="video/mp4"></video></div></div>`)
-	} else if !containsRex.MatchString(msg) {
-		var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?imgur\.com/)([^\s]*)`)
-		msg = re.ReplaceAllString(msg, `<a href="https://i.imgur.com/$3.jpg" target="_blank"><img class="imgur" src="https://i.imgur.com/$3.jpg"/></a>`)
-	} else {
-		var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?imgur\.com/)([^\s]*)`)
-		msg = re.ReplaceAllString(msg, `<a href="https://i.imgur.com/$3" target="_blank"><img class="imgur" src="https://i.imgur.com/$3"/></a>`)
-	}
-	return msg
-}
-
-func addGiphyImages(msg string) string {
-	if strings.Contains(msg, "giphy.com/gifs/") {
-		var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?giphy.com/gifs/[a-z-]*-([A-Za-z0-9]+))`)
-		msg = re.ReplaceAllString(msg, `<a href="https://i.giphy.com/$3.gif" target="_blank"><img class="imgur" src="https://i.giphy.com/$3.gif"/></a>`)
-	} else {
-		var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?giphy\.com/)([^\s]*)`)
-		msg = re.ReplaceAllString(msg, `<a href="https://i.giphy.com/$3" target="_blank"><img class="imgur" src="https://i.giphy.com/$3"/></a>`)
-	}
-	return msg
-}
-
-func addTwitterImages(msg string) string {
-	var re = regexp.MustCompile(`(http[s]?://pbs.twimg.com/media/([A-Za-z0-9_-]+)).jpg`)
-	msg = re.ReplaceAllString(msg, `<a href="https://pbs.twimg.com/media/$2.jpg" target="_blank"><img class="imgur" src="https://pbs.twimg.com/media/$2.jpg"/></a>`)
-	return msg
-}
-
-func addLinks(msg string) string {
-	// Explanation: https://github.com/jchavannes/memo/pull/57
-	var re = regexp.MustCompile(`(^|[\s(])(http[s]?://[^\s]*[^.?!,)\s])`)
-	s := re.ReplaceAllString(msg, `$1<a href="$2" target="_blank">$2</a>`)
-	return strings.Replace(s, "\n", "<br/>", -1)
 }
 
 func (p Post) GetTimeString(timezone string) string {
@@ -148,8 +96,7 @@ func (p Post) GetTimeString(timezone string) string {
 
 func (p Post) GetTimeAgo() string {
 	if p.Memo.Block != nil && p.Memo.Block.Timestamp.Before(p.Memo.CreatedAt) {
-		ts := p.Memo.Block.Timestamp
-		return util.GetTimeAgo(ts)
+		return util.GetTimeAgo(p.Memo.Block.Timestamp)
 	} else {
 		return util.GetTimeAgo(p.Memo.CreatedAt)
 	}
@@ -308,6 +255,91 @@ func GetPostByTxHash(txHash []byte, selfPkHash []byte) (*Post, error) {
 		ReplyCount: cnt,
 	}
 	return post, nil
+}
+
+func GetPostsByTxHashes(txHashes [][]byte, selfPkHash []byte) ([]*Post, error) {
+	memoPosts, err := db.GetPostsByTxHashes(txHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting memo posts", err)
+	}
+	var namePkHashes [][]byte
+	var pollVoteTxHashes [][]byte
+	for _, memoPost := range memoPosts {
+		namePkHashes = append(namePkHashes, memoPost.PkHash)
+		if memoPost.IsVote {
+			pollVoteTxHashes = append(pollVoteTxHashes, memoPost.TxHash)
+		}
+	}
+	memoPollVotes, err := db.GetMemoPollVotesByTxHashes(pollVoteTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting poll votes by tx hashes", err)
+	}
+	var pollOptionTxHashes [][]byte
+	for _, memoPollVote := range memoPollVotes {
+		pollOptionTxHashes = append(pollOptionTxHashes, memoPollVote.OptionTxHash)
+	}
+	memoPollOptions, err := db.GetMemoPollOptionsByTxHashes(pollOptionTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting poll options by tx hashes", err)
+	}
+	var pollTxHashes [][]byte
+	for _, memoPollOption := range memoPollOptions {
+		pollTxHashes = append(pollTxHashes, memoPollOption.PollTxHash)
+	}
+	memoPollQuestions, err := db.GetPostsByTxHashes(pollTxHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting poll questions for tx hashes", err)
+	}
+	setNames, err := db.GetNamesForPkHashes(namePkHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting names for hashes", err)
+	}
+	txHashCounts, err := db.GetPostReplyCounts(txHashes)
+	if err != nil {
+		return nil, jerr.Get("error getting post reply counts", err)
+	}
+	var posts []*Post
+	for _, memoPost := range memoPosts {
+		var name string
+		var replyCount uint
+		var voteQuestion *db.MemoPost
+		var voteOption *db.MemoPollOption
+		for _, setName := range setNames {
+			if bytes.Equal(setName.PkHash, memoPost.PkHash) {
+				name = setName.Name
+			}
+		}
+		for _, txHashCount := range txHashCounts {
+			if bytes.Equal(txHashCount.TxHash, memoPost.TxHash) {
+				replyCount = txHashCount.Count
+			}
+		}
+		if memoPost.IsVote {
+			for _, memoPollVote := range memoPollVotes {
+				if bytes.Equal(memoPollVote.TxHash, memoPost.TxHash) {
+					for _, memoPollOption := range memoPollOptions {
+						if bytes.Equal(memoPollOption.TxHash, memoPollVote.OptionTxHash) {
+							voteOption = memoPollOption
+							for _, memoPollQuestion := range memoPollQuestions {
+								if bytes.Equal(memoPollQuestion.TxHash, memoPollOption.PollTxHash) {
+									voteQuestion = memoPollQuestion
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		posts = append(posts, &Post{
+			Name:         name,
+			Memo:         memoPost,
+			SelfPkHash:   selfPkHash,
+			ReplyCount:   replyCount,
+			VoteQuestion: voteQuestion,
+			VoteOption:   voteOption,
+		})
+	}
+	return posts, nil
 }
 
 func AttachRepliesToPost(post *Post, offset uint) error {

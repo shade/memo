@@ -1,6 +1,7 @@
 {{ $tz := .TimeZone }}
 {{ $settings := .UserSettings }}
-<div class="post" id="post-{{ .Post.Memo.GetTransactionHashString }}">
+{{ $postUnique := getUnique 6 }}
+<div class="post" id="post-{{ $postUnique }}">
     <div class="post-header">
         <p class="name">
         {{ if .Post.ProfilePic }}
@@ -89,7 +90,7 @@
         <i>
         {{ if .Post.Likes }}
            {{ len .Post.Likes }} {{ T "like" (len .Post.Likes) }} -
-            <a href="#" id="show-hide-likes-{{ .Post.Memo.GetTransactionHashString }}">{{ T "show" | UcFirst }}</a>
+            <a href="#" id="show-hide-likes-{{ $postUnique }}">{{ T "show" | UcFirst }}</a>
             (tip: {{ formatBigInt .Post.GetTotalTip }} satoshis)
         {{ end }}
         </i>
@@ -97,7 +98,7 @@
 {{ end }}
 
 {{ if .Post.Likes }}
-    <div id="likes-{{ .Post.Memo.GetTransactionHashString }}" style="display:none">
+    <div id="likes-{{ $postUnique }}" style="display:none">
         <h3>{{ T "like" 2 | UcFirst }}</h3>
 
         <ul>
@@ -125,42 +126,42 @@
 
     <div class="actions">
     {{ if .Post.Memo.Topic }}
-        <a id="view-topic-link-{{ .Post.Memo.GetTransactionHashString }}" class="btn btn-sm btn-default"
+        <a id="view-topic-link-{{ $postUnique }}" class="btn btn-sm btn-default"
            href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">
             <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>{{ T "view_topic" | UcFirst }}
         </a>
     {{ end }}
     {{ if .Post.IsLoggedIn }}
         {{ if or (.ShowReply) (not .Post.Memo.Topic) }}
-        <a id="reply-link-{{ .Post.Memo.GetTransactionHashString }}" class="btn btn-sm btn-default"
+        <a id="reply-link-{{ $postUnique }}" class="btn btn-sm btn-default"
            href="memo/reply/{{ .Post.Memo.GetTransactionHashString }}">
             <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>{{ T "reply_verb" | Title }}
         </a>
        {{ end }}
         <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
         <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
-        <div class="like" id="like-{{ .Post.Memo.GetTransactionHashString }}">
-            <span class="like-info" id="like-info-{{ .Post.Memo.GetTransactionHashString }}">
-                <a class="btn btn-sm btn-default like-link" id="like-link-{{ .Post.Memo.GetTransactionHashString }}"
+        <div class="like" id="like-{{ $postUnique }}">
+            <span class="like-info" id="like-info-{{ $postUnique }}">
+                <a class="btn btn-sm btn-default like-link" id="like-link-{{ $postUnique }}"
                    href="#"><span class="glyphicon glyphicon-heart{{ if not .Post.HasLiked }}-empty{{ end }}"
                                   aria-hidden="true"></span>{{ T "like" 1 | UcFirst }}</a>
             </span>
-            <form class="like-form hidden form-inline" id="like-form-{{ .Post.Memo.GetTransactionHashString }}">
-                <input id="tx-hash-{{ .Post.Memo.GetTransactionHashString }}" type="hidden" name="tx-hash"
+            <form class="like-form hidden form-inline" id="like-form-{{ $postUnique }}">
+                <input id="tx-hash-{{ $postUnique }}" type="hidden" name="tx-hash"
                        value="{{ .Post.Memo.GetTransactionHashString }}"/>
                 <label for="tip-{{ .Post.Memo.GetTransactionHashString }}">Tip</label>
-                <input id="tip-{{ .Post.Memo.GetTransactionHashString }}" type="text" name="tip"
+                <input id="tip-{{ $postUnique }}" type="text" name="tip"
                        class="form-control input-sm"
                        placeholder="0" value="{{ .UserSettings.GetDefaultTipString }}"/>
                 <input class="btn btn-sm btn-primary" type="submit" value="Like">
                 <a href="#" class="like-cancel btn btn-sm btn-default"
-                   id="like-cancel-{{ .Post.Memo.GetTransactionHashString }}">Cancel</a>
+                   id="like-cancel-{{ $postUnique }}">Cancel</a>
             </form>
         </div>
     {{ end }}
     </div>
 
-{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" true }}
+{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" true "FormHash" $postUnique }}
 
 {{ if .Post.Replies }}
 
@@ -197,8 +198,8 @@
         $(".identicon-{{ .Post.Parent.Memo.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
     {{ end }}
     {{ if .Post.IsLoggedIn }}
-        MemoApp.Form.ReplyLink("{{ .Post.Memo.GetTransactionHashString }}");
-        MemoApp.Form.NewLike($("#like-{{ .Post.Memo.GetTransactionHashString }}"), "{{ .Post.Memo.GetTransactionHashString }}", true);
+        MemoApp.Form.ReplyLink("{{ $postUnique }}");
+        MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", true);
     {{ end }}
     })();
 </script>

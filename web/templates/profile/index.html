@@ -10,6 +10,7 @@
     <a {{ if eq $pageType "all" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=all">{{ T "All Activity" }}</a>
     <a {{ if eq $pageType "posts" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=posts">{{ T "Posts" }}</a>
     <a {{ if eq $pageType "likes" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=likes">{{ T "Likes" }}</a>
+    <a {{ if eq $pageType "polls" }}class="sel"{{ end }} href="/profile/{{ .Profile.GetAddressString }}?p=polls">{{ T "Polls" }}</a>
 </p>
 
 {{ template "feed/items.html" . }}

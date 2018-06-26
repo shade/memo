@@ -17,12 +17,14 @@ import (
 const (
 	PageAll   = "all"
 	PagePosts = "posts"
+	PagePolls = "polls"
 	PageLikes = "likes"
 )
 
 var profilePages = []string{
 	PageAll,
 	PagePosts,
+	PagePolls,
 	PageLikes,
 }
 
@@ -61,6 +63,10 @@ var viewRoute = web.Route{
 			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), nil)
 		case PagePosts:
 			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), db.PostEvents)
+		case PagePolls:
+			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), []db.FeedEventType{
+				db.FeedEventCreatePoll,
+			})
 		case PageLikes:
 			events, err = feed_event.GetUserEvents(userId, userPkHash, pkHash, uint(offset), []db.FeedEventType{
 				db.FeedEventLike,
@@ -112,7 +118,6 @@ var viewRoute = web.Route{
 
 		r.Helper["Profile"] = pf
 		r.Helper["PageType"] = pageType
-
 		r.Helper["OffsetLink"] = fmt.Sprintf("%s/%s?p=%s", res.UrlProfileView, address.GetEncoded(), pageType)
 		r.Helper["Title"] = fmt.Sprintf("Memo - %s's Profile", pf.Name)
 		res.SetPageAndOffset(r, offset)

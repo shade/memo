@@ -1,4 +1,5 @@
-<div class="post rounded box-shadow" id="post-{{ .Post.Memo.GetTransactionHashString }}">
+{{ $postUnique := getUnique 6 }}
+<div class="post rounded box-shadow" id="post-{{ $postUnique }}">
 {{ if .FeedItem }}
 {{ if .FeedItem.IsLike }}
     <div class="post-header">
@@ -11,7 +12,7 @@
             </a>
         {{ else }}
             <span class="identicon-{{ .FeedItem.GetAddressString }}">
-                <img class="identicon"/>
+                <img class="identicon" src=""/>
             </span>
         {{ end }}
             <a class="profile" href="profile/{{ .FeedItem.GetAddressString }}">{{ $len := len .FeedItem.Name }}
@@ -176,34 +177,34 @@
 {{ if not .Compress }}
     <div class="actions">
     {{ if .Post.Memo.Topic }}
-        <a id="view-topic-link-{{ .Post.Memo.GetTransactionHashString }}" class="btn btn-sm btn-default"
+        <a id="view-topic-link-{{ $postUnique }}" class="btn btn-sm btn-default"
            href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">
             <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>{{ T "view_topic" | UcFirst }}
         </a>
     {{ end }}
     {{ if .Post.IsLoggedIn }}
     {{ if not .Post.Memo.Topic }}
-        <a id="reply-link-{{ .Post.Memo.GetTransactionHashString }}" class="btn btn-sm btn-default"
+        <a id="reply-link-{{ $postUnique }}" class="btn btn-sm btn-default"
            href="memo/reply/{{ .Post.Memo.GetTransactionHashString }}">
             <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>{{ T "reply_verb" | Title }}
         </a>
     {{ end }}
         <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
         <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
-        <div class="like" id="like-{{ .Post.Memo.GetTransactionHashString }}">
-            <span class="like-info" id="like-info-{{ .Post.Memo.GetTransactionHashString }}">
-                <a class="btn btn-sm btn-default like-link" id="like-link-{{ .Post.Memo.GetTransactionHashString }}"
+        <div class="like" id="like-{{ $postUnique }}">
+            <span class="like-info" id="like-info-{{ $postUnique }}">
+                <a class="btn btn-sm btn-default like-link" id="like-link-{{ $postUnique }}"
                    href="#"><span class="glyphicon glyphicon-heart{{ if not .Post.HasLiked }}-empty{{ end }}"
                                   aria-hidden="true"></span>{{ T "like" 1 | UcFirst }}</a>
             </span>
-            <form class="like-form hidden form-inline" id="like-form-{{ .Post.Memo.GetTransactionHashString }}">
-                <label for="tip-{{ .Post.Memo.GetTransactionHashString }}">Tip</label>
-                <input id="tip-{{ .Post.Memo.GetTransactionHashString }}" type="text" name="tip"
+            <form class="like-form hidden form-inline" id="like-form-{{ $postUnique }}">
+                <label for="tip-{{ $postUnique }}">Tip</label>
+                <input id="tip-{{ $postUnique }}" type="text" name="tip"
                        class="form-control input-sm"
                        placeholder="0" value="{{ .UserSettings.GetDefaultTipString }}"/>
                 <input class="btn btn-sm btn-primary" type="submit" value="Like">
                 <a href="#" class="like-cancel btn btn-sm btn-default"
-                   id="like-cancel-{{ .Post.Memo.GetTransactionHashString }}">Cancel</a>
+                   id="like-cancel-{{ $postUnique }}">Cancel</a>
             </form>
         </div>
     {{ end }}
@@ -211,7 +212,7 @@
     </div>
 {{ end }}
 
-{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false }}
+{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique }}
 
 </div>
 
@@ -238,8 +239,8 @@
         $(".identicon-{{ .Post.Parent.Memo.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
     {{ end }}
     {{ if .Post.IsLoggedIn }}
-        MemoApp.Form.ReplyLink("{{ .Post.Memo.GetTransactionHashString }}");
-        MemoApp.Form.NewLike($("#like-{{ .Post.Memo.GetTransactionHashString }}"), "{{ .Post.Memo.GetTransactionHashString }}", false);
+        MemoApp.Form.ReplyLink("{{ $postUnique }}");
+        MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", false);
     {{ end }}
     })();
 </script>

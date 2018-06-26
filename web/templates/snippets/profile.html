@@ -39,7 +39,6 @@
                            href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }}</a>
                     </span>
             {{ end }}
-            {{ if not .Profile.IsSelf }}
                 <div class="dropdown">
                     <a class="nav-link dropdown-toggle btn btn-sm btn-default" data-toggle="dropdown" href="#">
                         &nbsp;<span class="glyphicon glyphicon-th"></span>&nbsp;
@@ -55,7 +54,6 @@
                         </a></li>
                     </ul>
                 </div>
-            {{ end }}
             </div>
         </div>
         <div class="col-sm-6">

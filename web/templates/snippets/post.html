@@ -152,7 +152,7 @@
     {{ .Post.GetMessage }}
     </p>
 {{ if .Post.IsPoll }}
-    {{ template "snippets/poll.html" dict "Post" .Post "Threaded" false }}
+    {{ template "snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
 {{ end }}
 {{ if or .Post.Likes (gt .Post.ReplyCount 0) }}
     <p class="likes">

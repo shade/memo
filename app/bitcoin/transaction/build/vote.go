@@ -20,13 +20,13 @@ func Vote(pollTxBytes []byte, message string, tip int64, privateKey *wallet.Priv
 		if tip > 1e8 {
 			return nil, jerr.New("error trying to tip too much")
 		}
-		memoPost, err := db.GetMemoPost(pollTxBytes)
+		memoPollOption, err := db.GetMemoPollOption(pollTxBytes)
 		if err != nil {
-			return nil, jerr.Get("error getting memo_post", err)
+			return nil, jerr.Get("error getting memo poll option", err)
 		}
 		transactions = append(transactions, memo.SpendOutput{
 			Type:    memo.SpendOutputTypeP2PK,
-			Address: memoPost.GetAddress(),
+			Address: memoPollOption.GetAddress(),
 			Amount:  tip,
 		})
 	}

@@ -83,6 +83,11 @@ var postAjaxRoute = web.Route{
 			r.Error(jerr.Get("error attaching polls to posts", err), http.StatusInternalServerError)
 			return
 		}
+		err = profile.AttachProfilePicsToPosts([]*profile.Post{post})
+		if err != nil {
+			r.Error(jerr.Get("error attaching profile pics to posts", err), http.StatusInternalServerError)
+			return
+		}
 		err = profile.SetShowMediaForPosts([]*profile.Post{post}, userId)
 		if err != nil {
 			r.Error(jerr.Get("error setting show media for posts", err), http.StatusInternalServerError)

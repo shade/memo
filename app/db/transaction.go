@@ -10,18 +10,6 @@ import (
 	"time"
 )
 
-var transactionColumns = []string{
-	BlockTable,
-	TxInTable,
-	TxInTxnOutTable,
-	TxInKeyTable,
-	TxInTxnOutTxnTable,
-	TxOutTable,
-	TxOutKeyTable,
-	TxOutTxnInTable,
-	TxOutTxnInTxnTable,
-}
-
 type Transaction struct {
 	Id        uint              `gorm:"primary_key"`
 	BlockId   uint
@@ -174,60 +162,6 @@ func (t *Transaction) HasUserKey(userId uint) bool {
 		}
 	}
 	return false
-}
-
-func GetTransactionById(transactionId uint) (*Transaction, error) {
-	return getTransaction(Transaction{
-		Id: transactionId,
-	})
-}
-
-func getTransaction(whereTxn Transaction) (*Transaction, error) {
-	var txn Transaction
-	err := findPreloadColumns(transactionColumns, &txn, whereTxn)
-	if err != nil {
-		return nil, jerr.Get("error finding transaction", err)
-	}
-	return &txn, nil
-}
-
-func GetTransactions() ([]*Transaction, error) {
-	var transactions []*Transaction
-	err := findPreloadColumns(transactionColumns, &transactions)
-	if err != nil {
-		return nil, jerr.Get("error finding transactions", err)
-	}
-	return transactions, nil
-}
-
-func GetTransactionsForPkHash(pkHash []byte) ([]*Transaction, error) {
-	ins, err := GetTransactionInputsForPkHash(pkHash)
-	if err != nil {
-		return nil, jerr.Get("error getting ins", err)
-	}
-	outs, err := GetTransactionOutputsForPkHash(pkHash)
-	if err != nil {
-		return nil, jerr.Get("error getting outs", err)
-	}
-	var hashes [][]byte
-	for _, in := range ins {
-		hashes = append(hashes, in.TransactionHash)
-	}
-	for _, out := range outs {
-		hashes = append(hashes, out.TransactionHash)
-	}
-	query, err := getDb()
-	if err != nil {
-		return nil, jerr.Get("error getting db", err)
-	}
-	query = query.Preload(TxOutTable)
-	var transactions []*Transaction
-	result := query.Where("hash in (?)", hashes).Find(&transactions)
-
-	if result.Error != nil {
-		return nil, jerr.Get("error finding transactions", result.Error)
-	}
-	return transactions, nil
 }
 
 func GetTransactionByHash(hash []byte) (*Transaction, error) {

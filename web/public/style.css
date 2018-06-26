@@ -193,6 +193,9 @@ a.disabled {
     background: #ff8080;
     border-radius: 0 0 5px 5px;
 }
+.dark .navbar .alert-banner {
+    background: #bf4d4d;
+}
 .navbar .alert-banner p {
     margin: 0;
     padding: 10px;
@@ -376,6 +379,10 @@ body.dark .post .post-header .block-explorer ul a {
     margin-bottom: 8px;
     border-bottom: 1px solid #ddd;
 }
+.dark .post .feed-item {
+    color: #888;
+    border-color: #666;
+}
 .post .feed-item .feed-item-glyphicon {
     margin-right: 5px;
 }
@@ -532,14 +539,23 @@ span.page {
 .red {
     color: #c73838;
 }
+.dark .red {
+    color: #d93d3d;
+}
 .yellow {
     color: #c7af38;
 }
 .green {
     color: #487521;
 }
+.dark .green {
+    color: #6eb332;
+}
 .blue {
     color: #00b;
+}
+.dark .blue {
+    color: #8095ff;
 }
 .reputation-tooltip:hover .bubble {
     display: block;

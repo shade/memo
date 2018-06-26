@@ -1,6 +1,6 @@
 {{ template "snippets/header.html" . }}
 
-{{ template "posts/header.html" dict "Page" "archive" "Username" .Username }}
+{{ template "posts/header.html" dict "Page" "archive" "IsLoggedIn" .IsLoggedIn }}
 
 <div class="pagination">
     <a href="posts/archive?day={{ .PrevDay }}">{{ T "previous_day" }}</a>

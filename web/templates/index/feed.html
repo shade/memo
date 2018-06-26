@@ -1,6 +1,6 @@
 {{ template "snippets/header.html" . }}
 
-{{ template "posts/header.html" dict "Page" "feed" "Username" .Username }}
+{{ template "posts/header.html" dict "Page" "feed" "IsLoggedIn" .IsLoggedIn }}
 
 {{ template "snippets/feed.html" . }}
 

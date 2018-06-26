@@ -472,24 +472,30 @@ func GetPersonalizedTopPosts(selfPkHash []byte, offset uint, timeStart time.Time
 	return sortedPosts, nil
 }
 
-func GetCountMemoPosts() (uint, uint, error) {
+func GetCountMemoPosts() (uint, uint, uint, uint, error) {
 	db, err := getDb()
 	if err != nil {
-		return 0, 0, jerr.Get("error getting db", err)
+		return 0, 0, 0, 0, jerr.Get("error getting db", err)
 	}
+	selectStmt := "" +
+		"SUM(IF(IFNULL(topic, '') = '' AND IFNULL(parent_tx_hash, b'') = b'', 1, 0)) AS non_topic_posts, " +
+		"SUM(IF(IFNULL(is_vote, 0) = 1, 1, 0)) AS vote_posts, " +
+		"SUM(IF(IFNULL(topic, '') = '', 0, 1)) AS topic_posts, " +
+		"SUM(IF(IFNULL(parent_tx_hash, b'') = b'', 0, 1)) AS reply_posts"
 	query := db.
 		Model(&MemoPost{}).
 		Where("IFNULL(is_poll, 0) = 0").
-		Where("IFNULL(is_vote, 0) = 0").
-		Select("SUM(IF(IFNULL(topic, '') = '', 1, 0)) AS non_topic_posts, SUM(IF(IFNULL(topic, '') = '', 0, 1)) AS topic_posts")
+		Select(selectStmt)
 	row := query.Row()
 	var postCount uint
+	var votePostCount uint
 	var topicPostCount uint
-	err = row.Scan(&postCount, &topicPostCount)
+	var replyPostCount uint
+	err = row.Scan(&postCount, &votePostCount, &topicPostCount, &replyPostCount)
 	if err != nil {
-		return 0, 0, jerr.Get("error getting distinct topics", err)
+		return 0, 0, 0, 0, jerr.Get("error getting distinct topics", err)
 	}
-	return postCount, topicPostCount, nil
+	return postCount, votePostCount, topicPostCount, replyPostCount, nil
 }
 
 type Topic struct {

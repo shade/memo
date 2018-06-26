@@ -472,12 +472,24 @@ func GetPersonalizedTopPosts(selfPkHash []byte, offset uint, timeStart time.Time
 	return sortedPosts, nil
 }
 
-func GetCountMemoPosts() (uint, error) {
-	cnt, err := count(&MemoPost{})
+func GetCountMemoPosts() (uint, uint, error) {
+	db, err := getDb()
 	if err != nil {
-		return 0, jerr.Get("error getting total count", err)
+		return 0, 0, jerr.Get("error getting db", err)
 	}
-	return cnt, nil
+	query := db.
+		Model(&MemoPost{}).
+		Where("IFNULL(is_poll, 0) = 0").
+		Where("IFNULL(is_vote, 0) = 0").
+		Select("SUM(IF(IFNULL(topic, '') = '', 1, 0)) AS non_topic_posts, SUM(IF(IFNULL(topic, '') = '', 0, 1)) AS topic_posts")
+	row := query.Row()
+	var postCount uint
+	var topicPostCount uint
+	err = row.Scan(&postCount, &topicPostCount)
+	if err != nil {
+		return 0, 0, jerr.Get("error getting distinct topics", err)
+	}
+	return postCount, topicPostCount, nil
 }
 
 type Topic struct {

@@ -77,9 +77,9 @@
         <p>{{ .Post.VoteOption.Option }}</p>
     </div>
 {{ end }}
-    <p class="message">
+    <div class="message">
     {{ .Post.GetMessage }}
-    </p>
+    </div>
 
 {{ if .Post.IsPoll }}
     {{ template "snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}

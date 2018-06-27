@@ -1,9 +1,9 @@
 package watcher
 
 import (
-	"github.com/memocash/memo/app/db"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
+	"github.com/memocash/memo/app/db"
 	"time"
 )
 
@@ -35,16 +35,29 @@ type txSend struct {
 }
 
 func init() {
+	var loops int
 	go func() {
 		for {
+			loops++
 			var topicLastPostIds = make(map[string]uint)
-			for _, item := range items {
+			for i := 0; i < len(items); i++ {
+				var item = items[i]
 				_, ok := topicLastPostIds[item.Topic]
 				if !ok {
 					topicLastPostIds[item.Topic] = item.LastPostId
 				}
 				if item.LastPostId < topicLastPostIds[item.Topic] {
 					topicLastPostIds[item.Topic] = item.LastPostId
+				}
+				if loops % 50 == 0 {
+					err := item.Socket.Ping()
+					if err != nil {
+						go func(item *Item, err error) {
+							item.Error <- nil
+						}(item, err)
+						items = append(items[:i], items[i+1:]...)
+						i--
+					}
 				}
 			}
 			for topic, lastPostId := range topicLastPostIds {
@@ -53,7 +66,9 @@ func init() {
 					for i := 0; i < len(items); i++ {
 						var item = items[i]
 						if item.Topic == topic {
-							item.Error <- jerr.Get("error getting recent post for topic", err)
+							go func(item *Item, err error) {
+								item.Error <- jerr.Get("error getting recent post for topic", err)
+							}(item, err)
 							items = append(items[:i], items[i+1:]...)
 							i--
 						}
@@ -72,7 +87,7 @@ func init() {
 								})
 								if err != nil {
 									go func(item *Item, err error) {
-										item.Error <- jerr.Get("error writing to socket", err)
+										item.Error <- nil
 									}(item, err)
 									items = append(items[:i], items[i+1:]...)
 									i--
@@ -98,7 +113,9 @@ func init() {
 					for i := 0; i < len(items); i++ {
 						var item = items[i]
 						if item.Topic == topic {
-							item.Error <- jerr.Get("error getting recent like for topic", err)
+							go func(item *Item, err error) {
+								item.Error <- jerr.Get("error getting recent like for topic", err)
+							}(item, err)
 							items = append(items[:i], items[i+1:]...)
 							i--
 						}

@@ -44,7 +44,7 @@ func SaveMemo(txn *db.Transaction, out *db.TransactionOut, block *db.Block) erro
 	if len(txn.TxIn) == 1 {
 		parentHash = txn.TxIn[0].PreviousOutPointHash
 	}
-	err = saveMemoTest(txn, out, block, inputAddress)
+	err, isNew := saveMemoTest(txn, out, block, inputAddress)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error saving memo_test", err)
 	}
@@ -125,19 +125,21 @@ func SaveMemo(txn *db.Transaction, out *db.TransactionOut, block *db.Block) erro
 			return jerr.Get("error saving memo_set_pic", err)
 		}
 	}
-	go func() {
-		err := metric.AddMemoSave(memoCode)
-		if err != nil {
-			jerr.Get("error adding memo save metric", err).Print()
-		}
-	}()
+	if isNew {
+		go func() {
+			err := metric.AddMemoSave(memoCode)
+			if err != nil {
+				jerr.Get("error adding memo save metric", err).Print()
+			}
+		}()
+	}
 	return nil
 }
 
-func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash) error {
+func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash) (error, bool) {
 	memoTest, err := db.GetMemoTest(txn.Hash)
 	if err != nil && ! db.IsRecordNotFoundError(err) {
-		return jerr.Get("error getting memo_test", err)
+		return jerr.Get("error getting memo_test", err), false
 	}
 	var blockId uint
 	if block != nil {
@@ -145,14 +147,14 @@ func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, block *db.Block, 
 	}
 	if memoTest != nil {
 		if memoTest.BlockId != 0 || blockId == 0 {
-			return nil
+			return nil, false
 		}
 		memoTest.BlockId = blockId
 		err = memoTest.Save()
 		if err != nil {
-			return jerr.Get("error saving memo_test", err)
+			return jerr.Get("error saving memo_test", err), false
 		}
-		return nil
+		return nil, false
 	}
 	memoTest = &db.MemoTest{
 		TxHash:   txn.Hash,
@@ -163,9 +165,9 @@ func saveMemoTest(txn *db.Transaction, out *db.TransactionOut, block *db.Block, 
 	}
 	err = memoTest.Save()
 	if err != nil {
-		return jerr.Get("error saving memo_test", err)
+		return jerr.Get("error saving memo_test", err), false
 	}
-	return nil
+	return nil, true
 }
 
 func saveMemoPost(txn *db.Transaction, out *db.TransactionOut, block *db.Block, inputAddress *btcutil.AddressPubKeyHash, parentHash []byte) error {

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	TagSpendOutputType = "type"
+	TagOutputType = "type"
 )
 
 func AddMemoBroadcast(outputType memo.OutputType) error {
@@ -16,7 +16,7 @@ func AddMemoBroadcast(outputType memo.OutputType) error {
 		return jerr.Get("error getting statsd", err)
 	}
 	tags := []string{
-		fmt.Sprintf("%s:%s", TagSpendOutputType, outputType.String()),
+		fmt.Sprintf("%s:%s", TagOutputType, outputType.String()),
 	}
 	err = c.Incr(NameMemoBroadcast, tags, 1)
 	if err != nil {
@@ -31,7 +31,7 @@ func AddMemoSave(code byte) error {
 		return jerr.Get("error getting statsd", err)
 	}
 	tags := []string{
-		fmt.Sprintf("%s:%s", TagSpendOutputType, memo.GetCodeString(code)),
+		fmt.Sprintf("%s:%s", TagOutputType, memo.GetCodeString(code)),
 	}
 	err = c.Incr(NameMemoSave, tags, 1)
 	if err != nil {

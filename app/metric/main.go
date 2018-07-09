@@ -8,13 +8,9 @@ import (
 )
 
 const (
-	HttpRequest = "http_request"
-	Test        = "test"
-)
-
-const (
-	TagUrl  = "url"
-	TagCode = "response_code"
+	NameHttpRequest   = "http_request"
+	NameMemoBroadcast = "memo_broadcast"
+	NameMemoSave = "memo_save"
 )
 
 var statsdClient *statsd.Client

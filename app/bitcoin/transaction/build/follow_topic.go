@@ -7,8 +7,8 @@ import (
 )
 
 func FollowTopic(topicName string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoTopicFollow,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoTopicFollow,
 		Data: []byte(topicName),
 	}}
 	tx, err := Build(transactions, privateKey)
@@ -19,8 +19,8 @@ func FollowTopic(topicName string, privateKey *wallet.PrivateKey) (*memo.Tx, err
 }
 
 func UnfollowTopic(topicName string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoTopicUnfollow,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoTopicUnfollow,
 		Data: []byte(topicName),
 	}}
 	tx, err := Build(transactions, privateKey)

@@ -8,8 +8,8 @@ import (
 )
 
 func Vote(pollTxBytes []byte, message string, tip int64, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type:    memo.SpendOutputTypeMemoPollVote,
+	transactions := []memo.Output{{
+		Type:    memo.OutputTypeMemoPollVote,
 		Data:    pollTxBytes,
 		RefData: []byte(message),
 	}}
@@ -24,8 +24,8 @@ func Vote(pollTxBytes []byte, message string, tip int64, privateKey *wallet.Priv
 		if err != nil {
 			return nil, jerr.Get("error getting memo poll option", err)
 		}
-		transactions = append(transactions, memo.SpendOutput{
-			Type:    memo.SpendOutputTypeP2PK,
+		transactions = append(transactions, memo.Output{
+			Type:    memo.OutputTypeP2PK,
 			Address: memoPollOption.GetAddress(),
 			Amount:  tip,
 		})

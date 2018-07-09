@@ -97,7 +97,9 @@ func queueBlocks(n *Node) {
 	}
 	n.Peer.QueueMessage(msgGetData, nil)
 	n.BlocksQueued += len(msgGetData.InvList)
-	fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
+	if n.BlocksQueued > 1 {
+		fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
+	}
 }
 
 func getBlock(n *Node, hash chainhash.Hash) {

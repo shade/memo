@@ -89,6 +89,5 @@ func (n *Node) OnReject(p *peer.Peer, msg *wire.MsgReject) {
 }
 
 func (n *Node) OnPing(p *peer.Peer, msg *wire.MsgPing) {
-	fmt.Printf("Received ping: %d\n", msg.Nonce)
 	n.Peer.QueueMessage(wire.NewMsgPong(msg.Nonce), nil)
 }

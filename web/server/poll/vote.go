@@ -65,7 +65,7 @@ var voteSubmitRoute = web.Route{
 		}
 
 		transaction.GetTxInfo(tx).Print()
-		transaction.QueueTx(tx.MsgTx)
+		transaction.QueueTx(tx)
 		r.Write(tx.MsgTx.TxHash().String())
 	},
 }

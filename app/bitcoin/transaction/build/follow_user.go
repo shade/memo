@@ -7,8 +7,8 @@ import (
 )
 
 func FollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoFollow,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoFollow,
 		Data: pkHash,
 	}}
 	tx, err := Build(transactions, privateKey)
@@ -19,8 +19,8 @@ func FollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*memo.Tx, error) 
 }
 
 func UnfollowUser(pkHash []byte, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoUnfollow,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoUnfollow,
 		Data: pkHash,
 	}}
 	tx, err := Build(transactions, privateKey)

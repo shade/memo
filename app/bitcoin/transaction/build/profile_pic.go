@@ -7,8 +7,8 @@ import (
 )
 
 func ProfilePic(url string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoSetProfilePic,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoSetProfilePic,
 		Data: []byte(url),
 	}}
 	tx, err := Build(transactions, privateKey)

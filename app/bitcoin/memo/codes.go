@@ -52,3 +52,38 @@ func GetAllCodes() [][]byte {
 		{CodePrefix, CodeTopicUnfollow},
 	}
 }
+
+func GetCodeString(code byte) string {
+	switch code {
+	case CodeSetName:
+		return StringMemoSetName
+	case CodePost:
+		return StringMemoMessage
+	case CodeReply:
+		return StringMemoReply
+	case CodeLike:
+		return StringMemoLike
+	case CodeSetProfile:
+		return StringMemoSetProfile
+	case CodeFollow:
+		return StringMemoFollow
+	case CodeUnfollow:
+		return StringMemoUnfollow
+	case CodeSetProfilePicture:
+		return StringMemoSetProfilePic
+	case CodePollCreate:
+		return StringMemoPollQuestion
+	case CodePollOption:
+		return StringMemoPollOption
+	case CodePollVote:
+		return StringMemoPollVote
+	case CodeTopicMessage:
+		return StringMemoTopicMessage
+	case CodeTopicFollow:
+		return StringMemoTopicFollow
+	case CodeTopicUnfollow:
+		return StringMemoTopicUnfollow
+	default:
+		return "unknown"
+	}
+}

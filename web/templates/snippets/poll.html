@@ -1,4 +1,4 @@
-<div id="poll-{{ .Post.Memo.GetTransactionHashString }}" class="poll">
+<div id="poll-{{ .FormHash }}" class="poll">
     <div class="results">
         <table class="poll-results table table-condensed">
             <tbody>
@@ -72,6 +72,6 @@
 </div>
 <script type="text/javascript">
     (function () {
-        MemoApp.Form.NewVote($("#poll-{{ .Post.Memo.GetTransactionHashString }}"), "{{ .Post.Memo.GetTransactionHashString }}", {{ .Threaded }});
+        MemoApp.Form.NewVote("{{ .FormHash }}", "{{ .Post.Memo.GetTransactionHashString }}", {{ .Threaded }});
     })();
 </script>

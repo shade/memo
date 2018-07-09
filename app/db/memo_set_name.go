@@ -1,7 +1,6 @@
 package db
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcutil"
@@ -9,7 +8,6 @@ import (
 	"github.com/memocash/memo/app/bitcoin/script"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"html"
-	"sort"
 	"time"
 )
 
@@ -86,31 +84,23 @@ func GetMemoSetName(txHash []byte) (*MemoSetName, error) {
 	return &memoSetName, nil
 }
 
-type memoSetNameSortByDate []*MemoSetName
-
-func (txns memoSetNameSortByDate) Len() int      { return len(txns) }
-func (txns memoSetNameSortByDate) Swap(i, j int) { txns[i], txns[j] = txns[j], txns[i] }
-func (txns memoSetNameSortByDate) Less(i, j int) bool {
-	if bytes.Equal(txns[i].ParentHash, txns[j].TxHash) {
-		return true
+func GetSetNamesByTxHashes(txHashes [][]byte) ([]*MemoSetName, error) {
+	var memoSetNames []*MemoSetName
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
 	}
-	if bytes.Equal(txns[i].TxHash, txns[j].ParentHash) {
-		return false
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoSetNames)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo set names", result.Error)
 	}
-	if txns[i].Block == nil && txns[j].Block == nil {
-		return false
-	}
-	if txns[i].Block == nil {
-		return true
-	}
-	if txns[j].Block == nil {
-		return false
-	}
-	return txns[i].Block.Height > txns[j].Block.Height
+	return memoSetNames, nil
 }
 
 func GetNameForPkHash(pkHash []byte) (*MemoSetName, error) {
-	names, err := GetSetNamesForPkHash(pkHash)
+	names, err := GetNamesForPkHashes([][]byte{pkHash})
 	if err != nil {
 		return nil, jerr.Get("error getting set names for pk hash", err)
 	}
@@ -176,24 +166,28 @@ func GetUniqueMemoAPkHashesMatchName(searchString string, offset int) ([][]byte,
 	return pkHashes, nil
 }
 
-func GetSetNamesForPkHash(pkHash []byte) ([]*MemoSetName, error) {
-	var memoSetNames []*MemoSetName
-	err := findPreloadColumns([]string{
-		BlockTable,
-	}, &memoSetNames, &MemoSetName{
-		PkHash: pkHash,
-	})
-	if err != nil {
-		return nil, jerr.Get("error getting memo names", err)
-	}
-	sort.Sort(memoSetNameSortByDate(memoSetNames))
-	return memoSetNames, nil
-}
-
 func GetCountMemoSetName() (uint, error) {
 	cnt, err := count(&MemoSetName{})
 	if err != nil {
 		return 0, jerr.Get("error getting total count", err)
 	}
 	return cnt, nil
+}
+
+func GetSetNames(offset uint) ([]*MemoSetName, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoSetNames []*MemoSetName
+	result := db.
+		Preload(BlockTable).
+		Limit(25).
+		Offset(offset).
+		Order("id ASC").
+		Find(&memoSetNames)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoSetNames, nil
 }

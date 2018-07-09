@@ -93,6 +93,21 @@ func GetMemoSetPic(txHash []byte) (*MemoSetPic, error) {
 	return &memoSetPic, nil
 }
 
+func GetSetProfilePicsByTxHashes(txHashes [][]byte) ([]*MemoSetPic, error) {
+	var memoSetProfilePics []*MemoSetPic
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("tx_hash IN (?)", txHashes).
+		Find(&memoSetProfilePics)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting memo set profile pics", result.Error)
+	}
+	return memoSetProfilePics, nil
+}
+
 type memoSetPicSortByDate []*MemoSetPic
 
 func (txns memoSetPicSortByDate) Len() int      { return len(txns) }
@@ -155,4 +170,22 @@ func GetCountMemoSetPic() (uint, error) {
 		return 0, jerr.Get("error getting total count", err)
 	}
 	return cnt, nil
+}
+
+func GetSetProfilePics(offset uint) ([]*MemoSetPic, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	var memoSetProfilePics []*MemoSetPic
+	result := db.
+		Preload(BlockTable).
+		Limit(25).
+		Offset(offset).
+		Order("id ASC").
+		Find(&memoSetProfilePics)
+	if result.Error != nil {
+		return nil, jerr.Get("error running query", result.Error)
+	}
+	return memoSetProfilePics, nil
 }

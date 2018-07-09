@@ -1,5 +1,53 @@
 (function () {
     /**
+     * https://stackoverflow.com/a/11268104/744298
+     * @param {string} pass
+     * @returns {number}
+     */
+    function scorePassword(pass) {
+        var score = 0;
+        if (!pass) {
+            return score;
+        }
+        var letters = {};
+        for (var i = 0; i < pass.length; i++) {
+            letters[pass[i]] = (letters[pass[i]] || 0) + 1;
+            score += 5.0 / letters[pass[i]];
+        }
+        var variations = {
+            spaces: /\s/.test(pass),
+            digits: /\d/.test(pass),
+            lower: /[a-z]/.test(pass),
+            upper: /[A-Z]/.test(pass),
+            nonWords: /\W/.test(pass)
+        };
+        var variationCount = 0;
+        for (var check in variations) {
+            variationCount += (variations[check] === true) ? 1 : 0;
+        }
+        score += (variationCount - 1) * 10;
+        return score;
+    }
+
+    /**
+     * @param {string} pass
+     * @returns {string}
+     */
+    function getPassStrength(pass) {
+        var score = scorePassword(pass);
+        var rating = "weak";
+        var color = "red";
+        if (score > 80) {
+            rating = "strong";
+            color = "green";
+        } else if (score > 50) {
+            rating = "good";
+            color = "orange";
+        }
+        return "<span style='color:" + color + "'>" + rating + "</span>";
+    }
+
+    /**
      * @param {jQuery} $form
      * @param {jQuery} $privateKeyField
      */
@@ -12,6 +60,13 @@
             } else {
                 $privateKeyField.hide();
             }
+        });
+
+        var $passwordWarning = $form.find("#password-warning")
+        var $password = $form.find("[name=password]");
+        $password.on("input", function () {
+            var html = "Strength: " + getPassStrength($password.val());
+            $passwordWarning.html(html);
         });
 
         $form.submit(function (e) {
@@ -71,7 +126,7 @@
                  * @param {XMLHttpRequest} xhr
                  */
                 error: function (xhr) {
-                    switch(xhr.status) {
+                    switch (xhr.status) {
                         case 422:
                             MemoApp.AddAlert("Could not parse the WIF. Please check the WIF and try again.");
                             return;

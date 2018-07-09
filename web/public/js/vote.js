@@ -1,26 +1,27 @@
 (function () {
     var maxVoteCommentBytes = 184;
     /**
-     * @param {jQuery} $ele
+     * @param {string} formHash
      * @param {string} postTxHash
      * @param {boolean} postIsThreaded
      */
-    MemoApp.Form.NewVote = function ($ele, postTxHash, postIsThreaded) {
+    MemoApp.Form.NewVote = function (formHash, postTxHash, postIsThreaded) {
+        var $poll = $("#poll-" + formHash);
         var submitting = false;
 
         var txHash = postTxHash;
         var threaded = postIsThreaded;
-        var $form = $ele.find("form");
+        var $form = $poll.find("form");
         var $msgByteCount = $form.find(".message-byte-count");
         var $message = $form.find("[name=message]");
-        var $broadcasting = $ele.find(".broadcasting");
-        var $creating = $ele.find(".creating");
-        var $results = $ele.find(".results");
-        var $showVotesButton = $ele.find(".show-votes");
-        var $votes = $ele.find(".votes");
+        var $broadcasting = $poll.find(".broadcasting");
+        var $creating = $poll.find(".creating");
+        var $results = $poll.find(".results");
+        var $showVotesButton = $poll.find(".show-votes");
+        var $votes = $poll.find(".votes");
 
-        var $voteShowForm = $ele.find(".vote-show-form");
-        var $cancelButton = $ele.find(".vote-cancel");
+        var $voteShowForm = $poll.find(".vote-show-form");
+        var $cancelButton = $poll.find(".vote-cancel");
 
         setMsgByteCount();
         $message.on("input", function () {
@@ -130,7 +131,7 @@
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
                                 success: function (html) {
-                                    $("#post-" + txHash).replaceWith(html);
+                                    $("#post-" + formHash).replaceWith(html);
                                 },
                                 error: function (xhr) {
                                     MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
@@ -150,6 +151,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =

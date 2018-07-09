@@ -50,7 +50,6 @@ func (n *QNode) KeepAlive() {
 }
 
 func (n *QNode) OnVerAck(p *peer.Peer, msg *wire.MsgVerAck) {
-	fmt.Printf("VerAck: %#v\n", msg)
 }
 
 func (n *QNode) OnReject(p *peer.Peer, msg *wire.MsgReject) {
@@ -58,12 +57,10 @@ func (n *QNode) OnReject(p *peer.Peer, msg *wire.MsgReject) {
 }
 
 func (n *QNode) OnPing(p *peer.Peer, msg *wire.MsgPing) {
-	fmt.Printf("Received ping: %d\n", msg.Nonce)
 	n.Peer.QueueMessage(wire.NewMsgPong(msg.Nonce), nil)
 }
 
 func StartAndKeepAlive() {
 	Node.Start()
-	fmt.Println("Keeping node alive...")
 	Node.KeepAlive()
 }

@@ -8,6 +8,7 @@ func SetPageAndOffset(r *web.Response, offset int) {
 		prevOffset = offset - 25
 	}
 	page := offset / 25 + 1
+	r.Helper["Offset"] = offset
 	r.Helper["PrevOffset"] = prevOffset
 	r.Helper["NextOffset"] = offset + 25
 	r.Helper["Page"] = page

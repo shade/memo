@@ -6,15 +6,15 @@
 
     <form id="form-signup" method="post">
         <p>
-            <label for="username">Username*</label>
+            <label for="username">Username</label>
             <input id="username" type="text" name="username" class="form-control" placeholder="Username"
                    required autofocus>
             <span class="signup-notice">
-            * Your username is only used for logging in and will not be visible to anyone else
-        </span>
+                Your username is only used for logging in and will not be visible to anyone else
+            </span>
         </p>
         <p>
-            <label for="password">Password</label>
+            <label for="password">Password</label> <span id="password-warning" class="inline"></span>
             <input id="password" type="password" name="password" class="form-control" placeholder="Password"
                    required>
         </p>
@@ -33,8 +33,7 @@
             <label for="key-import">Import Key</label>
         </p>
         <p id="private-key-field">
-            <label for="private-key">Private Key (WIF)</label>
-            <input id="private-key" type="password" name="private-key"/>
+            <input id="private-key" type="password" name="private-key" class="form-control" placeholder="WIF (compressed)"/>
         </p>
         <p class="disclaimer">
             <input id="accept" name="accept" type="checkbox"/>

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jchavannes/btcd/peer"
 	"github.com/jchavannes/btcd/wire"
+	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"github.com/memocash/memo/app/config"
 	"github.com/memocash/memo/app/db"
@@ -34,6 +35,7 @@ func (n *Node) Start() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	transaction.EnableBatchPostProcessing()
 	bitcoinNodeConfig := config.GetBitcoinNode()
 	n.NodeStatus = nodeStatus
 	p, err := peer.NewOutboundPeer(&peer.Config{
@@ -87,6 +89,5 @@ func (n *Node) OnReject(p *peer.Peer, msg *wire.MsgReject) {
 }
 
 func (n *Node) OnPing(p *peer.Peer, msg *wire.MsgPing) {
-	fmt.Printf("Received ping: %d\n", msg.Nonce)
 	n.Peer.QueueMessage(wire.NewMsgPong(msg.Nonce), nil)
 }

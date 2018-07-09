@@ -1,4 +1,3 @@
-<br/>
 <p class="posts-nav">
 {{ if and .IsLoggedIn (gt .TopicFollowCount 0) }}
     <a {{ if eq .TopicPage "following" }}class="sel"{{ end }} href="topics">{{ T "following" }}</a>

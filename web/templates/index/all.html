@@ -1,0 +1,9 @@
+{{ template "snippets/header.html" . }}
+
+{{ template "feed/header.html" dict "Page" "all" "IsLoggedIn" .IsLoggedIn }}
+
+{{ template "feed/items.html" . }}
+
+<br/>
+
+{{ template "snippets/footer.html" . }}

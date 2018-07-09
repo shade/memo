@@ -1,15 +1,14 @@
 package build
 
 import (
-	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 )
 
-func SetName(name string, privateKey *wallet.PrivateKey) (*wire.MsgTx, error) {
-	transactions := []transaction.SpendOutput{{
-		Type: transaction.SpendOutputTypeMemoSetName,
+func SetName(name string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoSetName,
 		Data: []byte(name),
 	}}
 	tx, err := Build(transactions, privateKey)

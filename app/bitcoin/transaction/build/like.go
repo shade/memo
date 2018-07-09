@@ -1,20 +1,19 @@
 package build
 
 import (
-	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"github.com/memocash/memo/app/db"
 )
 
-func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*wire.MsgTx, error) {
-	transactions := []transaction.SpendOutput{{
-		Type: transaction.SpendOutputTypeMemoLike,
+func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoLike,
 		Data: likeTxBytes,
 	}}
 	if tip != 0 {
-		if tip < transaction.DustMinimumOutput {
+		if tip < memo.DustMinimumOutput {
 			return nil, jerr.New("error tip not above dust limit")
 		}
 		if tip > 1e8 {
@@ -24,8 +23,8 @@ func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*wire.M
 		if err != nil {
 			return nil, jerr.Get("error getting memo_post", err)
 		}
-		transactions = append(transactions, transaction.SpendOutput{
-			Type:    transaction.SpendOutputTypeP2PK,
+		transactions = append(transactions, memo.Output{
+			Type:    memo.OutputTypeP2PK,
 			Address: memoPost.GetAddress(),
 			Amount:  tip,
 		})

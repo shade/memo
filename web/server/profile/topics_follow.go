@@ -7,6 +7,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/db/obj"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -41,7 +42,7 @@ var topicsFollowingRoute = web.Route{
 			return
 		}
 		r.Helper["Profile"] = pf
-		topics, err := db.GetUniqueTopics(uint(offset), "", pf.PkHash, db.TopicOrderTypeRecent)
+		topics, err := db.GetTopicInfo(uint(offset), "", pf.PkHash, obj.TopicOrderTypeRecent)
 		if err != nil {
 			r.Error(jerr.Get("error setting following for hash", err), http.StatusInternalServerError)
 			return

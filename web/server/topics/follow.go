@@ -1,11 +1,10 @@
 package topics
 
 import (
-	"fmt"
-	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
+	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/bitcoin/transaction/build"
 	"github.com/memocash/memo/app/db"
@@ -42,20 +41,24 @@ var followSubmitRoute = web.Route{
 		pkHash := privateKey.GetPublicKey().GetAddress().GetScriptAddress()
 		mutex.Lock(pkHash)
 
-		var tx *wire.MsgTx
+		var tx *memo.Tx
 		if unfollow {
 			tx, err = build.UnfollowTopic(topicName, privateKey)
 		} else {
 			tx, err = build.FollowTopic(topicName, privateKey)
 		}
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building topic follow tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building topic follow tx", err), statusCode)
 			return
 		}
 
-		fmt.Println(transaction.GetTxInfo(tx))
+		transaction.GetTxInfo(tx).Print()
 		transaction.QueueTx(tx)
-		r.Write(tx.TxHash().String())
+		r.Write(tx.MsgTx.TxHash().String())
 	},
 }

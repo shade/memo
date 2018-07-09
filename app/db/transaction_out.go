@@ -1,27 +1,18 @@
 package db
 
 import (
-	"bytes"
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcutil"
 	"github.com/jchavannes/btcd/txscript"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/script"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"html"
-	"sort"
 	"strings"
 	"time"
 )
-
-var transactionOutColumns = []string{
-	KeyTable,
-	TransactionTable,
-	TransactionBlockTbl,
-}
 
 type TransactionOut struct {
 	Id              uint           `gorm:"primary_key"`
@@ -120,26 +111,19 @@ func (t TransactionOut) GetMessage() string {
 	return html.EscapeString(script.GetScriptString(t.PkScript))
 }
 
-func GetTransactionOutputById(id uint) (*TransactionOut, error) {
-	var txOut TransactionOut
-	err := findPreloadColumns(transactionOutColumns, &txOut, TransactionOut{
-		Id: id,
-	})
+func GetTransactionOutput(txHash []byte, index uint32) (*TransactionOut, error) {
+	var transactionOut TransactionOut
+	db, err := getDb()
 	if err != nil {
-		return nil, jerr.Get("error finding transaction out", err)
+		return nil, jerr.Get("error getting db", err)
 	}
-	return &txOut, nil
-}
-
-func GetTransactionOutputsForPkHash(pkHash []byte) ([]*TransactionOut, error) {
-	var transactionOuts []*TransactionOut
-	err := findPreloadColumns([]string{TransactionTable}, &transactionOuts, TransactionOut{
-		KeyPkHash: pkHash,
-	})
-	if err != nil {
-		return nil, jerr.Get("error finding transaction outputs", err)
+	result := db.
+		Where("`index` = ?", index).
+		Find(&transactionOut, TransactionOut{TransactionHash: txHash})
+	if result.Error != nil {
+		return nil, jerr.Get("error finding transaction output", result.Error)
 	}
-	return transactionOuts, nil
+	return &transactionOut, nil
 }
 
 func GetSpendableTransactionOutputsForPkHash(pkHash []byte) ([]*TransactionOut, error) {
@@ -158,79 +142,22 @@ func GetSpendableTransactionOutputsForPkHash(pkHash []byte) ([]*TransactionOut, 
 	return transactionOuts, nil
 }
 
-func GetSpendableTxOut(pkHash []byte, fee int64) (*TransactionOut, error) {
-	transactions, err := GetTransactionsForPkHash(pkHash)
-	if err != nil {
-		return nil, jerr.Get("error getting transactions", err)
-	}
-	var txOut *TransactionOut
-	for _, txn := range transactions {
-		for _, out := range txn.TxOut {
-			if out.TxnInHashString == "" && out.Value > fee && bytes.Equal(out.KeyPkHash, pkHash) {
-				txOut = out
-			}
-		}
-	}
-	if txOut == nil {
-		return nil, jerr.New("unable to find an output to spend")
-	}
-	return txOut, nil
-}
+type TxOutSortByValue []*TransactionOut
 
-type txOutSortByValue []*TransactionOut
-
-func (txOuts txOutSortByValue) Len() int      { return len(txOuts) }
-func (txOuts txOutSortByValue) Swap(i, j int) { txOuts[i], txOuts[j] = txOuts[j], txOuts[i] }
-func (txOuts txOutSortByValue) Less(i, j int) bool {
+func (txOuts TxOutSortByValue) Len() int      { return len(txOuts) }
+func (txOuts TxOutSortByValue) Swap(i, j int) { txOuts[i], txOuts[j] = txOuts[j], txOuts[i] }
+func (txOuts TxOutSortByValue) Less(i, j int) bool {
 	return txOuts[i].Value > txOuts[j].Value
 }
 
-func GetSpendableTxOuts(pkHash []byte, fee int64) ([]*TransactionOut, error) {
-	transactions, err := GetTransactionsForPkHash(pkHash)
-	if err != nil {
-		return nil, jerr.Get("error getting transactions", err)
-	}
-	var spendableOuts []*TransactionOut
-	for _, txn := range transactions {
-		for _, out := range txn.TxOut {
-			if out.TxnInHashString == "" && bytes.Equal(out.KeyPkHash, pkHash) {
-				spendableOuts = append(spendableOuts, out)
-			}
-		}
-	}
-	sort.Sort(txOutSortByValue(spendableOuts))
-	var outsToUse []*TransactionOut
-	var totalValue int64
-	for _, spendableOut := range spendableOuts {
-		outsToUse = append(outsToUse, spendableOut)
-		totalValue += spendableOut.Value
-		if totalValue > fee {
-			break
-		}
-		fee += memo.InputFeeP2PKH
-	}
-
-	if totalValue < fee {
-		return nil, jerr.New("unable to find enough value to spend")
-	}
-	return outsToUse, nil
-}
-
 func HasSpendable(pkHash []byte) (bool, error) {
-	transactions, err := GetTransactionsForPkHash(pkHash)
+	transactionOutputs, err := GetSpendableTransactionOutputsForPkHash(pkHash)
 	if err != nil {
 		return false, jerr.Get("error getting transactions", err)
 	}
-	var txOut *TransactionOut
-	for _, txn := range transactions {
-		for _, out := range txn.TxOut {
-			if out.TxnInHashString == "" && out.Value > 1000 && bytes.Equal(out.KeyPkHash, pkHash) {
-				txOut = out
-			}
-		}
+	var totalValue int64
+	for _, transactionOutput := range transactionOutputs {
+		totalValue += transactionOutput.Value
 	}
-	if txOut == nil {
-		return false, nil
-	}
-	return true, nil
+	return totalValue > 1000, nil
 }

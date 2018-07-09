@@ -82,6 +82,9 @@
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
@@ -161,6 +164,9 @@
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
@@ -217,7 +223,7 @@
             var imgurJpg = /^https:\/\/i\.imgur\.com\/[a-zA-Z0-9]+\.(jpg|png)$/;
             var imgurLink = /^https:\/\/imgur\.com\/[a-zA-Z0-9]+$/;
             var imgurJpgErroMsg = "Please enter an imgur URL in the form https://imgur.com/abcd or https://i.imgur.com/abcd.jpg";
-            if(!imgurJpg.test(url) && !imgurLink.test(url)) {
+            if (!imgurJpg.test(url) && !imgurLink.test(url)) {
                 MemoApp.AddAlert(imgurJpgErroMsg);
                 return;
             }
@@ -259,6 +265,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     } else if (xhr.status === 422) {
                         MemoApp.AddAlert(imgurJpgErroMsg);
                     } else {
@@ -347,6 +356,9 @@
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
@@ -402,6 +414,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
@@ -459,6 +474,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
@@ -523,6 +541,9 @@
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
+                    } else if (xhr.status === 402) {
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
+                        return;
                     }
                     var errorMessage =
                         "Error with request (response code " + xhr.status + "):\n" +
@@ -535,15 +556,16 @@
     };
     /**
      * @param {string} txHash
+     * @param {string} formHash
      * @param {boolean} threaded
      */
-    MemoApp.Form.ReplyMemo = function (txHash, threaded) {
-        var $post = $("#post-" + txHash);
-        var $form = $("#reply-form-" + txHash);
-        var $replyCancel = $("#reply-cancel-" + txHash);
+    MemoApp.Form.ReplyMemo = function (txHash, formHash, threaded) {
+        var $post = $("#post-" + formHash);
+        var $form = $("#reply-form-" + formHash);
+        var $replyCancel = $("#reply-cancel-" + formHash);
         var $message = $form.find("[name=message]");
         var $msgByteCount = $form.find(".message-byte-count");
-        var $replyLink = $("#reply-link-" + txHash);
+        var $replyLink = $("#reply-link-" + formHash);
         var $broadcasting = $post.find(".broadcasting:eq(0)");
         var $creating = $post.find(".creating:eq(0)");
         $message.on("input", function () {
@@ -560,7 +582,7 @@
             }
         }
 
-        $replyCancel.click(function(e) {
+        $replyCancel.click(function (e) {
             e.preventDefault();
             $form.addClass("hidden");
         });
@@ -627,7 +649,7 @@
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
                                 success: function (html) {
-                                    $("#post-" + txHash).replaceWith(html);
+                                    $("#post-" + formHash).replaceWith(html);
                                 },
                                 error: function (xhr) {
                                     MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
@@ -643,15 +665,16 @@
                 },
                 error: function (xhr) {
                     submitting = false;
+                    $creating.addClass("hidden");
+                    $replyLink.show();
+                    $form.show();
                     if (xhr.status === 401) {
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
                     } else if (xhr.status === 402) {
-                        MemoApp.AddAlert("Please make sure your account has enough funds. " +
-                            "Unable to find a spendable transaction output. " +
-                            "You may need to consolidate dust.")
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =
@@ -714,27 +737,28 @@
     };
 
     /**
-     * @param {string} txHash
+     * @param {string} formHash
      */
-    MemoApp.Form.ReplyLink = function(txHash) {
-        var $replyLink = $("#reply-link-" + txHash);
-        var $replyForm = $("#reply-form-" + txHash);
-        $replyLink.click(function(e) {
+    MemoApp.Form.ReplyLink = function (formHash) {
+        var $replyLink = $("#reply-link-" + formHash);
+        var $replyForm = $("#reply-form-" + formHash);
+        $replyLink.click(function (e) {
             e.preventDefault();
             $replyForm.removeClass("hidden");
         });
     };
 
     /**
-     * @param {jQuery} $like
      * @param {string} txHash
+     * @param {string} formHash
      * @param {boolean} threaded
      */
-    MemoApp.Form.NewLike = function ($like, txHash, threaded) {
-        var $likeLink = $("#like-link-" + txHash);
-        var $likeCancel = $("#like-cancel-" + txHash);
-        var $likeInfo = $("#like-info-" + txHash);
-        var $likeForm = $("#like-form-" + txHash);
+    MemoApp.Form.NewLike = function (txHash, formHash, threaded) {
+        var $like = $("#like-" + formHash);
+        var $likeLink = $("#like-link-" + formHash);
+        var $likeCancel = $("#like-cancel-" + formHash);
+        var $likeInfo = $("#like-info-" + formHash);
+        var $likeForm = $("#like-form-" + formHash);
         var $creating = $like.parent().find(".creating:eq(0)");
         var $broadcasting = $like.parent().find(".broadcasting:eq(0)");
 
@@ -802,7 +826,7 @@
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
                                 success: function (html) {
-                                    $("#post-" + txHash).replaceWith(html);
+                                    $("#post-" + formHash).replaceWith(html);
                                 },
                                 error: function (xhr) {
                                     MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
@@ -818,15 +842,16 @@
                 },
                 error: function (xhr) {
                     submitting = false;
+                    $creating.addClass("hidden");
+                    $broadcasting.addClass("hidden");
+                    $likeForm.show();
                     if (xhr.status === 401) {
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
                         return;
                     } else if (xhr.status === 402) {
-                        MemoApp.AddAlert("Please make sure your account has enough funds. " +
-                            "Unable to find a spendable transaction output. " +
-                            "You may need to consolidate dust.");
+                        MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
                     }
                     var errorMessage =

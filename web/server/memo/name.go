@@ -1,7 +1,6 @@
 package memo
 
 import (
-	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
@@ -69,13 +68,17 @@ var setNameSubmitRoute = web.Route{
 
 		tx, err := build.SetName(name, privateKey)
 		if err != nil {
+			var statusCode = http.StatusInternalServerError
+			if build.IsNotEnoughValueError(err) {
+				statusCode = http.StatusPaymentRequired
+			}
 			mutex.Unlock(pkHash)
-			r.Error(jerr.Get("error building set name tx", err), http.StatusInternalServerError)
+			r.Error(jerr.Get("error building set name tx", err), statusCode)
 			return
 		}
 
-		fmt.Println(transaction.GetTxInfo(tx))
+		transaction.GetTxInfo(tx).Print()
 		transaction.QueueTx(tx)
-		r.Write(tx.TxHash().String())
+		r.Write(tx.MsgTx.TxHash().String())
 	},
 }

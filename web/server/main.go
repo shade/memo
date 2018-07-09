@@ -7,8 +7,11 @@ import (
 	"github.com/memocash/memo/app/bitcoin/queuer"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/res"
+	"github.com/memocash/memo/app/util"
 	auth2 "github.com/memocash/memo/web/server/auth"
+	"github.com/memocash/memo/web/server/index"
 	"github.com/memocash/memo/web/server/key"
 	"github.com/memocash/memo/web/server/memo"
 	"github.com/memocash/memo/web/server/poll"
@@ -22,7 +25,6 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
-	"github.com/memocash/memo/app/util"
 )
 
 var UseMinJS bool
@@ -44,18 +46,7 @@ func getCsrfToken(cookieId string) string {
 	return token
 }
 
-var blockedIps = []string{
-	"91.130.64.132",
-	"49.195.117.8",
-}
-
 func preHandler(r *web.Response) {
-	for _, blockedIp := range blockedIps {
-		if r.Request.GetSourceIP() == blockedIp {
-			r.Error(jerr.Newf("blocked ip: %s\n", blockedIp), http.StatusUnauthorized)
-			return
-		}
-	}
 	r.Helper["Title"] = "Memo"
 	r.Helper["Description"] = "Decentralized on-chain social network built on Bitcoin Cash"
 	r.Helper["BaseUrl"] = res.GetBaseUrl(r)
@@ -126,7 +117,7 @@ func preHandler(r *web.Response) {
 	}
 
 	r.SetFuncMap(map[string]interface{}{
-		"T": i18n.MustTfunc(lang),
+		"T":     i18n.MustTfunc(lang),
 		"Title": strings.Title,
 		"UcFirst": func(str string) string { // UC first character only
 			if len(str) > 0 {
@@ -137,29 +128,42 @@ func preHandler(r *web.Response) {
 			return ""
 		},
 		"ToInt": func(value interface{}) int32 {
-			switch v := value.(type){
-				case string:
-					converted, err := strconv.ParseInt(v, 10, 32)
-					if err != nil {
-						log.Fatal(jerr.Get("error casting to int in template", err))
-					}
-					return int32(converted)
-				case int:
-					return int32(v)
-				case int32:
-					return int32(v)
-				case int64:
-					return int32(v)
-				case uint:
-					return int32(v)
-				case uint32:
-					return int32(v)
-				case uint64:
-					return int32(v)
+			switch v := value.(type) {
+			case string:
+				converted, err := strconv.ParseInt(v, 10, 32)
+				if err != nil {
+					log.Fatal(jerr.Get("error casting to int in template", err))
+				}
+				return int32(converted)
+			case int:
+				return int32(v)
+			case int32:
+				return int32(v)
+			case int64:
+				return int32(v)
+			case uint:
+				return int32(v)
+			case uint32:
+				return int32(v)
+			case uint64:
+				return int32(v)
 			}
 			return int32(0)
 		},
 	})
+}
+
+func postHandler(r *web.Response) {
+	go func() {
+		responseCode := r.GetResponseCode()
+		if responseCode == 0 {
+			responseCode = http.StatusOK
+		}
+		err := metric.AddHttpRequest(r.Request.HttpRequest.URL.Path, responseCode)
+		if err != nil {
+			jerr.Get("error adding metric", err).Print()
+		}
+	}()
 }
 
 func notFoundHandler(r *web.Response) {
@@ -205,22 +209,10 @@ func Run(sessionCookieInsecure bool, port int) {
 		Port:              port,
 		NotFoundHandler:   notFoundHandler,
 		PreHandler:        preHandler,
+		PostHandler:       postHandler,
 		GetCsrfToken:      getCsrfToken,
 		Routes: web.Routes(
-			[]web.Route{
-				indexRoute,
-				protocolRoute,
-				guidesRoute,
-				disclaimerRoute,
-				introducingMemoRoute,
-				openSourcingMemoRoute,
-				aboutRoute,
-				needFundsRoute,
-				newPostsRoute,
-				statsRoute,
-				feedRoute,
-				//testsRoute,
-			},
+			index.GetRoutes(),
 			poll.GetRoutes(),
 			topics.GetRoutes(),
 			posts.GetRoutes(),

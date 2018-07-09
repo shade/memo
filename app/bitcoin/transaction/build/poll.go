@@ -9,12 +9,12 @@ import (
 )
 
 func Poll(pollType memo.PollType, question string, options []string, privateKey *wallet.PrivateKey) ([]*memo.Tx, error) {
-	var transactionType memo.SpendOutputType
+	var outputType memo.OutputType
 	switch memo.PollType(pollType) {
 	case memo.PollTypeOne:
-		transactionType = memo.SpendOutputTypeMemoPollQuestionSingle
+		outputType = memo.OutputTypeMemoPollQuestionSingle
 	case memo.PollTypeAny:
-		transactionType = memo.SpendOutputTypeMemoPollQuestionMulti
+		outputType = memo.OutputTypeMemoPollQuestionMulti
 	default:
 		return nil, jerr.New("invalid poll type")
 	}
@@ -26,8 +26,8 @@ func Poll(pollType memo.PollType, question string, options []string, privateKey 
 	sort.Sort(db.TxOutSortByValue(spendableTxOuts))
 
 	var memoTxns []*memo.Tx
-	memoTx, spendableTxOuts, err := buildWithTxOuts([]memo.SpendOutput{{
-		Type:    transactionType,
+	memoTx, spendableTxOuts, err := buildWithTxOuts([]memo.Output{{
+		Type:    outputType,
 		Data:    []byte(question),
 		RefData: []byte{byte(len(options))},
 	}}, spendableTxOuts, privateKey)
@@ -39,8 +39,8 @@ func Poll(pollType memo.PollType, question string, options []string, privateKey 
 	memoTxHash := memoTx.MsgTx.TxHash()
 	var questionTxHashBytes = memoTxHash.CloneBytes()
 	for _, option := range options {
-		memoTx, spendableTxOuts, err = buildWithTxOuts([]memo.SpendOutput{{
-			Type:    memo.SpendOutputTypeMemoPollOption,
+		memoTx, spendableTxOuts, err = buildWithTxOuts([]memo.Output{{
+			Type:    memo.OutputTypeMemoPollOption,
 			Data:    []byte(option),
 			RefData: []byte(questionTxHashBytes),
 		}}, spendableTxOuts, privateKey)

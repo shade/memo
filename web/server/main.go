@@ -7,6 +7,7 @@ import (
 	"github.com/memocash/memo/app/bitcoin/queuer"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/res"
 	"github.com/memocash/memo/app/util"
 	auth2 "github.com/memocash/memo/web/server/auth"
@@ -45,18 +46,7 @@ func getCsrfToken(cookieId string) string {
 	return token
 }
 
-var blockedIps = []string{
-	"91.130.64.132",
-	"49.195.117.8",
-}
-
 func preHandler(r *web.Response) {
-	for _, blockedIp := range blockedIps {
-		if r.Request.GetSourceIP() == blockedIp {
-			r.Error(jerr.Newf("blocked ip: %s\n", blockedIp), http.StatusUnauthorized)
-			return
-		}
-	}
 	r.Helper["Title"] = "Memo"
 	r.Helper["Description"] = "Decentralized on-chain social network built on Bitcoin Cash"
 	r.Helper["BaseUrl"] = res.GetBaseUrl(r)
@@ -163,6 +153,19 @@ func preHandler(r *web.Response) {
 	})
 }
 
+func postHandler(r *web.Response) {
+	go func() {
+		responseCode := r.GetResponseCode()
+		if responseCode == 0 {
+			responseCode = http.StatusOK
+		}
+		err := metric.AddHttpRequest(r.Request.HttpRequest.URL.Path, responseCode)
+		if err != nil {
+			jerr.Get("error adding metric", err).Print()
+		}
+	}()
+}
+
 func notFoundHandler(r *web.Response) {
 	r.SetResponseCode(http.StatusNotFound)
 	r.RenderTemplate(res.UrlNotFound)
@@ -206,6 +209,7 @@ func Run(sessionCookieInsecure bool, port int) {
 		Port:              port,
 		NotFoundHandler:   notFoundHandler,
 		PreHandler:        preHandler,
+		PostHandler:       postHandler,
 		GetCsrfToken:      getCsrfToken,
 		Routes: web.Routes(
 			index.GetRoutes(),

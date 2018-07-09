@@ -7,8 +7,8 @@ import (
 )
 
 func MemoReply(txHashBytes []byte, message string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type:    memo.SpendOutputTypeMemoReply,
+	transactions := []memo.Output{{
+		Type:    memo.OutputTypeMemoReply,
 		RefData: txHashBytes,
 		Data:    []byte(message),
 	}}

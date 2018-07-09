@@ -7,8 +7,8 @@ import (
 )
 
 func TopicMessage(topicName string, message string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type:    memo.SpendOutputTypeMemoTopicMessage,
+	transactions := []memo.Output{{
+		Type:    memo.OutputTypeMemoTopicMessage,
 		RefData: []byte(topicName),
 		Data:    []byte(message),
 	}}

@@ -12,6 +12,7 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/html-parser"
+	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/profile/pic"
 )
 
@@ -47,7 +48,8 @@ func SaveMemo(txn *db.Transaction, out *db.TransactionOut, block *db.Block) erro
 	if err != nil && ! db.IsRecordNotFoundError(err) {
 		return jerr.Get("error saving memo_test", err)
 	}
-	switch out.PkScript[3] {
+	memoCode := out.PkScript[3]
+	switch memoCode {
 	case memo.CodePost:
 		err = saveMemoPost(txn, out, block, inputAddress, parentHash)
 		if err != nil {
@@ -123,7 +125,12 @@ func SaveMemo(txn *db.Transaction, out *db.TransactionOut, block *db.Block) erro
 			return jerr.Get("error saving memo_set_pic", err)
 		}
 	}
-
+	go func() {
+		err := metric.AddMemoSave(memoCode)
+		if err != nil {
+			jerr.Get("error adding memo save metric", err).Print()
+		}
+	}()
 	return nil
 }
 

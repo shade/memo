@@ -8,8 +8,8 @@ import (
 )
 
 func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoLike,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoLike,
 		Data: likeTxBytes,
 	}}
 	if tip != 0 {
@@ -23,8 +23,8 @@ func Like(likeTxBytes []byte, tip int64, privateKey *wallet.PrivateKey) (*memo.T
 		if err != nil {
 			return nil, jerr.Get("error getting memo_post", err)
 		}
-		transactions = append(transactions, memo.SpendOutput{
-			Type:    memo.SpendOutputTypeP2PK,
+		transactions = append(transactions, memo.Output{
+			Type:    memo.OutputTypeP2PK,
 			Address: memoPost.GetAddress(),
 			Amount:  tip,
 		})

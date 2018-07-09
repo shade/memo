@@ -35,10 +35,14 @@ type txSend struct {
 }
 
 func init() {
-	var loops int
+	var lastPing time.Time
 	go func() {
 		for {
-			loops++
+			var needsPing bool
+			if time.Since(lastPing) > 10 * time.Second {
+				needsPing = true
+				lastPing = time.Now()
+			}
 			var topicLastPostIds = make(map[string]uint)
 			for i := 0; i < len(items); i++ {
 				var item = items[i]
@@ -49,7 +53,7 @@ func init() {
 				if item.LastPostId < topicLastPostIds[item.Topic] {
 					topicLastPostIds[item.Topic] = item.LastPostId
 				}
-				if loops % 50 == 0 {
+				if needsPing {
 					err := item.Socket.Ping()
 					if err != nil {
 						go func(item *Item, err error) {

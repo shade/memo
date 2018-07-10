@@ -38,13 +38,13 @@ var MemoApp = {
     /**
      * @param message {string}
      */
-    MemoApp.AddAlert = function(message) {
+    MemoApp.AddAlert = function (message) {
         alertId++;
         $(".alert-banner").append("<p id='alert-banner-message-" + alertId + "'>" + message + "</p>");
         var $alertMessage = $("#alert-banner-message-" + alertId);
         $alertMessage.hide().slideDown();
-        setTimeout(function() {
-            $alertMessage.slideUp(function() {
+        setTimeout(function () {
+            $alertMessage.slideUp(function () {
                 $alertMessage.remove();
             })
         }, 5000);
@@ -78,17 +78,33 @@ var MemoApp = {
         return parseInt(s);
     };
 
-    MemoApp.GetPassword = function() {
+    MemoApp.GetPassword = function () {
         if (!localStorage.WalletPassword || localStorage.WalletPassword.length === 0) {
             localStorage.WalletPassword = prompt("Your wallet has become locked. Please re-enter your password to unlock your wallet.");
         }
         return localStorage.WalletPassword;
     };
 
+    MemoApp.ReEnterPassword = function () {
+        var html =
+            "<div id='re-enter-password-modal'>" +
+            "<div class='panel panel-default'>" +
+            "<div class='panel-heading'>Re-enter Password</div>" +
+            "<div class='panel-body'>" +
+            "<form id='re-enter-password-form'>" +
+            "<label for='re-enter-password'>Password</label>" +
+            "<input type='password' id='re-enter-password' autocomplete='Password'/>" +
+            "</form>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
+        MemoApp.Modal(new Array(15).join(html));
+    };
+
     /**
      * @param {string} password
      */
-    MemoApp.SetPassword = function(password) {
+    MemoApp.SetPassword = function (password) {
         localStorage.WalletPassword = password;
     };
 
@@ -107,7 +123,7 @@ var MemoApp = {
      * @param {string} path
      * @return {WebSocket}
      */
-    MemoApp.GetSocket = function(path) {
+    MemoApp.GetSocket = function (path) {
         var loc = window.location;
         var protocol = window.location.protocol.toLowerCase() === "https:" ? "wss" : "ws";
         var socket = new WebSocket(protocol + "://" + loc.hostname + ":" + loc.port + path);

@@ -86,6 +86,32 @@ select {
     clear: both;
 }
 
+#site-wrapper.active {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+#inner-site-wrapper {
+    position: relative;
+    height: 100%;
+}
+#site-wrapper-cover.active {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.25);
+}
+#site-modal-wrapper {
+    position: absolute;
+    display: none;
+    top: 62px;
+    left: 0;
+    width: 100%;
+}
+
 table.sortable td.bars span {
     display: block;
     width: 20px;

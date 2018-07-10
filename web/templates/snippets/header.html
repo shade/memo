@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>{{ .Title }}</title>
@@ -31,6 +32,7 @@
 </head>
 <body {{ if eq .UserSettings.Theme "dark" }}class="dark"{{ end }}>
 {{ if not .IsMobileApp }}
+<div id="site-wrapper"><div id="inner-site-wrapper">
 <br/>
 <br/>
 <br/>

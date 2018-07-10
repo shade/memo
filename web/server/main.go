@@ -6,6 +6,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/bitcoin/queuer"
 	"github.com/memocash/memo/app/cache"
+	"github.com/memocash/memo/app/config"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/res"
@@ -27,8 +28,6 @@ import (
 	"unicode"
 )
 
-var UseMinJS bool
-
 func isLoggedIn(r *web.Response) bool {
 	if ! auth.IsLoggedIn(r.Session.CookieId) {
 		r.SetRedirect(res.UrlLogin)
@@ -47,6 +46,7 @@ func getCsrfToken(cookieId string) string {
 }
 
 func preHandler(r *web.Response) {
+	useMinJS := config.GetUseMinJs()
 	r.Helper["Title"] = "Memo"
 	r.Helper["Description"] = "Decentralized on-chain social network built on Bitcoin Cash"
 	r.Helper["BaseUrl"] = res.GetBaseUrl(r)
@@ -99,7 +99,7 @@ func preHandler(r *web.Response) {
 	} else {
 		r.Helper["IsMobileApp"] = false
 	}
-	if UseMinJS {
+	if useMinJS {
 		r.Helper["jsFiles"] = res.GetMinJsFiles()
 	} else {
 		r.Helper["jsFiles"] = res.GetResJsFiles()

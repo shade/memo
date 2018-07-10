@@ -55,7 +55,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                MemoApp.ReEnterPassword();
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -81,7 +84,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
-                        MemoApp.ReEnterPassword();
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -138,7 +143,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -164,6 +172,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -231,12 +242,15 @@
 
             $submit.prop('disabled', true);
             $url.prop('disabled', true);
-            $broadcasting.removeClass('hidden')
-            $cancel.hide()
+            $broadcasting.removeClass('hidden');
+            $cancel.hide();
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -266,6 +280,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
                         return;
@@ -330,7 +347,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -356,6 +376,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -389,7 +412,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -415,6 +441,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -449,7 +478,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -475,6 +507,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -514,7 +549,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -541,6 +579,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -614,7 +655,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $form.submit();
+                });
                 return;
             }
 
@@ -673,6 +717,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $form.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");
@@ -791,7 +838,10 @@
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
-                console.log("Password not set. Please try logging in again.");
+                MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+                MemoApp.ReEnterPassword(function() {
+                    $likeForm.submit();
+                });
                 return;
             }
 
@@ -850,6 +900,9 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
+                        MemoApp.ReEnterPassword(function() {
+                            $likeForm.submit();
+                        });
                         return;
                     } else if (xhr.status === 402) {
                         MemoApp.AddAlert("Please make sure your account has enough funds.");

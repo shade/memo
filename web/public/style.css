@@ -120,7 +120,7 @@ select {
     min-height: 100%;
 }
 #site-modal-wrapper .container {
-    padding-top: 62px;
+    padding-top: 100px;
 }
 
 table.sortable td.bars span {
@@ -221,12 +221,21 @@ a.disabled {
     padding: 0;
     margin:5px 5px 0;
 }
+@media (min-width: 400px) {
+    .navbar .alert-banner {
+        left: 50%;
+        margin-left: -200px;
+        width: 400px;
+    }
+}
+@media (max: 400px) {
+    .navbar .alert-banner {
+        width: 100%;
+    }
+}
 .navbar .alert-banner {
     position: absolute;
     top: 50px;
-    left: 50%;
-    margin-left: -200px;
-    width: 400px;
     background: #ff8080;
     border-radius: 0 0 5px 5px;
 }

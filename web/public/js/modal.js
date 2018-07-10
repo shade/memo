@@ -22,7 +22,7 @@
     MemoApp.Modal = function (title, body, width) {
         var offset = (12 - width) / 2;
         var html =
-            "<div class='container vertical-center'>" +
+            "<div class='container'>" +
             "<div id='re-enter-password-modal' class='col-xs-12 col-sm-" + width + " col-sm-offset-" + offset + "'>" +
             "<div class='panel panel-default'>" +
             "<div class='panel-heading'>" +

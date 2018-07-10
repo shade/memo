@@ -90,13 +90,13 @@ var MemoApp = {
             "<form id='re-enter-password-form'>" +
             "<p>" +
             "<label for='re-enter-password'>Password</label>" +
-            "<input type='password' name='password' id='re-enter-password' class='form-control' autocomplete='Password'/>" +
+            "<input type='password' name='password' id='re-enter-password' class='form-control' autocomplete='Password' autofocus/>" +
             "</p><p>" +
-            "<input type='submit' class='btn btn-primary' value='Submit'/> " +
+            "<input type='submit' class='btn btn-primary' value='Unlock'/> " +
             "<a name='cancel' class='btn btn-default' href='#'>Cancel</a>" +
             "</p>" +
             "</form>";
-        MemoApp.Modal("Re-enter Password", new Array(2).join(html), 8);
+        MemoApp.Modal("Unlock Wallet", html, 8);
         var $form = $("#re-enter-password-form");
         var $cancel = $form.find("[name=cancel]");
         $form.submit(function (e) {

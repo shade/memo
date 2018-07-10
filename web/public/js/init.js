@@ -79,26 +79,43 @@ var MemoApp = {
     };
 
     MemoApp.GetPassword = function () {
-        if (!localStorage.WalletPassword || localStorage.WalletPassword.length === 0) {
-            localStorage.WalletPassword = prompt("Your wallet has become locked. Please re-enter your password to unlock your wallet.");
-        }
-        return localStorage.WalletPassword;
+        return localStorage.WalletPassword || "";
     };
 
-    MemoApp.ReEnterPassword = function () {
+    /**
+     * @param {function=} callback
+     */
+    MemoApp.ReEnterPassword = function (callback) {
         var html =
-            "<div id='re-enter-password-modal'>" +
-            "<div class='panel panel-default'>" +
-            "<div class='panel-heading'>Re-enter Password</div>" +
-            "<div class='panel-body'>" +
             "<form id='re-enter-password-form'>" +
+            "<p>" +
             "<label for='re-enter-password'>Password</label>" +
-            "<input type='password' id='re-enter-password' autocomplete='Password'/>" +
-            "</form>" +
-            "</div>" +
-            "</div>" +
-            "</div>";
-        MemoApp.Modal(new Array(15).join(html));
+            "<input type='password' name='password' id='re-enter-password' class='form-control' autocomplete='Password'/>" +
+            "</p><p>" +
+            "<input type='submit' class='btn btn-primary' value='Submit'/> " +
+            "<a name='cancel' class='btn btn-default' href='#'>Cancel</a>" +
+            "</p>" +
+            "</form>";
+        MemoApp.Modal("Re-enter Password", new Array(2).join(html), 8);
+        var $form = $("#re-enter-password-form");
+        var $cancel = $form.find("[name=cancel]");
+        $form.submit(function (e) {
+            e.preventDefault();
+            var password = $form.find("[name=password]").val();
+            if (!password || password.length === 0) {
+                MemoApp.AddAlert("Password is empty.");
+                return;
+            }
+            localStorage.WalletPassword = password;
+            MemoApp.CloseModal();
+            if (typeof callback === "function") {
+                callback();
+            }
+        });
+        $cancel.click(function (e) {
+            e.preventDefault();
+            MemoApp.CloseModal();
+        });
     };
 
     /**

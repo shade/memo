@@ -16,16 +16,28 @@
         $window = $(window);
     });
     /**
-     * @param {string} html
+     * @param {string} title
+     * @param {string} body
      */
-    MemoApp.Modal = function (html) {
-        html =
-            "<div class='container'>" +
-            html +
+    MemoApp.Modal = function (title, body, width) {
+        var offset = (12 - width) / 2;
+        var html =
+            "<div class='container vertical-center'>" +
+            "<div id='re-enter-password-modal' class='col-xs-12 col-sm-" + width + " col-sm-offset-" + offset + "'>" +
+            "<div class='panel panel-default'>" +
+            "<div class='panel-heading'>" +
+            title +
+            "<a data-toggle='collapse' href='#' class='close'>&times </a>" +
+            "</div>" +
+            "<div class='panel-body'>" +
+            body +
+            "</form>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
             "</div>";
         $modalWrapper.html(html).show();
         windowHeight = $window.height();
-        console.log(windowHeight);
         scrollTop = $document.scrollTop();
         $siteWrapper.css({height: windowHeight});
         $innerWrapper.css({top: -scrollTop});
@@ -35,12 +47,20 @@
         $modalWrapper.find(".container").click(function (e) {
             e.stopPropagation();
         });
-        $modalWrapper.click(function () {
-            $siteWrapper.removeClass("active");
-            $innerWrapper.css({top: 0});
-            $document.scrollTop(scrollTop);
-            $siteCover.removeClass("active");
-            $modalWrapper.hide();
+        $modalWrapper.find(".close").click(function(e) {
+            e.preventDefault();
+            MemoApp.CloseModal();
         });
+        $modalWrapper.click(function () {
+            MemoApp.CloseModal();
+        });
+    };
+
+    MemoApp.CloseModal = function() {
+        $siteWrapper.removeClass("active");
+        $innerWrapper.css({top: 0});
+        $document.scrollTop(scrollTop);
+        $siteCover.removeClass("active");
+        $modalWrapper.hide();
     };
 })();

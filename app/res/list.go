@@ -41,10 +41,10 @@ func SetAppendNumber(num int) {
 func GetResCssFiles() []string {
 	var fileList []string
 	for _, file := range CssFiles {
-		if strings.HasPrefix(file, "http") {
-			continue
+		if ! strings.HasPrefix(file, "lib/") {
+			file = fmt.Sprintf("%s?ver=%d", file, appendNumber)
 		}
-		fileList = append(fileList, fmt.Sprintf("%s?ver=%d", file, appendNumber))
+		fileList = append(fileList, file)
 	}
 	return fileList
 }
@@ -52,22 +52,14 @@ func GetResCssFiles() []string {
 func GetResJsFiles() []string {
 	var fileList []string
 	for _, file := range JsFiles {
-		if strings.HasPrefix(file, "http") {
-			continue
+		if ! strings.HasPrefix(file, "lib/") {
+			file = fmt.Sprintf("%s?ver=%d", file, appendNumber)
 		}
-		fileList = append(fileList, fmt.Sprintf("%s?ver=%d", file, appendNumber))
+		fileList = append(fileList, file)
 	}
 	return fileList
 }
 
 func GetMinJsFiles() []string {
-	var fileList []string
-	for _, file := range JsFiles {
-		if ! strings.HasPrefix(file, "http") {
-			continue
-		}
-		fileList = append(fileList, fmt.Sprintf("%s?ver=%d", file, appendNumber))
-	}
-	fileList = append(fileList, MinJsFile)
-	return fileList
+	return []string{MinJsFile}
 }

@@ -240,11 +240,6 @@
                 return;
             }
 
-            $submit.prop('disabled', true);
-            $url.prop('disabled', true);
-            $broadcasting.removeClass('hidden');
-            $cancel.hide();
-
             var password = MemoApp.GetPassword();
             if (!password.length) {
                 MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
@@ -253,6 +248,11 @@
                 });
                 return;
             }
+
+            $submit.prop('disabled', true);
+            $url.prop('disabled', true);
+            $broadcasting.removeClass('hidden');
+            $cancel.hide();
 
             submitting = true;
             $.ajax({
@@ -649,10 +649,6 @@
                 return;
             }
 
-            $creating.removeClass("hidden");
-            $replyLink.hide();
-            $form.hide();
-
             var password = MemoApp.GetPassword();
             if (!password.length) {
                 MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
@@ -661,6 +657,10 @@
                 });
                 return;
             }
+
+            $creating.removeClass("hidden");
+            $replyLink.hide();
+            $form.hide();
 
             submitting = true;
             $.ajax({
@@ -833,8 +833,6 @@
                 MemoApp.AddAlert("Must enter a tip greater than 546 (the minimum dust limit).");
                 return;
             }
-            $creating.removeClass("hidden");
-            $likeForm.hide();
 
             var password = MemoApp.GetPassword();
             if (!password.length) {
@@ -844,6 +842,9 @@
                 });
                 return;
             }
+
+            $creating.removeClass("hidden");
+            $likeForm.hide();
 
             submitting = true;
             $.ajax({

@@ -502,9 +502,6 @@
                 return
             }
 
-            $creating.removeClass("hidden");
-            $form.hide();
-
             var txHash = $form.find("[name=tx-hash]").val();
             if (txHash.length === 0) {
                 MemoApp.AddAlert("Form error, tx hash not set.");
@@ -525,6 +522,9 @@
                 });
                 return;
             }
+
+            $creating.removeClass("hidden");
+            $form.hide();
 
             submitting = true;
             $.ajax({

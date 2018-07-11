@@ -1,0 +1,114 @@
+{{ template "snippets/header.html" . }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highstock/5.0.12/highstock.js"></script>
+
+<h2>{{ T "Charts" }}</h2>
+
+<div id="actions-chart"></div>
+<br/>
+<div id="users-chart"></div>
+
+<br/>
+<br/>
+
+<script type="text/javascript">
+    $(function () {
+        setTimeout(function () {
+            Highcharts.stockChart("actions-chart", {
+                title: {
+                    text: "On-chain Actions"
+                },
+                credits: false,
+                legend: {
+                    enabled: false
+                },
+                /*xAxis: {
+                    labels: {
+                        format: "{value:%Y-%m-%d}"
+                    }
+                },*/
+                tooltip: {
+                    formatter: function () {
+                        var dateString = Highcharts.dateFormat('%Y-%m-%d', this.x);
+                        return dateString + ": <b>" + Highcharts.numberFormat(this.y, 0, '', ',') + "</b>";
+                    }
+                },
+                chart: {
+                    alignTicks: false
+                },
+
+                rangeSelector: {
+                    selected: 1
+                },
+                series: [{
+                    type: 'column',
+                    data: {{ .Actions }},
+                    dataGrouping: {
+                        enabled: false/*,
+                        units: [[
+                            'week', // unit name
+                            [1] // allowed multiples
+                        ], [
+                            'month',
+                            [1, 2, 3, 4, 6]
+                        ]]*/
+                    }
+                }]
+            });
+        });
+        Highcharts.stockChart("users-chart", {
+            title: {
+                text: "Unique Users"
+            },
+            credits: false,
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                formatter: function () {
+                    var dateString = Highcharts.dateFormat('%Y-%m-%d', this.x);
+                    return dateString + ": <b>" + Highcharts.numberFormat(this.y, 0, '', ',') + "</b>";
+                }
+            },
+            chart: {
+                alignTicks: false
+            },
+
+            rangeSelector: {
+                selected: 1
+            },
+            series: [{
+                type: 'column',
+                data: {{ .Users }},
+                dataGrouping: {
+                    enabled: false
+                }
+            }]
+        });
+        /*setTimeout(function () {
+            Highcharts.stockChart("users-chart", {
+                title: {
+                    text: "Memo Unique Users"
+                },
+                xAxis: {
+                    type: "datetime",
+                    dateTimeLabelFormats: {
+                        day: '%Y-%m-%d'
+                    }
+                },
+                credits: false,
+                tooltip: {
+                    formatter: function () {
+                        return "<b>" + this.y + "</b>";
+                    }
+                },
+                series: [{
+                    type: "line",
+                    data: {{ .Users }}
+                }]
+            });
+        });*/
+    });
+</script>
+
+{{ template "snippets/footer.html" . }}

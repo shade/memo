@@ -15,6 +15,7 @@ func GetRoutes() []web.Route {
 		needFundsRoute,
 		newPostsRoute,
 		statsRoute,
+		chartsRoute,
 		allRoute,
 	}
 }

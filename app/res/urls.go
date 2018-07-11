@@ -12,6 +12,7 @@ const (
 	UrlNeedFunds       = "/need-funds"
 	UrlNewPosts        = "/new-posts"
 	UrlStats           = "/stats"
+	UrlCharts          = "/charts"
 	UrlFeed            = "/feed"
 	UrlAbout           = "/about"
 	UrlNotFound        = "/404"
@@ -30,6 +31,7 @@ const (
 	TmplOpenSource       = "/index/open-source"
 	TmplProtocol         = "/index/protocol"
 	TmplStats            = "/index/stats"
+	TmplCharts           = "/index/charts"
 )
 
 const (

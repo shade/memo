@@ -21,6 +21,7 @@ var JsFiles = []string{
 	"js/profile.js",
 	"js/poll.js",
 	"js/vote.js",
+	"js/modal.js",
 }
 
 var CssFiles = []string{
@@ -29,7 +30,7 @@ var CssFiles = []string{
 	"style.css",
 }
 
-var MinJsFile = "res/js/min.js"
+var MinJsFile = "js/min.js"
 
 var appendNumber = 0
 
@@ -40,10 +41,10 @@ func SetAppendNumber(num int) {
 func GetResCssFiles() []string {
 	var fileList []string
 	for _, file := range CssFiles {
-		if strings.HasPrefix(file, "http") {
-			continue
+		if ! strings.HasPrefix(file, "lib/") && appendNumber > 0 {
+			file = fmt.Sprintf("%s?ver=%d", file, appendNumber)
 		}
-		fileList = append(fileList, fmt.Sprintf("%s?ver=%d", file, appendNumber))
+		fileList = append(fileList, file)
 	}
 	return fileList
 }
@@ -51,10 +52,10 @@ func GetResCssFiles() []string {
 func GetResJsFiles() []string {
 	var fileList []string
 	for _, file := range JsFiles {
-		if strings.HasPrefix(file, "http") {
-			continue
+		if ! strings.HasPrefix(file, "lib/") && appendNumber > 0 {
+			file = fmt.Sprintf("%s?ver=%d", file, appendNumber)
 		}
-		fileList = append(fileList, fmt.Sprintf("%s?ver=%d", file, appendNumber))
+		fileList = append(fileList, file)
 	}
 	return fileList
 }
@@ -62,11 +63,20 @@ func GetResJsFiles() []string {
 func GetMinJsFiles() []string {
 	var fileList []string
 	for _, file := range JsFiles {
-		if ! strings.HasPrefix(file, "http") {
-			continue
+		if strings.HasPrefix(file, "lib/") {
+			fileList = append(fileList, file)
 		}
-		fileList = append(fileList, fmt.Sprintf("%s?ver=%d", file, appendNumber))
 	}
-	fileList = append(fileList, MinJsFile)
+	fileList = append(fileList, fmt.Sprintf("%s?ver=%d", MinJsFile, appendNumber))
+	return fileList
+}
+
+func getJsFilesToMinify() []string {
+	var fileList []string
+	for _, file := range JsFiles {
+		if ! strings.HasPrefix(file, "lib/") {
+			fileList = append(fileList, file)
+		}
+	}
 	return fileList
 }

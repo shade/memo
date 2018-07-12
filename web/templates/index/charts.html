@@ -4,47 +4,81 @@
 
 <h2>{{ T "Charts" }}</h2>
 
+<div id="cohort-actions-chart"></div>
+<br/>
 <div id="actions-chart"></div>
 <br/>
 <div id="users-chart"></div>
+<br/>
+<div id="first-posts-chart"></div>
+<br/>
+<div id="last-posts-chart"></div>
 
 <br/>
 <br/>
 
 <script type="text/javascript">
     $(function () {
-        createChart("actions-chart", "On-chain Actions", {{ .Actions }});
-        createChart("users-chart", "Unique Users", {{ .Users }});
+        createSingleSeriesChart("actions-chart", "On-chain Actions", {{ .Actions }});
+        createSingleSeriesChart("users-chart", "Active Users", {{ .Users }});
+        createSingleSeriesChart("first-posts-chart", "New Users", {{ .FirstPosts }});
+        createSingleSeriesChart("last-posts-chart", "Last Seen Users", {{ .LastPosts }});
+        createChart("cohort-actions-chart", "On-chain Actions by Cohort", {{ .CohortActions }});
     });
-    function createChart(id, title, data) {
+    function createSingleSeriesChart(id, title, data) {
+        createChart(id, title, [{
+            type: 'column',
+            data: data,
+            dataGrouping: {
+                enabled: false
+            }
+        }]);
+    }
+    function createChart(id, title, series) {
         Highcharts.stockChart(id, {
             title: {
                 text: title
             },
             credits: false,
             legend: {
-                enabled: false
+                enabled: true
+            },
+            lang: {
+                thousandsSep: ','
             },
             tooltip: {
+                shared: true,
+                /*
+                headerFormat: '<b>{point.x:%Y-%m-%d}</b><br>',
+                pointFormat: '<b>{series.name}:</b> {point.y:,.f} ( {point.percentage:.0f}% )<br>',
+                footerFormat: '<b>Total:  {point.total:,.f} </b>'*/
                 formatter: function () {
-                    var dateString = Highcharts.dateFormat('%Y-%m-%d', this.x);
-                    return dateString + ": <b>" + Highcharts.numberFormat(this.y, 0, '', ',') + "</b>";
+                    var html = "<b>" + Highcharts.dateFormat('%Y-%m-%d', this.x) + "</b>";
+                    var total = 0;
+                    $.each(this.points, function () {
+                        total += this.y;
+                        if (this.y === 0) {
+                            return;
+                        }
+                        html += '<br/>' + this.series.name + ": <b>" + Highcharts.numberFormat(this.y, 0, '', ',') + " (" + Highcharts.numberFormat(this.percentage, 0, '', ',') + "%)</b>";
+                    });
+                    console.log(this);
+                    return html + "<br/>Total: <b>" + Highcharts.numberFormat(total, 0, '', ',') + "</b>";
                 }
             },
             chart: {
+                type: "column",
                 alignTicks: false
             },
-
             rangeSelector: {
                 selected: 1
             },
-            series: [{
-                type: 'column',
-                data: data,
-                dataGrouping: {
-                    enabled: false
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
                 }
-            }]
+            },
+            series: series
         });
     }
 </script>

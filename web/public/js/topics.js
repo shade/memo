@@ -258,7 +258,9 @@
                             return;
                         }
                         $allPosts.append(html);
-                        $allPosts.scrollTop($allPosts[0].scrollHeight);
+                        if ($allPosts[0].scrollHeight - $allPosts.scrollTop() === $allPosts.outerHeight()) {
+                            $allPosts.scrollTop($allPosts[0].scrollHeight);
+                        }
                     },
                     error: function (xhr) {
                         MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");

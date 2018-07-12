@@ -51,6 +51,9 @@
         });
     });
 </script>
+{{ if eq .UserSettings.Integrations "all" }}
+<script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
+{{ end }}
 
 {{ if not (eq .UserSettings.Integrations "none") }}
 <script type="text/javascript" async src="https://www.googletagmanager.com/gtag/js?id={{ .GoogleId }}"></script>

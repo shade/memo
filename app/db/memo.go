@@ -100,14 +100,29 @@ func GetUserStats() ([]obj.UserStat, error) {
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
 	}
+	joinSql := "" +
+		"LEFT JOIN (" +
+		"	SELECT" +
+		"		follow_pk_hash," +
+		"		COALESCE(SUM(IF(unfollow=0, 1, 0)), 0) AS num_followers" +
+		"	FROM memo_follows" +
+		"	JOIN (" +
+		"		SELECT MAX(id) AS id" +
+		"		FROM memo_follows" +
+		"		GROUP BY pk_hash, follow_pk_hash" +
+		"	) sq ON (sq.id = memo_follows.id)" +
+		"	GROUP BY follow_pk_hash" +
+		") follows ON (memo_tests.pk_hash = follows.follow_pk_hash)"
 	query := db.
 		Table("memo_tests").
-		Select("pk_hash, " +
-		"COUNT(*) AS num_posts, " +
-		"MIN(`timestamp`) AS first_post, " +
+		Select("memo_tests.pk_hash, " +
+		"COUNT(*) AS num_posts," +
+		"follows.num_followers AS num_followers," +
+		"MIN(`timestamp`) AS first_post," +
 		"MAX(`timestamp`) AS last_post").
 		Joins("JOIN blocks ON (memo_tests.block_id = blocks.id)").
-		Group("pk_hash")
+		Joins(joinSql).
+		Group("memo_tests.pk_hash")
 	var userStats []obj.UserStat
 	result := query.Find(&userStats)
 	if result.Error != nil {

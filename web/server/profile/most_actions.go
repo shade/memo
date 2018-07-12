@@ -13,8 +13,8 @@ import (
 	"strings"
 )
 
-var allRoute = web.Route{
-	Pattern:    res.UrlProfiles,
+var mostActionsRoute = web.Route{
+	Pattern:    res.UrlProfilesMostActions,
 	Handler: func(r *web.Response) {
 		r.Helper["Nav"] = "profiles"
 		offset := r.Request.GetUrlParameterInt("offset")
@@ -33,7 +33,7 @@ var allRoute = web.Route{
 			}
 			selfPkHash = key.PkHash
 		}
-		profiles, err := profile.GetProfiles(selfPkHash, searchString, offset, db.UserStatOrderCreated)
+		profiles, err := profile.GetProfiles(selfPkHash, searchString, offset, db.UserStatOrderPosts)
 		if err != nil {
 			r.Error(jerr.Get("error getting profiles", err), http.StatusInternalServerError)
 			return
@@ -41,11 +41,11 @@ var allRoute = web.Route{
 		res.SetPageAndOffset(r, offset)
 		r.Helper["SearchString"] = searchString
 		if searchString != "" {
-			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlProfiles, "/"), searchString)
+			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlProfilesMostActions, "/"), searchString)
 		} else {
-			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlProfiles)
+			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlProfilesMostActions)
 		}
 		r.Helper["Profiles"] = profiles
-		r.RenderTemplate(res.TmplProfiles)
+		r.RenderTemplate(res.TmplProfilesMostActions)
 	},
 }

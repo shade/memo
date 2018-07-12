@@ -265,33 +265,6 @@ func GetPostsForPkHash(pkHash []byte, offset uint) ([]*MemoPost, error) {
 	return memoPosts, nil
 }
 
-func GetUniqueMemoAPkHashes(offset int) ([][]byte, error) {
-	db, err := getDb()
-	if err != nil {
-		return nil, jerr.Get("error getting db", err)
-	}
-	rows, err := db.
-		Table("memo_posts").
-		Select("DISTINCT(pk_hash)").
-		Limit(25).
-		Offset(offset).
-		Rows()
-	if err != nil {
-		return nil, jerr.Get("error getting distinct pk hashes", err)
-	}
-	defer rows.Close()
-	var pkHashes [][]byte
-	for rows.Next() {
-		var pkHash []byte
-		err := rows.Scan(&pkHash)
-		if err != nil {
-			return nil, jerr.Get("error scanning row with pkHash", err)
-		}
-		pkHashes = append(pkHashes, pkHash)
-	}
-	return pkHashes, nil
-}
-
 func GetRecentPosts(offset uint) ([]*MemoPost, error) {
 	db, err := getDb()
 	if err != nil {

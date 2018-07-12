@@ -29,7 +29,7 @@ type Profile struct {
 	Balance              int64
 	BalanceBCH           float64
 	hasBalance           bool
-	FollowerCount        uint
+	FollowerCount        int
 	FollowingCount       uint
 	TopicsFollowingCount uint
 	NumPosts             int
@@ -105,7 +105,7 @@ func (p *Profile) SetFollowerCount() error {
 	if err != nil {
 		return jerr.Get("error getting follower count for hash", err)
 	}
-	p.FollowerCount = cnt
+	p.FollowerCount = int(cnt)
 	return nil
 }
 
@@ -182,12 +182,22 @@ func GetProfiles(selfPkHash []byte, searchString string, offset int, orderType d
 			return nil, jerr.Get("error getting profile for hash", err)
 		}
 		profile.NumPosts = objProfile.NumPosts
-		profile.FollowerCount = uint(objProfile.NumFollowers)
+		profile.FollowerCount = objProfile.NumFollowers
 		profile.FirstPost = objProfile.FirstPost
 		profile.LastPost = objProfile.LastPost
 		profiles = append(profiles, profile)
 	}
 	return profiles, nil
+}
+
+func AttachReputationToProfiles(profiles []*Profile) error {
+	for _, profile := range profiles {
+		err := profile.SetReputation()
+		if err != nil {
+			return jerr.Get("error setting reputation", err)
+		}
+	}
+	return nil
 }
 
 func GetProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {

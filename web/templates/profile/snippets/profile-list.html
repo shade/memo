@@ -3,7 +3,7 @@
 <div class="col-md-12">
 
     <div class="center">
-        <form action="profiles" class="form-inline search-form">
+        <form class="form-inline search-form">
             <div class="form-group row">
                 <input class="form-control" type="text" name="s" placeholder="Username"
                        value="{{ .SearchString }}"/>
@@ -23,67 +23,132 @@
     </p>
 {{ end }}
 
+{{ $isLoggedIn := .IsLoggedIn }}
+
     <div id="profile-list">
-        <table class="table table-striped table-condensed">
+        <div class="narrow-profile-list">
+        {{ range .Profiles }}
+            <div class="profile-info">
+                <p>
+                {{ if .Pic }}
+                    <img class="profile-pic profile-pic-24"
+                         src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
+                {{ else }}
+                    <span class="identicon-{{ .GetAddressString }}">
+                        <img class="identicon"/>
+                    </span>
+                {{ end }}
+                    <a href="/profile/{{ .GetAddressString }}">
+                    {{ if .NameSet }}{{ .Name }}
+                {{ else }}
+                    {{ .GetAddressString }}
+                {{ end }}
+                    </a>
+                {{ if $isLoggedIn }}
+                {{ template "snippets/reputation.html" .Reputation }}
+                {{ end }}
+                </p>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <table class="table table-condensed">
+                            <tr>
+                                <th>Actions</th>
+                                <td>{{ formatInt .NumPosts }}</td>
+                            </tr>
+                            <tr>
+                                <th>Followers</th>
+                                <td>{{ formatInt .FollowerCount }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-xs-6">
+                        <table class="table table-condensed">
+                            <tr>
+                                <th>Created</th>
+                                <td>{{ .FirstPost.Format "2006-01-02" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Action</th>
+                                <td>{{ .LastPost.Format "2006-01-02" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                (function () {
+                    var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+                    var background = [0, 0, 0, 0];
+                    var data = new Identicon('{{ .GetAddressString }}', {
+                        foreground: foreground,
+                        background: background,
+                        size: 24,
+                        form: 'svg',
+                        margin: 0
+                    }).toString();
+                    $(".identicon-{{ .GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+                })();
+            </script>
+        {{ end }}
+        </div>
+
+        <table class="table table-striped table-condensed wide-profile-list">
             <thead>
-            <tr>
-                <th style="width:50%">User</th>
+            <tr class="regular-row">
+                <th class="name">User</th>
                 <th>Actions</th>
                 <th>Followers</th>
                 <th>Created</th>
                 <th>Last Action</th>
+            {{ if $isLoggedIn }}
+                <th>Conn.</th>
+            {{ end }}
             </tr>
             </thead>
             <tbody>
             {{ range .Profiles }}
             <tr>
                 <td>
-                {{ if .NameSet }}
-                    <span data-address="{{ .Name }} {{ .GetAddressString }}">
-                    {{ if .Pic }}
-                        <img class="profile-pic profile-pic-24"
-                             src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
-                    {{ else }}
-                        <span class="identicon-{{ .GetAddressString }}">
-                            <img class="identicon"/>
-                        </span>
-                    {{ end }}
-                        <a href="/profile/{{ .GetAddressString }}">{{ .Name }} ({{ .GetAddressString }})</a>
-                    </span>
+                {{ if .Pic }}
+                    <img class="profile-pic profile-pic-24"
+                         src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
                 {{ else }}
-                    <span data-address="{{ .GetAddressString }}">
-                    {{ if .Pic }}
-                        <img class="profile-pic profile-pic-24"
-                             src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
-                    {{ else }}
-                        <span class="identicon-{{ .GetAddressString }}">
-                            <img class="identicon"/>
-                        </span>
-                    {{ end }}
-                        <a href="/profile/{{ .GetAddressString }}">{{ .GetAddressString }}</a>
+                    <span class="identicon-{{ .GetAddressString }}">
+                        <img class="identicon"/>
                     </span>
                 {{ end }}
-                    <script type="text/javascript">
-                        (function () {
-                            var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
-                            var background = [0, 0, 0, 0];
-                            var data = new Identicon('{{ .GetAddressString }}', {
-                                foreground: foreground,
-                                background: background,
-                                size: 24,
-                                form: 'svg',
-                                margin: 0
-                            }).toString();
-                            $(".identicon-{{ .GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
-                        })();
-                    </script>
+                    <a href="/profile/{{ .GetAddressString }}">
+                    {{ if .NameSet }}{{ .Name }}
+                    {{ else }}
+                        {{ .GetAddressString }}
+                    {{ end }}
+                    </a>
                 </td>
-                <td>{{ .NumPosts }}</td>
-                <td>{{ .FollowerCount }}</td>
+                <td>{{ formatInt .NumPosts }}</td>
+                <td>{{ formatInt .FollowerCount }}</td>
                 <td>{{ .FirstPost.Format "2006-01-02 15:04" }}</td>
                 <td>{{ .LastPost.Format "2006-01-02 15:04" }}</td>
+            {{ if $isLoggedIn }}
+                <td>
+                {{ template "snippets/reputation.html" .Reputation }}
+                </td>
+            {{ end }}
             </tr>
-
+            <script type="text/javascript">
+                (function () {
+                    var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+                    var background = [0, 0, 0, 0];
+                    var data = new Identicon('{{ .GetAddressString }}', {
+                        foreground: foreground,
+                        background: background,
+                        size: 24,
+                        form: 'svg',
+                        margin: 0
+                    }).toString();
+                    $(".identicon-{{ .GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+                })();
+            </script>
             {{ end }}
             </tbody>
         </table>

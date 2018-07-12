@@ -228,7 +228,7 @@ a.disabled {
         width: 400px;
     }
 }
-@media (max: 400px) {
+@media (max-width: 399px) {
     .navbar .alert-banner {
         width: 100%;
     }
@@ -524,6 +524,37 @@ body.dark table.table {
 .profile .dropdown .btn {
     margin-bottom: 10px;
 }
+#profile-list table tr td:nth-of-type(1) {
+    word-break: break-word;
+}
+@media (min-width: 768px) {
+    #profile-list table tr td:nth-of-type(4),
+    #profile-list table tr td:nth-of-type(5) {
+        white-space: nowrap;
+    }
+    .narrow-profile-list {
+        display: none;
+    }
+}
+@media (max-width: 767px) {
+    .wide-profile-list {
+        display: none;
+    }
+}
+#profile-list .profile-info {
+    background: #fff;
+    padding: 10px 10px 0 10px;
+    margin-bottom: 15px;
+    word-wrap: break-word;
+    border: 1px solid #ccc;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
+    border-radius: 4px;
+}
+#profile-list .profile-info>span {
+    text-align: left;
+}
+#profile-list .profile-info>span:nth-of-type(even) {
+}
 
 .byte-count.red {
     color: red;
@@ -783,7 +814,7 @@ body.dark .topics-table .glyphicon {
         max-width: 40%;
     }
 }
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .topic-post .video-wrapper {
         max-width: 70%;
     }

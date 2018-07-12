@@ -38,6 +38,11 @@ var allRoute = web.Route{
 			r.Error(jerr.Get("error getting profiles", err), http.StatusInternalServerError)
 			return
 		}
+		err = profile.AttachReputationToProfiles(profiles)
+		if err != nil {
+			r.Error(jerr.Get("error attaching reputation to profiles", err), http.StatusInternalServerError)
+			return
+		}
 		res.SetPageAndOffset(r, offset)
 		r.Helper["SearchString"] = searchString
 		if searchString != "" {

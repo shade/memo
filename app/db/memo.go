@@ -72,27 +72,6 @@ func GetMemoTest(txHash []byte) (*MemoTest, error) {
 	return &memoTest, nil
 }
 
-func GetMemoStats() ([]obj.MemoStat, error) {
-	db, err := getDb()
-	if err != nil {
-		return nil, jerr.Get("error getting db", err)
-	}
-	query := db.
-		Table("memo_tests").
-		Select("COUNT(*) AS num_posts, " +
-		"COUNT(DISTINCT pk_hash) AS num_users," +
-		"DATE(DATE_FORMAT(`timestamp`, '%Y-%m-%d')) AS date").
-		Joins("JOIN blocks ON (memo_tests.block_id = blocks.id)").
-		Group("date").
-		Order("date ASC")
-	var memoStats []obj.MemoStat
-	result := query.Find(&memoStats)
-	if result.Error != nil {
-		return nil, jerr.Get("error getting memo stats", result.Error)
-	}
-	return memoStats, nil
-}
-
 func GetMemoCohortStats() ([]obj.MemoCohortStat, error) {
 	db, err := getDb()
 	if err != nil {

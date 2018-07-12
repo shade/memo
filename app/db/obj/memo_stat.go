@@ -1,16 +1,9 @@
 package obj
 
 import (
-	"fmt"
 	"github.com/memocash/memo/app/obj/chart"
 	"time"
 )
-
-type MemoStat struct {
-	Date     time.Time
-	NumPosts int
-	NumUsers int
-}
 
 type MemoCohortStat struct {
 	Date     time.Time
@@ -28,12 +21,11 @@ func contains(item time.Time, items []time.Time) bool {
 	return false
 }
 
-func GetCohortStatData(memoCohortStats []MemoCohortStat) []chart.MultiSeries {
+func GetCohortStatData(memoCohortStats []MemoCohortStat, users bool) []chart.MultiSeries {
 	var cohortActionsData = make(map[time.Time]map[time.Time]int)
 	var cohorts []time.Time
 	var dates []time.Time
 	for _, cohortStat := range memoCohortStats {
-		fmt.Printf("date: %s\n", cohortStat.Date.String())
 		_, ok := cohortActionsData[cohortStat.Date]
 		if !ok {
 			cohortActionsData[cohortStat.Date] = make(map[time.Time]int)
@@ -44,7 +36,11 @@ func GetCohortStatData(memoCohortStats []MemoCohortStat) []chart.MultiSeries {
 		if ! contains(cohortStat.Date, dates) {
 			dates = append(dates, cohortStat.Date)
 		}
-		cohortActionsData[cohortStat.Date][cohortStat.Cohort] = cohortStat.NumPosts
+		if users {
+			cohortActionsData[cohortStat.Date][cohortStat.Cohort] = cohortStat.NumUsers
+		} else {
+			cohortActionsData[cohortStat.Date][cohortStat.Cohort] = cohortStat.NumPosts
+		}
 	}
 
 	var multiSeriesMap = make(map[time.Time]chart.MultiSeries)
@@ -54,11 +50,11 @@ func GetCohortStatData(memoCohortStats []MemoCohortStat) []chart.MultiSeries {
 		}
 	}
 	for _, date := range dates {
-		cohortPosts := cohortActionsData[date]
+		cohortItems := cohortActionsData[date]
 		for _, cohort := range cohorts {
 			seriesCohort := multiSeriesMap[cohort]
-			numPosts, _ := cohortPosts[cohort]
-			seriesCohort.Data = append(seriesCohort.Data, []int64{date.Unix() * 1000, int64(numPosts)})
+			num, _ := cohortItems[cohort]
+			seriesCohort.Data = append(seriesCohort.Data, []int64{date.Unix() * 1000, int64(num)})
 			multiSeriesMap[cohort] = seriesCohort
 		}
 	}

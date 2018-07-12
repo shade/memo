@@ -61,23 +61,3 @@ func GetUserFirstPostStats() ([]obj.UserDateStat, error) {
 	}
 	return userDataStats, nil
 }
-
-func GetUserLastPostStats() ([]obj.UserDateStat, error) {
-	db, err := getDb()
-	if err != nil {
-		return nil, jerr.Get("error getting db", err)
-	}
-	query := db.
-		Table("user_stats").
-		Select("DATE(last_post) AS date, " +
-		"COUNT(*) AS num_users").
-		Where("num_posts > 1").
-		Group("date").
-		Order("date ASC")
-	var userDataStats []obj.UserDateStat
-	result := query.Find(&userDataStats)
-	if result.Error != nil {
-		return nil, jerr.Get("error getting user last post stats", result.Error)
-	}
-	return userDataStats, nil
-}

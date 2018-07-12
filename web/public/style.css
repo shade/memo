@@ -274,6 +274,10 @@ a.disabled {
     display: inline-block;
     margin: 0 10px;
 }
+.footer .bootstrap-select.btn-group:not(.input-group-btn) {
+    margin-bottom: 0;
+    padding: 0;
+}
 
 .posts {
     padding: 15px 0;

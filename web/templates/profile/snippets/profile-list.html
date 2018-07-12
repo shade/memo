@@ -29,7 +29,7 @@
         <div class="narrow-profile-list">
         {{ range .Profiles }}
             <div class="profile-info">
-                <p>
+                <p class="name">
                 {{ if .Pic }}
                     <img class="profile-pic profile-pic-24"
                          src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
@@ -51,22 +51,26 @@
 
                 <div class="row">
                     <div class="col-xs-6">
-                        <table class="table table-condensed">
-                            <tr>
-                                <th>Actions</th>
-                                <td>{{ formatInt .NumPosts }}</td>
-                            </tr>
+                        <table class="table table-condensed table-striped">
                             <tr>
                                 <th>Followers</th>
-                                <td>{{ formatInt .FollowerCount }}</td>
+                                <td>
+                                    <a href="profile/followers/{{ .GetAddressString }}">
+                                    {{ formatInt .FollowerCount }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Created</th>
+                                <td>{{ .FirstPost.Format "2006-01-02" }}</td>
                             </tr>
                         </table>
                     </div>
                     <div class="col-xs-6">
-                        <table class="table table-condensed">
+                        <table class="table table-condensed table-striped">
                             <tr>
-                                <th>Created</th>
-                                <td>{{ .FirstPost.Format "2006-01-02" }}</td>
+                                <th>Actions</th>
+                                <td>{{ formatInt .NumPosts }}</td>
                             </tr>
                             <tr>
                                 <th>Last Action</th>
@@ -96,20 +100,25 @@
         <table class="table table-striped table-condensed wide-profile-list">
             <thead>
             <tr class="regular-row">
-                <th class="name">User</th>
+            {{ if $isLoggedIn }}
+                <th>Conn.</th>
+            {{ end }}
+                <th>User</th>
                 <th>Actions</th>
                 <th>Followers</th>
                 <th>Created</th>
                 <th>Last Action</th>
-            {{ if $isLoggedIn }}
-                <th>Conn.</th>
-            {{ end }}
             </tr>
             </thead>
             <tbody>
             {{ range .Profiles }}
             <tr>
+            {{ if $isLoggedIn }}
                 <td>
+                {{ template "snippets/reputation.html" .Reputation }}
+                </td>
+            {{ end }}
+                <td class="name">
                 {{ if .Pic }}
                     <img class="profile-pic profile-pic-24"
                          src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
@@ -126,14 +135,9 @@
                     </a>
                 </td>
                 <td>{{ formatInt .NumPosts }}</td>
-                <td>{{ formatInt .FollowerCount }}</td>
+                <td><a href="profile/followers/{{ .GetAddressString }}">{{ formatInt .FollowerCount }}</a></td>
                 <td>{{ .FirstPost.Format "2006-01-02 15:04" }}</td>
                 <td>{{ .LastPost.Format "2006-01-02 15:04" }}</td>
-            {{ if $isLoggedIn }}
-                <td>
-                {{ template "snippets/reputation.html" .Reputation }}
-                </td>
-            {{ end }}
             </tr>
             <script type="text/javascript">
                 (function () {

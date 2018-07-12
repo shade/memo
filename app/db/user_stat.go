@@ -112,3 +112,11 @@ func GetUniqueMemoAPkHashes(offset int, searchString string, orderType UserStatO
 	}
 	return profiles, nil
 }
+
+func GetUniqueUserCount() (int, error) {
+	cnt, err := count(UserStat{})
+	if err != nil {
+		return 0, jerr.Get("error getting user stat count", err)
+	}
+	return int(cnt), nil
+}

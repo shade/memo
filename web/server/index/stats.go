@@ -61,6 +61,11 @@ var statsRoute = web.Route{
 			r.Error(jerr.Get("error getting memo topic follow count", err), http.StatusInternalServerError)
 			return
 		}
+		uniqueUsers, err := db.GetUniqueUserCount()
+		if err != nil {
+			r.Error(jerr.Get("error getting unique users", err), http.StatusInternalServerError)
+			return
+		}
 		r.Helper["MemoFollowCount"] = int64(memoFollowCount)
 		r.Helper["MemoLikeCount"] = int64(memoLikeCount)
 		r.Helper["MemoPostCount"] = int64(memoPostCount)
@@ -91,6 +96,7 @@ var statsRoute = web.Route{
 			memoPollOptionCount +
 			memoPollVoteCount +
 			memoTopicFollowCount)
+		r.Helper["UniqueUsers"] = uniqueUsers
 
 		r.RenderTemplate(res.TmplStats)
 	},

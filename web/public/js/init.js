@@ -161,6 +161,7 @@ var MemoApp = {
 
     MemoApp.URL = {
         Index: "",
+        SetLanguage: "set-language",
         Profile: "profile",
         LoadKey: "key/load",
         LoginSubmit: "login-submit",

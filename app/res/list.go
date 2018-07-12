@@ -6,12 +6,13 @@ import (
 )
 
 var JsFiles = []string{
-	"lib/jquery.min.js",
-	"lib/jquery-ui.min.js",
-	"lib/pnglib.js",
-	"lib/identicon.js",
-	"lib/jstz.min.js",
-	"lib/bootstrap.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/identicon.js/2.3.2/pnglib.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/identicon.js/2.3.2/identicon.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js",
 	"js/init.js",
 	"js/login.js",
 	"js/signup.js",
@@ -25,8 +26,10 @@ var JsFiles = []string{
 }
 
 var CssFiles = []string{
-	"lib/jquery-ui.min.css",
-	"lib/bootstrap.min.css",
+	"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css",
+	"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css",
+	"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css",
+	"https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css",
 	"style.css",
 }
 
@@ -41,7 +44,7 @@ func SetAppendNumber(num int) {
 func GetResCssFiles() []string {
 	var fileList []string
 	for _, file := range CssFiles {
-		if ! strings.HasPrefix(file, "lib/") && appendNumber > 0 {
+		if ! strings.HasPrefix(file, "lib/") && ! strings.HasPrefix(file, "http") && appendNumber > 0 {
 			file = fmt.Sprintf("%s?ver=%d", file, appendNumber)
 		}
 		fileList = append(fileList, file)
@@ -52,7 +55,7 @@ func GetResCssFiles() []string {
 func GetResJsFiles() []string {
 	var fileList []string
 	for _, file := range JsFiles {
-		if ! strings.HasPrefix(file, "lib/") && appendNumber > 0 {
+		if ! strings.HasPrefix(file, "lib/") && ! strings.HasPrefix(file, "http") && appendNumber > 0 {
 			file = fmt.Sprintf("%s?ver=%d", file, appendNumber)
 		}
 		fileList = append(fileList, file)
@@ -63,7 +66,7 @@ func GetResJsFiles() []string {
 func GetMinJsFiles() []string {
 	var fileList []string
 	for _, file := range JsFiles {
-		if strings.HasPrefix(file, "lib/") {
+		if strings.HasPrefix(file, "lib/") || strings.HasPrefix(file, "http") {
 			fileList = append(fileList, file)
 		}
 	}
@@ -74,7 +77,7 @@ func GetMinJsFiles() []string {
 func getJsFilesToMinify() []string {
 	var fileList []string
 	for _, file := range JsFiles {
-		if ! strings.HasPrefix(file, "lib/") {
+		if ! strings.HasPrefix(file, "lib/") && ! strings.HasPrefix(file, "http") {
 			fileList = append(fileList, file)
 		}
 	}

@@ -115,6 +115,7 @@ func preHandler(r *web.Response) {
 	if ! util.IsValidLang(lang) {
 		lang = "en-US"
 	}
+	r.Helper["Lang"] = lang
 
 	r.SetFuncMap(map[string]interface{}{
 		"T":     i18n.MustTfunc(lang),

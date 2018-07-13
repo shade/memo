@@ -1,0 +1,171 @@
+{{ $settings := .UserSettings }}
+
+<div class="col-md-12">
+
+    <div class="center">
+        <form class="form-inline search-form">
+            <div class="form-group row">
+                <input class="form-control" type="text" name="s" placeholder="Username"
+                       value="{{ .SearchString }}"/>
+                <input class="btn btn-primary" type="submit" value="Search"/>
+            </div>
+        </form>
+    </div>
+
+{{ if and (eq .NextOffset 25) (lt (len .Profiles) 25) }}<br/>{{ else }}
+    <p class="pagination">
+        <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}"
+           href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>
+        <span class="page">{{ .Page }}</span>
+        <a class="{{ if lt (len .Profiles) 25 }}disabled{{ end }}"
+           href="{{ .OffsetLink }}&offset={{ .NextOffset }}">{{ T "next" }}
+            &gt;</a>
+    </p>
+{{ end }}
+
+{{ $isLoggedIn := .IsLoggedIn }}
+
+    <div id="profile-list">
+        <div class="narrow-profile-list">
+        {{ range .Profiles }}
+            <div class="profile-info">
+                <p class="name">
+                {{ if .Pic }}
+                    <img class="profile-pic profile-pic-24"
+                         src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
+                {{ else }}
+                    <span class="identicon-{{ .GetAddressString }}">
+                        <img class="identicon"/>
+                    </span>
+                {{ end }}
+                    <a href="/profile/{{ .GetAddressString }}">
+                    {{ if .NameSet }}{{ .Name }}
+                {{ else }}
+                    {{ .GetAddressString }}
+                {{ end }}
+                    </a>
+                {{ if $isLoggedIn }}
+                {{ template "snippets/reputation.html" .Reputation }}
+                {{ end }}
+                </p>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <table class="table table-condensed table-striped">
+                            <tr>
+                                <th>Followers</th>
+                                <td>
+                                    <a href="profile/followers/{{ .GetAddressString }}">
+                                    {{ formatInt .FollowerCount }}
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Created</th>
+                                <td>{{ .FirstPost.Format "2006-01-02" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-xs-6">
+                        <table class="table table-condensed table-striped">
+                            <tr>
+                                <th>Actions</th>
+                                <td>{{ formatInt .NumPosts }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Action</th>
+                                <td>{{ .LastPost.Format "2006-01-02" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                (function () {
+                    var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+                    var background = [0, 0, 0, 0];
+                    var data = new Identicon('{{ .GetAddressString }}', {
+                        foreground: foreground,
+                        background: background,
+                        size: 24,
+                        form: 'svg',
+                        margin: 0
+                    }).toString();
+                    $(".identicon-{{ .GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+                })();
+            </script>
+        {{ end }}
+        </div>
+
+        <table class="table table-striped table-condensed wide-profile-list">
+            <thead>
+            <tr class="regular-row">
+            {{ if $isLoggedIn }}
+                <th>Conn.</th>
+            {{ end }}
+                <th>User</th>
+                <th>Actions</th>
+                <th>Followers</th>
+                <th>Created</th>
+                <th>Last Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range .Profiles }}
+            <tr>
+            {{ if $isLoggedIn }}
+                <td>
+                {{ template "snippets/reputation.html" .Reputation }}
+                </td>
+            {{ end }}
+                <td class="name">
+                {{ if .Pic }}
+                    <img class="profile-pic profile-pic-24"
+                         src="/img/profilepics/{{ .GetAddressString }}-24x24.{{ .Pic.GetExtension }}?id={{ .Pic.Id }}"/>
+                {{ else }}
+                    <span class="identicon-{{ .GetAddressString }}">
+                        <img class="identicon"/>
+                    </span>
+                {{ end }}
+                    <a href="/profile/{{ .GetAddressString }}">
+                    {{ if .NameSet }}{{ .Name }}
+                    {{ else }}
+                        {{ .GetAddressString }}
+                    {{ end }}
+                    </a>
+                </td>
+                <td>{{ formatInt .NumPosts }}</td>
+                <td><a href="profile/followers/{{ .GetAddressString }}">{{ formatInt .FollowerCount }}</a></td>
+                <td>{{ .FirstPost.Format "2006-01-02 15:04" }}</td>
+                <td>{{ .LastPost.Format "2006-01-02 15:04" }}</td>
+            </tr>
+            <script type="text/javascript">
+                (function () {
+                    var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+                    var background = [0, 0, 0, 0];
+                    var data = new Identicon('{{ .GetAddressString }}', {
+                        foreground: foreground,
+                        background: background,
+                        size: 24,
+                        form: 'svg',
+                        margin: 0
+                    }).toString();
+                    $(".identicon-{{ .GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+                })();
+            </script>
+            {{ end }}
+            </tbody>
+        </table>
+    </div>
+
+{{ if and (eq .NextOffset 25) (lt (len .Profiles) 25) }}<br/>{{ else }}
+    <p class="pagination">
+        <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}"
+           href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>
+        <span class="page">{{ .Page }}</span>
+        <a class="{{ if lt (len .Profiles) 25 }}disabled{{ end }}"
+           href="{{ .OffsetLink }}&offset={{ .NextOffset }}">{{ T "next" }}
+            &gt;</a>
+    </p>
+{{ end }}
+</div>

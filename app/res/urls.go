@@ -12,6 +12,7 @@ const (
 	UrlNeedFunds       = "/need-funds"
 	UrlNewPosts        = "/new-posts"
 	UrlStats           = "/stats"
+	UrlCharts          = "/charts"
 	UrlFeed            = "/feed"
 	UrlAbout           = "/about"
 	UrlNotFound        = "/404"
@@ -30,6 +31,7 @@ const (
 	TmplOpenSource       = "/index/open-source"
 	TmplProtocol         = "/index/protocol"
 	TmplStats            = "/index/stats"
+	TmplCharts           = "/index/charts"
 )
 
 const (
@@ -83,6 +85,8 @@ const (
 
 const (
 	UrlProfiles               = "/profiles"
+	UrlProfilesMostActions    = "/profiles/most-actions"
+	UrlProfilesMostFollowers  = "/profiles/most-followers"
 	UrlProfileView            = "/profile"
 	UrlProfileFollowers       = "/profile/followers"
 	UrlProfileFollowing       = "/profile/following"
@@ -93,11 +97,13 @@ const (
 	UrlProfileNotifications   = "/notifications"
 	UrlProfileTopicsFollowing = "/profile/topics-following"
 
-	TmplProfiles             = "/profile/all"
-	TmplProfileSettings      = "/profile/settings"
-	TmplProfileAccount       = "/profile/account"
-	TmplProfileCoins         = "/profile/coins"
-	TmplProfileNotifications = "/profile/notifications"
+	TmplProfiles              = "/profile/all"
+	TmplProfileSettings       = "/profile/settings"
+	TmplProfileAccount        = "/profile/account"
+	TmplProfileCoins          = "/profile/coins"
+	TmplProfileNotifications  = "/profile/notifications"
+	TmplProfilesMostActions   = "/profile/most-actions"
+	TmplProfilesMostFollowers = "/profile/most-followers"
 )
 
 const (

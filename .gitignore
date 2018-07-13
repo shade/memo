@@ -2,5 +2,6 @@
 .idea
 .DS_Store
 /web/public/img/profilepics/*
+/web/public/js/min.js
 /memo.exe~
 /memo

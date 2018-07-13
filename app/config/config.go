@@ -27,6 +27,10 @@ const (
 )
 
 const (
+	EnvUseMinJs = "USE_MIN_JS"
+)
+
+const (
 	VipsThumbnailPath = "VIPS_THUMBNAIL_PATH"
 	UseVipsThumbnail  = "USE_VIPS_THUMBNAIL"
 )
@@ -90,6 +94,10 @@ func GetMemcacheConfig() MemcacheConfig {
 		Host: viper.GetString(EnvMemcacheHost),
 		Port: viper.GetString(EnvMemcachePort),
 	}
+}
+
+func GetUseMinJs() bool {
+	return viper.GetBool(EnvUseMinJs)
 }
 
 func GetBitcoinNode() BitcoinNodeConfig {

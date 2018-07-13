@@ -65,7 +65,10 @@
 
         var password = MemoApp.GetPassword();
         if (!password.length) {
-            console.log("Password not set. Please try logging in again.");
+            MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
+            MemoApp.ReEnterPassword(function() {
+                submitForm();
+            });
             return;
         }
 
@@ -120,6 +123,9 @@
                     MemoApp.AddAlert("Error unlocking key. " +
                         "Please verify your password is correct. " +
                         "If this problem persists, please try refreshing the page.");
+                    MemoApp.ReEnterPassword(function() {
+                        submitForm();
+                    });
                     return;
                 } else if (xhr.status === 402) {
                     MemoApp.AddAlert("Please make sure your account has enough funds.");

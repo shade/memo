@@ -44,12 +44,12 @@
             <a href="topic/{{ .GetUrlEncoded }}">{{ .Name }}</a>
         </td>
         <td>{{ .GetTimeAgo }}</td>
-        <td>{{ .CountPosts }}</td>
+        <td>{{ formatInt .CountPosts }}</td>
         <td>
         {{if gt .CountFollows 0 }}
             <a href="topics/followers/{{ .GetUrlEncoded }}">{{ .CountFollows }}</a>
         {{ else }}
-            {{ .CountFollows }}
+            {{ formatInt .CountFollows }}
         {{ end }}
         </td>
     </tr>

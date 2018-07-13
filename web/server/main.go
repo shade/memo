@@ -6,10 +6,10 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/bitcoin/queuer"
 	"github.com/memocash/memo/app/cache"
+	"github.com/memocash/memo/app/config"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/res"
-	"github.com/memocash/memo/app/util"
 	auth2 "github.com/memocash/memo/web/server/auth"
 	"github.com/memocash/memo/web/server/index"
 	"github.com/memocash/memo/web/server/key"
@@ -26,8 +26,6 @@ import (
 	"strings"
 	"unicode"
 )
-
-var UseMinJS bool
 
 func isLoggedIn(r *web.Response) bool {
 	if ! auth.IsLoggedIn(r.Session.CookieId) {
@@ -47,6 +45,7 @@ func getCsrfToken(cookieId string) string {
 }
 
 func preHandler(r *web.Response) {
+	useMinJS := config.GetUseMinJs()
 	r.Helper["Title"] = "Memo"
 	r.Helper["Description"] = "Decentralized on-chain social network built on Bitcoin Cash"
 	r.Helper["BaseUrl"] = res.GetBaseUrl(r)
@@ -99,7 +98,7 @@ func preHandler(r *web.Response) {
 	} else {
 		r.Helper["IsMobileApp"] = false
 	}
-	if UseMinJS {
+	if useMinJS {
 		r.Helper["jsFiles"] = res.GetMinJsFiles()
 	} else {
 		r.Helper["jsFiles"] = res.GetResJsFiles()
@@ -112,9 +111,11 @@ func preHandler(r *web.Response) {
 	if lang == "" {
 		lang = r.Request.GetHeader("Accept-Language")
 	}
-	if ! util.IsValidLang(lang) {
+	if ! res.IsValidLang(lang) {
 		lang = "en-US"
 	}
+	r.Helper["Lang"] = lang
+	r.Helper["Languages"] = res.Languages
 
 	r.SetFuncMap(map[string]interface{}{
 		"T":     i18n.MustTfunc(lang),

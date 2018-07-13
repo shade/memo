@@ -4,7 +4,6 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/res"
-	"github.com/memocash/memo/app/util"
 	"net/http"
 	"time"
 )
@@ -14,7 +13,7 @@ var setLangRoute = web.Route{
 	NeedsLogin: false,
 	Handler: func(r *web.Response) {
 		code := r.Request.GetFormValue("code")
-		if !util.IsValidLang(code) {
+		if ! res.IsValidLang(code) {
 			r.Error(jerr.New("unknown language"), http.StatusUnprocessableEntity)
 			return
 		}

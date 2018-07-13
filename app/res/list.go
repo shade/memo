@@ -12,7 +12,6 @@ var JsFiles = []string{
 	"https://cdnjs.cloudflare.com/ajax/libs/identicon.js/2.3.2/identicon.min.js",
 	"https://cdnjs.cloudflare.com/ajax/libs/jstimezonedetect/1.0.6/jstz.min.js",
 	"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/js/bootstrap-select.min.js",
 	"js/init.js",
 	"js/login.js",
 	"js/signup.js",
@@ -28,7 +27,6 @@ var JsFiles = []string{
 var CssFiles = []string{
 	"https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css",
 	"https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css",
-	"https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css",
 	"https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/0.8.2/css/flag-icon.min.css",
 	"style.css",
 }

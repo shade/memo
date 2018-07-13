@@ -13,38 +13,38 @@
             <a href="bitcoincash:qzdxp2z5yuxzlskafh2d8wsq7grg7rt46csg3qcn80">Donate</a>
         </div>
         <div class="col-md-6 text-right-large">
-            <select id="language-picker" data-width="fit">
-                <option {{ if eq .Lang "en-US" }}selected{{ end }} value="en-US" data-content='<span class="flag-icon flag-icon-us"></span> English'>English</option>
-                <option {{ if eq .Lang "es-LA" }}selected{{ end }} value="es-LA" data-content='<span class="flag-icon flag-icon-mx"></span> Español'>Español</option>
-                <option {{ if eq .Lang "zh-CN" }}selected{{ end }} value="zh-CN" data-content='<span class="flag-icon flag-icon-cn"></span> 中文(简体)'>中文(简体)</option>
-                <option {{ if eq .Lang "fr-FR" }}selected{{ end }} value="fr-FR" data-content='<span class="flag-icon flag-icon-fr"></span> français'>français</option>
-                <option {{ if eq .Lang "ja-JP" }}selected{{ end }} value="ja-JP" data-content='<span class="flag-icon flag-icon-jp"></span> 日本語'>日本語</option>
-                <option {{ if eq .Lang "sv-SE" }}selected{{ end }} value="sv-SE" data-content='<span class="flag-icon flag-icon-se"></span> svenska'>svenska</option>
-                <option {{ if eq .Lang "ko-KR" }}selected{{ end }} value="ko-KR" data-content='<span class="flag-icon flag-icon-kr"></span> 한국어'>한국어</option>
-                <option {{ if eq .Lang "el-GR" }}selected{{ end }} value="el-GR" data-content='<span class="flag-icon flag-icon-gr"></span> Ελληνικά'>Ελληνικά</option>
-                <option {{ if eq .Lang "pl-PL" }}selected{{ end }} value="pl-PL" data-content='<span class="flag-icon flag-icon-pl"></span> Polski'>Polski</option>
-                <option {{ if eq .Lang "pt-BR" }}selected{{ end }} value="pt-BR" data-content='<span class="flag-icon flag-icon-br"></span> Português'>Português</option>
-                <option {{ if eq .Lang "cs-CZ" }}selected{{ end }} value="cs-CZ" data-content='<span class="flag-icon flag-icon-cz"></span> Čeština'>Čeština</option>
-                <option {{ if eq .Lang "nl-NL" }}selected{{ end }} value="nl-NL" data-content='<span class="flag-icon flag-icon-nl"></span> Nederlands'>Nederlands</option>
-            </select>
+            <div class="dropup" id="language-picker" style="display:inline-block">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                {{ $lang := .Lang }}
+                {{ range .Languages }}
+                {{ if eq .Code $lang }}<span class="flag-icon flag-icon-{{ .Flag }}"></span> {{ .Name }}{{ end }}
+                {{ end }}
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                {{ range .Languages }}
+                    <li><a href="#" data-lang="{{ .Code }}"><span class="flag-icon flag-icon-{{ .Flag }}"></span> {{ .Name }}</a></li>
+                {{ end }}
+                </ul>
+            </div>
         </div>
     </div>
 </div>
 <script>
-    $(function(){
+    $(function () {
         var $languagePicker = $("#language-picker");
-        $languagePicker.selectpicker();
-        $languagePicker.on("change", function() {
+        $languagePicker.find("a").click(function (e) {
+            var $this = $(this);
+            e.preventDefault();
             $.ajax({
                 type: "POST",
                 url: MemoApp.URL.SetLanguage,
                 data: {
-                    code: $languagePicker.val()
+                    code: $this.attr("data-lang")
                 },
-                success: function() {
+                success: function () {
                     window.location.reload();
                 },
-                error: function() {
+                error: function () {
                     MemoApp.AddAlert("Error updating language.");
                 }
             });
@@ -59,9 +59,11 @@
 <script type="text/javascript" async src="https://www.googletagmanager.com/gtag/js?id={{ .GoogleId }}"></script>
 <script type="text/javascript">
     window.dataLayer = window.dataLayer || [];
+
     function gtag() {
         dataLayer.push(arguments);
     }
+
     gtag('js', new Date());
     gtag('config', '{{ .GoogleId }}');
 </script>

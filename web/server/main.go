@@ -10,7 +10,6 @@ import (
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/res"
-	"github.com/memocash/memo/app/util"
 	auth2 "github.com/memocash/memo/web/server/auth"
 	"github.com/memocash/memo/web/server/index"
 	"github.com/memocash/memo/web/server/key"
@@ -112,10 +111,11 @@ func preHandler(r *web.Response) {
 	if lang == "" {
 		lang = r.Request.GetHeader("Accept-Language")
 	}
-	if ! util.IsValidLang(lang) {
+	if ! res.IsValidLang(lang) {
 		lang = "en-US"
 	}
 	r.Helper["Lang"] = lang
+	r.Helper["Languages"] = res.Languages
 
 	r.SetFuncMap(map[string]interface{}{
 		"T":     i18n.MustTfunc(lang),

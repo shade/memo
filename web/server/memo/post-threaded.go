@@ -17,7 +17,7 @@ var postThreadedRoute = web.Route{
 	Handler: func(r *web.Response) {
 		offset := r.Request.GetUrlParameterInt("offset")
 		txHashString := r.Request.GetUrlNamedQueryVariable(urlTxHash.Id)
-		post, err := getPostWithThreads(r, txHashString, offset)
+		post, err := getPostWithThreads(r, txHashString, offset, true)
 		if err != nil {
 			r.Error(jerr.Get("error getting post with threads", err), http.StatusInternalServerError)
 			return
@@ -38,7 +38,7 @@ var postMoreThreadedAjaxRoute = web.Route{
 	Handler: func(r *web.Response) {
 		offset := r.Request.GetUrlParameterInt("offset")
 		txHashString := r.Request.GetUrlParameter("txHash")
-		post, err := getPostWithThreads(r, txHashString, offset)
+		post, err := getPostWithThreads(r, txHashString, offset, true)
 		if err != nil {
 			r.Error(jerr.Get("error getting post with threads", err), http.StatusInternalServerError)
 			return
@@ -55,7 +55,7 @@ var postMoreThreadedAjaxRoute = web.Route{
 	},
 }
 
-func getPostWithThreads(r *web.Response, txHashString string, offset int) (*profile.Post, error) {
+func getPostWithThreads(r *web.Response, txHashString string, offset int, showParent bool) (*profile.Post, error) {
 	txHash, err := chainhash.NewHashFromStr(txHashString)
 	if err != nil {
 		return nil, jerr.Get("error getting transaction hash", err)
@@ -78,9 +78,11 @@ func getPostWithThreads(r *web.Response, txHashString string, offset int) (*prof
 	if err != nil {
 		return nil, jerr.Get("error getting post", err)
 	}
-	err = profile.AttachParentToPosts([]*profile.Post{post})
-	if err != nil {
-		return nil, jerr.Get("error attaching parent to post", err)
+	if showParent {
+		err = profile.AttachParentToPosts([]*profile.Post{post})
+		if err != nil {
+			return nil, jerr.Get("error attaching parent to post", err)
+		}
 	}
 	allPosts := []*profile.Post{post}
 	needsReplies := post.Replies

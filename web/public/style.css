@@ -60,6 +60,18 @@ video {
 }
 .twitter-tweet {
     margin: 10px auto;
+    min-height: 150px;
+    width: 100%;
+    border: none;
+    background: #eee;
+}
+@media (min-width: 400px) {
+    .twitter-tweet {
+        width: 350px;
+    }
+}
+body.dark .twitter-tweet {
+    background: rgb(53, 72, 90);
 }
 .vertical-center {
     min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
@@ -873,7 +885,7 @@ a.block-link {
     margin-bottom: 10px;
 }
 img.imgur {
-    max-width: 100%;
+    max-width: 50%;
     max-height: 400px;
     display: block;
     margin: 10px auto;

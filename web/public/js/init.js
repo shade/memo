@@ -118,6 +118,20 @@ var MemoApp = {
         });
     };
 
+    var twitterEnabled = false;
+    /**
+     * @param {boolean} isEnabled
+     */
+    MemoApp.SetTwitter = function(isEnabled) {
+        twitterEnabled = isEnabled;
+    };
+
+    MemoApp.ReloadTwitter = function () {
+        if (twitterEnabled) {
+            twttr.widgets.load();
+        }
+    }
+
     /**
      * @param {string} password
      */

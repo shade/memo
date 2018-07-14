@@ -600,8 +600,9 @@
      * @param {string} txHash
      * @param {string} formHash
      * @param {boolean} threaded
+     * @param {boolean} showParent
      */
-    MemoApp.Form.ReplyMemo = function (txHash, formHash, threaded) {
+    MemoApp.Form.ReplyMemo = function (txHash, formHash, threaded, showParent) {
         var $post = $("#post-" + formHash);
         var $form = $("#reply-form-" + formHash);
         var $replyCancel = $("#reply-cancel-" + formHash);
@@ -683,7 +684,8 @@
                         type: "POST",
                         url: MemoApp.GetBaseUrl() + MemoApp.URL.MemoWaitSubmit,
                         data: {
-                            txHash: replyTxHash
+                            txHash: replyTxHash,
+                            showParent: showParent
                         },
                         success: function () {
                             submitting = false;
@@ -693,8 +695,12 @@
                             }
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
+                                data: {
+                                    showParent: showParent
+                                },
                                 success: function (html) {
                                     $("#post-" + formHash).replaceWith(html);
+                                    MemoApp.ReloadTwitter();
                                 },
                                 error: function (xhr) {
                                     MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
@@ -800,8 +806,9 @@
      * @param {string} txHash
      * @param {string} formHash
      * @param {boolean} threaded
+     * @param {boolean} showParent
      */
-    MemoApp.Form.NewLike = function (txHash, formHash, threaded) {
+    MemoApp.Form.NewLike = function (txHash, formHash, threaded, showParent) {
         var $like = $("#like-" + formHash);
         var $likeLink = $("#like-link-" + formHash);
         var $likeCancel = $("#like-cancel-" + formHash);
@@ -877,8 +884,12 @@
                             }
                             $.ajax({
                                 url: MemoApp.GetBaseUrl() + url + "/" + txHash,
+                                data: {
+                                    showParent: showParent
+                                },
                                 success: function (html) {
                                     $("#post-" + formHash).replaceWith(html);
+                                    MemoApp.ReloadTwitter();
                                 },
                                 error: function (xhr) {
                                     MemoApp.AddAlert("error getting post via ajax (status: " + xhr.status + ")");
@@ -953,6 +964,7 @@
                 },
                 success: function (html) {
                     $moreReplies.replaceWith(html);
+                    MemoApp.ReloadTwitter();
                 },
                 error: function () {
                     console.log("Error loading more replies.");

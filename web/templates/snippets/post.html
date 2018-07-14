@@ -212,7 +212,7 @@
     </div>
 {{ end }}
 
-{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique }}
+{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}
 
 </div>
 
@@ -240,7 +240,7 @@
     {{ end }}
     {{ if .Post.IsLoggedIn }}
         MemoApp.Form.ReplyLink("{{ $postUnique }}");
-        MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", false);
+        MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", false, {{ if .Post.Parent }}true{{ else }}false{{ end }});
     {{ end }}
     })();
 </script>

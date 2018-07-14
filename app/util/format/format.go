@@ -52,8 +52,8 @@ func AddTwitterImages(msg string) string {
 }
 
 func AddTweets(msg string) string {
-	var re = regexp.MustCompile(`(http[s]?://twitter.com/([A-Za-z0-9_-]+)/status/([0-9]+)[A-Za-z0-9?=.]*)`)
-	msg = re.ReplaceAllString(msg, `<blockquote class="twitter-tweet" data-cards="hidden" data-lang="en"><a href="https://twitter.com/$2/status/$3"></a></blockquote>`)
+	var re = regexp.MustCompile(`(http[s]?://([a-z]+\.)?twitter.com/([A-Za-z0-9_-]+)/status/([0-9]+)[A-Za-z0-9?=.]*)`)
+	msg = re.ReplaceAllString(msg, `<blockquote class="twitter-tweet" data-cards="hidden" data-lang="en"><a href="https://twitter.com/$3/status/$4"></a></blockquote>`)
 	return msg
 }
 

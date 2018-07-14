@@ -700,7 +700,6 @@ span.page {
     display: inline-block;
 }
 #all-posts {
-    height: 0;
     overflow-y: scroll;
     box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
     margin-bottom: 12px;

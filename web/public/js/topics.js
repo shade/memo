@@ -255,9 +255,11 @@
                     success: function (html) {
                         if ($post.length) {
                             $post.replaceWith(html);
+                            MemoApp.ReloadTwitter();
                             return;
                         }
                         $allPosts.append(html);
+                        MemoApp.ReloadTwitter();
                         if ($allPosts[0].scrollHeight - $allPosts.scrollTop() === $allPosts.outerHeight()) {
                             $allPosts.scrollTop($allPosts[0].scrollHeight);
                         }
@@ -300,6 +302,7 @@
                         var curOffset = firstItem.offset().top - $allPosts.scrollTop();
                         $allPosts.prepend(html);
                         $allPosts.scrollTop(firstItem.offset().top - curOffset);
+                        MemoApp.ReloadTwitter();
                     },
                     error: function (xhr) {
                         submitting = false;

@@ -4,7 +4,7 @@
 
 <div class="footer">
     <div class="container">
-        <div class="col-md-6">
+        <div class="col-md-6 links">
             <a href="/about">{{ T "about" }}</a>
             <a href="/guides">{{ T "Guides" }}</a>
             <a href="protocol">{{ T "protocol" }}</a>
@@ -17,12 +17,12 @@
                 <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
                 {{ $lang := .Lang }}
                 {{ range .Languages }}
-                {{ if eq .Code $lang }}<span class="flag-icon flag-icon-{{ .Flag }}"></span> {{ .Name }}{{ end }}
+                {{ if eq .Code $lang }}<span class="flag-icon flag-icon-{{ .Flag }}"></span> &nbsp; {{ .Name }}{{ end }}
                 {{ end }}
                     <span class="caret"></span></button>
                 <ul class="dropdown-menu dropdown-menu-right">
                 {{ range .Languages }}
-                    <li><a href="#" data-lang="{{ .Code }}"><span class="flag-icon flag-icon-{{ .Flag }}"></span> {{ .Name }}</a></li>
+                    <li><a href="#" data-lang="{{ .Code }}"><span class="flag-icon flag-icon-{{ .Flag }}"></span> &nbsp; {{ .Name }}</a></li>
                 {{ end }}
                 </ul>
             </div>

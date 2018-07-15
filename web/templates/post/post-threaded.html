@@ -188,4 +188,7 @@
         MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", true, {{ if .Post.Parent }}true{{ else }}false{{ end }});
     {{ end }}
     })();
+    $(function () {
+        MemoApp.MiniProfile($("#post-{{ $postUnique }}"));
+    });
 </script>

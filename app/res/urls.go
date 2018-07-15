@@ -85,6 +85,7 @@ const (
 
 const (
 	UrlProfiles               = "/profiles"
+	UrlProfilesNew            = "/profiles/new"
 	UrlProfilesMostActions    = "/profiles/most-actions"
 	UrlProfilesMostFollowers  = "/profiles/most-followers"
 	UrlProfileView            = "/profile"
@@ -99,6 +100,7 @@ const (
 	UrlProfileMini            = "/profile/mini"
 
 	TmplProfiles              = "/profile/all"
+	TmplProfilesNew           = "/profile/new"
 	TmplProfileSettings       = "/profile/settings"
 	TmplProfileAccount        = "/profile/account"
 	TmplProfileCoins          = "/profile/coins"

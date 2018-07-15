@@ -1,8 +1,9 @@
 package util
 
 import (
-	"time"
 	"fmt"
+	"github.com/jchavannes/jgo/jerr"
+	"time"
 )
 
 func GetTimeAgo(ts time.Time) string {
@@ -25,4 +26,18 @@ func GetTimeAgo(ts time.Time) string {
 		return fmt.Sprintf("%d minutes ago", minutes)
 	}
 	return fmt.Sprintf("%d seconds ago", int(delta.Seconds()))
+}
+
+func GetTimezoneTime(ts time.Time, timezone string) string {
+	timeLayout := "2006-01-02 15:04:05"
+	if len(timezone) > 0 {
+		displayLocation, err := time.LoadLocation(timezone)
+		if err != nil {
+			jerr.Get("error finding location", err).Print()
+			return ts.Format(timeLayout)
+		}
+		return ts.In(displayLocation).Format(timeLayout)
+	} else {
+		return ts.Format(timeLayout)
+	}
 }

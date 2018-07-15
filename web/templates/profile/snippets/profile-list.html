@@ -1,4 +1,5 @@
 {{ $settings := .UserSettings }}
+{{ $tz := .TimeZone }}
 
 <div class="col-md-12">
 
@@ -62,7 +63,7 @@
                             </tr>
                             <tr>
                                 <th>Created</th>
-                                <td>{{ .FirstPost.Format "2006-01-02" }}</td>
+                                <td>{{ .GetFirstPost $tz }}</td>
                             </tr>
                         </table>
                     </div>
@@ -74,7 +75,7 @@
                             </tr>
                             <tr>
                                 <th>Last Action</th>
-                                <td>{{ .LastPost.Format "2006-01-02" }}</td>
+                                <td>{{ .GetLastPost $tz }}</td>
                             </tr>
                         </table>
                     </div>
@@ -136,8 +137,8 @@
                 </td>
                 <td>{{ formatInt .NumPosts }}</td>
                 <td><a href="profile/followers/{{ .GetAddressString }}">{{ formatInt .FollowerCount }}</a></td>
-                <td>{{ .FirstPost.Format "2006-01-02 15:04" }}</td>
-                <td>{{ .LastPost.Format "2006-01-02 15:04" }}</td>
+                <td>{{ .GetFirstPost $tz }}</td>
+                <td>{{ .GetLastPost $tz }}</td>
             </tr>
             <script type="text/javascript">
                 (function () {

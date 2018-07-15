@@ -22,6 +22,7 @@ func GetRoutes() []web.Route {
 		topicsFollowingRoute,
 		coinsRoute,
 		miniRoute,
+		newRoute,
 	}
 }
 

@@ -334,7 +334,7 @@ a.disabled {
 .post .name .mini-profile {
     position: absolute;
     display: none;
-    top: 22px;
+    top: 20px;
     left: 0;
     max-width: 400px;
     border: 1px solid #ccc;
@@ -359,6 +359,7 @@ a.disabled {
 }
 .mini-profile .body {
     word-break: break-word;
+    padding: 5px 0;
 }
 .mini-profile .identicon {
     width: 128px;

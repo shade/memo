@@ -12,6 +12,7 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/rep"
+	"github.com/memocash/memo/app/util"
 	"github.com/memocash/memo/app/util/format"
 	"github.com/skip2/go-qrcode"
 	"strings"
@@ -30,8 +31,8 @@ type Profile struct {
 	BalanceBCH           float64
 	hasBalance           bool
 	FollowerCount        int
-	FollowingCount       uint
-	TopicsFollowingCount uint
+	FollowingCount       int
+	TopicsFollowingCount int
 	NumPosts             int
 	FirstPost            time.Time
 	LastPost             time.Time
@@ -42,6 +43,14 @@ type Profile struct {
 	CanUnfollow          bool
 	Qr                   string
 	Pic                  *db.MemoSetPic
+}
+
+func (p Profile) GetFirstPost(timezone string) string {
+	return util.GetTimezoneTime(p.FirstPost, timezone)
+}
+
+func (p Profile) GetLastPost(timezone string) string {
+	return util.GetTimezoneTime(p.LastPost, timezone)
 }
 
 func (p Profile) IsSelf() bool {
@@ -114,7 +123,7 @@ func (p *Profile) SetFollowingCount() error {
 	if err != nil {
 		return jerr.Get("error getting following count for hash", err)
 	}
-	p.FollowingCount = cnt
+	p.FollowingCount = int(cnt)
 	return nil
 }
 
@@ -123,7 +132,7 @@ func (p *Profile) SetTopicsFollowingCount() error {
 	if err != nil {
 		return jerr.Get("error getting topic following count for hash", err)
 	}
-	p.TopicsFollowingCount = cnt
+	p.TopicsFollowingCount = int(cnt)
 	return nil
 }
 
@@ -134,6 +143,15 @@ func (p *Profile) SetCanFollow() error {
 	}
 	p.CanFollow = canFollow
 	p.CanUnfollow = !canFollow && bytes.Compare(p.PkHash, p.SelfPkHash) != 0
+	return nil
+}
+
+func (p *Profile) SetNumPosts() error {
+	userStat, err := db.GetUserStat(p.PkHash)
+	if err != nil {
+		return jerr.Get("error getting num posts", err)
+	}
+	p.NumPosts = userStat.NumPosts
 	return nil
 }
 
@@ -254,6 +272,10 @@ func GetBasicProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
 	err = pf.SetTopicsFollowingCount()
 	if err != nil {
 		return nil, jerr.Get("error setting topics following count for profile", err)
+	}
+	err = pf.SetNumPosts()
+	if err != nil {
+		return nil, jerr.Get("error setting num posts for profile", err)
 	}
 	if len(selfPkHash) > 0 {
 		err = pf.SetReputation()

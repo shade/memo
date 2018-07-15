@@ -1,4 +1,4 @@
-{{ $identiconId := getUnique 6 }}
+{{ $miniProfileId := getUnique 6 }}
 <div class="title">
     <div class="pic">
     {{ if .Profile.Pic }}
@@ -9,12 +9,12 @@
                  src="/img/profilepics/{{ .Profile.GetAddressString }}-128x128.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"/>
         </a>
     {{ else }}
-        <span class="profile-identicon-{{ $identiconId }}">
+        <span class="profile-identicon-{{ $miniProfileId }}">
             <img class="identicon"/>
         </span>
     {{ end }}
     </div>
-    <div class="name-follow">
+    <div class="name-follow" id="name-follow-{{ $miniProfileId }}">
         <h3>
         {{ .Profile.Name }}
         {{ if .Profile.Reputation }}
@@ -26,34 +26,53 @@
         </h3>
     {{ if .Profile.CanFollow }}
         <span>
-            <a class="btn btn-sm btn-primary"
-               href="memo/follow/{{ .Profile.GetAddressString }}">{{ T "follow" 1 }}</a>
+            <a class="btn btn-sm btn-primary follow"
+               href="#">{{ T "follow" 1 }}</a>
+        </span>
+        <span>
+            <a class="btn btn-sm btn-primary hidden confirm-follow"
+               href="#">{{ T "Confirm follow" }}</a>
         </span>
     {{ else if .Profile.CanUnfollow }}
         <span>
-            <a class="btn btn-sm btn-default"
+            <a class="btn btn-sm btn-default unfollow"
                href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }}</a>
         </span>
+        <span>
+            <a class="btn btn-sm btn-primary hidden confirm-unfollow"
+               href="#">{{ T "Confirm unfollow" }}</a>
+        </span>
     {{ end }}
+        <span class="cancel hidden btn btn-sm btn-default">Cancel</span>
+        <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
+        <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
     </div>
 </div>
+
 <div class="body">
 {{ .Profile.GetText }}
 </div>
+
 <table class="profile-counts">
     <tbody>
     <tr>
         <td>
             <p>{{ T "Actions" }}</p>
-            <p>###</p>
+            <p>
+                <a href="profile/{{ .Profile.GetAddressString }}">{{ formatInt .Profile.NumPosts }}</a>
+            </p>
         </td>
         <td>
             <p>{{ T "following" }}</p>
-            <p>{{ .Profile.FollowingCount }}</p>
+            <p>
+                <a href="profile/following/{{ .Profile.GetAddressString }}">{{ formatInt .Profile.FollowingCount }}</a>
+            </p>
         </td>
         <td>
             <p>{{ T "followers" }}</p>
-            <p>{{ .Profile.FollowerCount }}</p>
+            <p>
+                <a href="profile/followers/{{ .Profile.GetAddressString }}">{{ formatInt .Profile.FollowerCount }}</a>
+            </p>
         </td>
     </tr>
     </tbody>
@@ -69,6 +88,9 @@
             size: 128,
             margin: 0
         }).toString();
-        $(".profile-identicon-{{ $identiconId }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+        $(".profile-identicon-{{ $miniProfileId }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+    {{ if or .Profile.CanFollow .Profile.CanUnfollow }}
+        MemoApp.Form.MiniProfileFollow("{{ $miniProfileId }}", {{ if .Profile.CanUnfollow }}true{{ else }}false{{ end }});
+    {{ end }}
     })();
 </script>

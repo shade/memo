@@ -358,6 +358,12 @@ a.disabled {
     padding: 5px 10px;
     z-index: 1;
 }
+/*.mini-profile .name-follow a.btn {
+    color: #fff;
+}
+.mini-profile .name-follow a.btn:hover {
+    text-decoration: none;
+}*/
 .mini-profile .pic {
     position: absolute;
     top: 10px;
@@ -821,6 +827,9 @@ body.dark .topics-table .glyphicon {
     word-break: break-word;
     border-bottom: 1px solid #eee;
 }
+.topic-post .profile-link {
+    color: #000;
+}
 .topic-post:nth-of-type(odd) {
     background: #fcfcfc;
 }
@@ -830,7 +839,7 @@ body.dark .topics-table .glyphicon {
 .topic-post:last-of-type {
     border-bottom: none;
 }
-.topic-post .identicon, .topic-post .profile-pic-24 {
+.topic-post .topic-identicon, .topic-post .profile-pic-24 {
     float: left;
     display: block;
     width: 24px;
@@ -849,15 +858,15 @@ body.dark .topics-table .glyphicon {
 .topic-post .name {
     font-weight: bold;
 }
-.topic-post .name a {
+.topic-post .name a.topic-link {
     display: inline-block;
     color: #000;
     text-decoration: none;
 }
-.topic-post .name a:hover {
+.topic-post .name a.topic-link:hover {
     text-decoration: underline;
 }
-.topic-post .name .time {
+.topic-post .name a.topic-link.time {
     font-weight: normal;
     font-size: 12px;
     color: #888;

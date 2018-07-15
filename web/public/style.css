@@ -358,6 +358,12 @@ a.disabled {
     padding: 5px 10px;
     z-index: 1;
 }
+body.dark .mini-profile {
+    background: #2b3e50;
+}
+body.dark .mini-profile table td p:nth-of-type(1) {
+    color: #e0e0e0;
+}
 /*.mini-profile .name-follow a.btn {
     color: #fff;
 }

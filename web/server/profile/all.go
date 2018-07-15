@@ -14,43 +14,59 @@ import (
 )
 
 var allRoute = web.Route{
-	Pattern:    res.UrlProfiles,
+	Pattern: res.UrlProfiles,
 	Handler: func(r *web.Response) {
-		r.Helper["Nav"] = "profiles"
-		offset := r.Request.GetUrlParameterInt("offset")
-		searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
-		var selfPkHash []byte
-		if auth.IsLoggedIn(r.Session.CookieId) {
-			user, err := auth.GetSessionUser(r.Session.CookieId)
-			if err != nil {
-				r.Error(jerr.Get("error getting session user", err), http.StatusInternalServerError)
-				return
-			}
-			key, err := db.GetKeyForUser(user.Id)
-			if err != nil {
-				r.Error(jerr.Get("error getting key for user", err), http.StatusInternalServerError)
-				return
-			}
-			selfPkHash = key.PkHash
-		}
-		profiles, err := profile.GetProfiles(selfPkHash, searchString, offset, db.UserStatOrderCreated)
-		if err != nil {
-			r.Error(jerr.Get("error getting profiles", err), http.StatusInternalServerError)
-			return
-		}
-		err = profile.AttachReputationToProfiles(profiles)
-		if err != nil {
-			r.Error(jerr.Get("error attaching reputation to profiles", err), http.StatusInternalServerError)
-			return
-		}
-		res.SetPageAndOffset(r, offset)
-		r.Helper["SearchString"] = searchString
-		if searchString != "" {
-			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlProfiles, "/"), searchString)
-		} else {
-			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlProfiles)
-		}
-		r.Helper["Profiles"] = profiles
+		profilesByDate(r, true)
 		r.RenderTemplate(res.TmplProfiles)
 	},
+}
+
+func profilesByDate(r *web.Response, oldestToNewest bool) {
+	r.Helper["Nav"] = "profiles"
+	offset := r.Request.GetUrlParameterInt("offset")
+	searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
+	var selfPkHash []byte
+	if auth.IsLoggedIn(r.Session.CookieId) {
+		user, err := auth.GetSessionUser(r.Session.CookieId)
+		if err != nil {
+			r.Error(jerr.Get("error getting session user", err), http.StatusInternalServerError)
+			return
+		}
+		key, err := db.GetKeyForUser(user.Id)
+		if err != nil {
+			r.Error(jerr.Get("error getting key for user", err), http.StatusInternalServerError)
+			return
+		}
+		selfPkHash = key.PkHash
+	}
+	var statOrderType db.UserStatOrderType
+	if oldestToNewest {
+		statOrderType = db.UserStatOrderCreated
+	} else {
+		statOrderType = db.UserStatOrderNewest
+	}
+	profiles, err := profile.GetProfiles(selfPkHash, searchString, offset, statOrderType)
+	if err != nil {
+		r.Error(jerr.Get("error getting profiles", err), http.StatusInternalServerError)
+		return
+	}
+	err = profile.AttachReputationToProfiles(profiles)
+	if err != nil {
+		r.Error(jerr.Get("error attaching reputation to profiles", err), http.StatusInternalServerError)
+		return
+	}
+	res.SetPageAndOffset(r, offset)
+	r.Helper["SearchString"] = searchString
+	var url string
+	if oldestToNewest {
+		url = res.UrlProfiles
+	} else {
+		url = res.UrlProfilesNew
+	}
+	if searchString != "" {
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(url, "/"), searchString)
+	} else {
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", url)
+	}
+	r.Helper["Profiles"] = profiles
 }

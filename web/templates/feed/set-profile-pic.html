@@ -1,28 +1,12 @@
 <div class="post rounded box-shadow" id="post-{{ .Post.Memo.GetTransactionHashString }}">
     <div class="post-header post-header-feed-item">
-        <p class="name">
-        {{ if .Item.ProfilePic }}
-            <a class="image-link" href="profile/{{ .Item.GetAddressString }}">
-                <img class="profile-pic profile-pic-24"
-                     src="/img/profilepics/{{ .Item.GetAddressString }}-24x24.{{ .Item.ProfilePic.GetExtension }}?id={{ .Item.ProfilePic.Id }}">
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .Item.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-        {{ end }}
-            <a class="profile" href="profile/{{ .Item.GetAddressString }}">{{ $len := len .Item.Name }}
-        {{- if gt $len 0 -}}
-            {{ .Item.Name }}
-        {{- else -}}
-            {{ .Item.GetAddressString }}
-        {{- end -}}
-            </a>
+        <div class="name">
+        {{ template "post/snippets/name.html" dict "Address" .Item.GetAddressString "ProfilePic" .Item.ProfilePic "IsFeedItem" false "Name" .Item.Name }}
         {{ if .Item.Reputation }}
             {{ template "snippets/reputation.html" .Item.Reputation }}
         {{ end }}
             set profile pic &middot; {{ .Item.TimeAgo }}
-        </p>
+        </div>
     {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
     </div>
     <div class="message profile-text">

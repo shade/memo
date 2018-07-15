@@ -6,51 +6,35 @@
             <img class="profile-pic profile-pic-24" src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}"/>
         </a>
     {{ else }}
-        <span class="identicon-{{ .Post.Memo.GetAddressString }}">
+        <span class="topic-identicon identicon-{{ .Post.Memo.GetAddressString }}">
             <img class="identicon"/>
         </span>
     {{ end }}
     </a>
     <div class="post-wrapper">
     <div class="post-header">
-    {{ if .Post.Parent }}
-        <p class="reply-header">
-            Replying to
-            <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-            <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s
-                post</a>
-        </p>
-    {{ end }}
         <div class="name">
-            <a href="profile/{{ .Post.Memo.GetAddressString }}">{{ $len := len .Post.Name }}
-        {{- if gt $len 0 -}}
-            {{ .Post.Name }}
-        {{- else -}}
-            {{ .Post.Memo.GetAddressString }}
-        {{- end -}}
-            </a>
+        {{ template "post/snippets/name.html" dict "Address" .Post.Memo.GetAddressString  "Name" .Post.Name "HidePic" true }}
         {{ if .Post.Reputation }}
             {{ template "snippets/reputation.html" .Post.Reputation }}
         {{ end }}
-            <a class="time"
+            <a class="time topic-link"
                href="post/{{ .Post.Memo.GetTransactionHashString }}" title="{{ .Post.GetTimeString .TimeZone }}">{{ .Post.GetTimeAgo }}</a>
             <div class="like" id="like-{{ .Post.Memo.GetTransactionHashString }}">
                 <span class="like-info" id="like-info-{{ .Post.Memo.GetTransactionHashString }}">
                 {{- if .Post.Likes }}
-                    <a id="like-link-{{ .Post.Memo.GetTransactionHashString }}" href="#">
+                    <a id="like-link-{{ .Post.Memo.GetTransactionHashString }}" class="topic-link" href="#">
                     {{- len .Post.Likes }}
                         like{{ if not (eq (len .Post.Likes) 1) }}s{{ end }}</a>
                     (tip: {{ formatBigInt .Post.GetTotalTip }} satoshis)
                 {{- else }}
-                    <a class="like-link" id="like-link-{{ .Post.Memo.GetTransactionHashString }}" href="#">{{ T "like" 1 | UcFirst }}</a>
+                    <a class="like-link topic-link" id="like-link-{{ .Post.Memo.GetTransactionHashString }}" href="#">{{ T "like" 1 | UcFirst }}</a>
                 {{- end }}
                     &middot;
                 {{- if not (eq .Post.ReplyCount 0) }}
-                    <a class="reply-count" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ T "reply" (.Post.ReplyCount | ToInt) }}</a>
+                    <a class="reply-count topic-link" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ T "reply" (.Post.ReplyCount | ToInt) }}</a>
                 {{ else }}
-                    <a class="like-link" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ T "start_thread" | UcFirst }}</a>
+                    <a class="like-link topic-link" href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ T "start_thread" | UcFirst }}</a>
                 {{ end }}
                 </span>
                 <form class="like-form" id="like-form-{{ .Post.Memo.GetTransactionHashString }}">
@@ -68,6 +52,7 @@
                 <script type="text/javascript">
                     $(function () {
                         MemoApp.Form.NewTopicLike($("#like-{{ .Post.Memo.GetTransactionHashString }}"), "{{ .Post.Memo.GetTransactionHashString }}");
+                        MemoApp.MiniProfile($("#topic-post-{{ .Post.Memo.GetTransactionHashString }}"));
                     });
                 </script>
             </div>

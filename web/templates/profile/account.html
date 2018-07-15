@@ -16,11 +16,10 @@
 
 <br/>
 
-{{ template "snippets/profile.html" dict "Profile" .Profile "UserSettings" .UserSettings }}
+{{ template "profile/snippets/profile.html" dict "Profile" .Profile "UserSettings" .UserSettings }}
 
 <div class="dashboard-actions">
     <a class="btn btn-default" href="profile/{{ .Profile.GetAddressString }}">{{ T "view_your_profile" }}</a>
-    <!--<a href="memo/new">{{ T "new_memo" }}</a>-->
     <a class="btn btn-default" href="memo/set-name">{{ T "set_name" }}</a>
     <a class="btn btn-default" href="memo/set-profile">{{ T "set_profile" }}</a>
     <a class="btn btn-default" href="memo/set-profile-pic">{{ T "set_profile_pic" | Title }}</a>

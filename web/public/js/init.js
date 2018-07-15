@@ -177,6 +177,7 @@ var MemoApp = {
         Index: "",
         SetLanguage: "set-language",
         Profile: "profile",
+        ProfileMini: "profile/mini",
         LoadKey: "key/load",
         LoginSubmit: "login-submit",
         SignupSubmit: "signup-submit",

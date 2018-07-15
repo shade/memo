@@ -57,10 +57,16 @@ func profilesByDate(r *web.Response, oldestToNewest bool) {
 	}
 	res.SetPageAndOffset(r, offset)
 	r.Helper["SearchString"] = searchString
-	if searchString != "" {
-		r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlProfiles, "/"), searchString)
+	var url string
+	if oldestToNewest {
+		url = res.UrlProfiles
 	} else {
-		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlProfiles)
+		url = res.UrlProfilesNew
+	}
+	if searchString != "" {
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(url, "/"), searchString)
+	} else {
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", url)
 	}
 	r.Helper["Profiles"] = profiles
 }

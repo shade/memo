@@ -1,52 +1,52 @@
 {{ $miniProfileId := getUnique 6 }}
-<div class="title">
-    <div class="pic">
-    {{ if .Profile.Pic }}
-        <a class="image-link"
-           href="/img/profilepics/{{ .Profile.GetAddressString }}-640x640.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"
-           target="_blank">
-            <img class="profile-pic"
-                 src="/img/profilepics/{{ .Profile.GetAddressString }}-128x128.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"/>
-        </a>
-    {{ else }}
-        <span class="profile-identicon-{{ $miniProfileId }}">
-            <img class="identicon"/>
-        </span>
+
+<div class="pic">
+{{ if .Profile.Pic }}
+    <a class="image-link" href="profile/{{ .Profile.GetAddressString }}">
+        <img class="profile-pic"
+             src="/img/profilepics/{{ .Profile.GetAddressString }}-128x128.{{ .Profile.Pic.GetExtension }}?id={{ .Profile.Pic.Id }}"/>
+    </a>
+{{ else }}
+    <a href="profile/{{ .Profile.GetAddressString }}">
+            <span class="profile-identicon-{{ $miniProfileId }}">
+                    <img class="identicon"/>
+            </span>
+    </a>
+{{ end }}
+</div>
+
+<div class="name-follow" id="name-follow-{{ $miniProfileId }}">
+    <h3>
+        <a href="profile/{{ .Profile.GetAddressString }}">{{ .Profile.Name }}</a>
+    {{ if .Profile.Reputation }}
+    {{ template "snippets/reputation.html" .Profile.Reputation }}
+    {{ if .Profile.IsSelf }}
+        <span style="font-size:12px;">This is you!</span>
     {{ end }}
-    </div>
-    <div class="name-follow" id="name-follow-{{ $miniProfileId }}">
-        <h3>
-            <a href="profile/{{ .Profile.GetAddressString }}">{{ .Profile.Name }}</a>
-        {{ if .Profile.Reputation }}
-        {{ template "snippets/reputation.html" .Profile.Reputation }}
-        {{ if .Profile.IsSelf }}
-            <span style="font-size:12px;">This is you!</span>
-        {{ end }}
-        {{ end }}
-        </h3>
-    {{ if .Profile.CanFollow }}
-        <span>
+    {{ end }}
+    </h3>
+{{ if .Profile.CanFollow }}
+    <span>
             <a class="btn btn-sm btn-primary follow"
                href="#">{{ T "follow" 1 }}</a>
         </span>
-        <span>
+    <span>
             <a class="btn btn-sm btn-primary hidden confirm-follow"
                href="#">{{ T "Confirm follow" }}</a>
         </span>
-    {{ else if .Profile.CanUnfollow }}
-        <span>
+{{ else if .Profile.CanUnfollow }}
+    <span>
             <a class="btn btn-sm btn-default unfollow"
                href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }}</a>
         </span>
-        <span>
+    <span>
             <a class="btn btn-sm btn-primary hidden confirm-unfollow"
                href="#">{{ T "Confirm unfollow" }}</a>
         </span>
-    {{ end }}
-        <span class="cancel hidden btn btn-sm btn-default">Cancel</span>
-        <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
-        <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
-    </div>
+{{ end }}
+    <span class="cancel hidden btn btn-sm btn-default">Cancel</span>
+    <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
+    <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
 </div>
 
 <div class="body">

@@ -1,0 +1,22 @@
+<span class="mini-profile-name" data-profile-hash="{{ .Address }}">
+{{ if .ProfilePic }}
+    <img class="profile-pic profile-pic-24"
+         src="/img/profilepics/{{ .Address }}-24x24.{{ .ProfilePic.GetExtension }}?id={{ .ProfilePic.Id }}">
+{{ else }}
+    <span class="identicon-{{ .Address }}">
+        <img class="identicon"/>
+    </span>
+{{ end }}
+    <a class="profile profile-link{{ if .IsFeedItem }} profile-feed-item{{ end }}"
+       href="profile/{{ .Address }}">
+{{ $len := len .Name }}
+{{- if gt $len 0 -}}
+    {{ .Name }}
+{{- else -}}
+    {{ .Address }}
+{{- end -}}
+    </a>
+    <div class="mini-profile-wrapper">
+        <div class="mini-profile"></div>
+    </div>
+</span>

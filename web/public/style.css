@@ -330,13 +330,27 @@ a.disabled {
 .post .name {
     position: relative;
     min-height: 22px;
+    margin: 0 0 5px;
+    line-height: 22px;
 }
-.post .name .mini-profile {
+.mini-profile-name {
+    position: relative;
+    display: inline-block;
+}
+.mini-profile-wrapper {
+    position: absolute;
+    width: 400px;
+    top: 0;
+    left: 0;
+}
+.mini-profile {
     position: absolute;
     display: none;
+    font-weight: normal;
     top: 20px;
     left: 0;
     max-width: 400px;
+    min-width: 250px;
     border: 1px solid #ccc;
     box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .2);
     border-radius: 5px;
@@ -358,16 +372,18 @@ a.disabled {
     word-break: break-word;
 }
 .mini-profile .body {
+    padding: 5px 0 10px;
     word-break: break-word;
-    padding: 5px 0;
 }
-.mini-profile .identicon {
+.mini-profile .identicon,
+.reply .mini-profile .identicon {
     width: 128px;
     height: 128px;
 }
 .mini-profile table td {
     padding-right: 20px;
 }
+.reply .mini-profile table td p,
 .mini-profile table td p {
     margin: 0;
 }
@@ -407,11 +423,6 @@ a.disabled {
 }
 .post .reply.vote p:nth-of-type(2) {
     font-weight: bold;
-}
-.post .name {
-    margin: 0 0 5px;
-    line-height: 22px;
-    word-break: break-all;
 }
 .post .message {
     margin: 5px 0 5px;

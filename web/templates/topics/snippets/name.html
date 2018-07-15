@@ -1,0 +1,12 @@
+<span class="mini-profile-name" data-profile-hash="{{ .Address }}">
+    <a href="profile/{{ .Address }}">{{ $len := len .Name }}
+{{- if gt $len 0 -}}
+    {{ .Name }}
+{{- else -}}
+    {{ .Address }}
+{{- end -}}
+    </a>
+    <div class="mini-profile-wrapper">
+        <div class="mini-profile"></div>
+    </div>
+</span>

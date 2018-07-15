@@ -149,6 +149,9 @@ func (p *Profile) SetCanFollow() error {
 func (p *Profile) SetNumPosts() error {
 	userStat, err := db.GetUserStat(p.PkHash)
 	if err != nil {
+		if db.IsRecordNotFoundError(err) {
+			return nil
+		}
 		return jerr.Get("error getting num posts", err)
 	}
 	p.NumPosts = userStat.NumPosts

@@ -3,22 +3,8 @@
 {{ $postUnique := getUnique 6 }}
 <div class="post" id="post-{{ $postUnique }}" data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
     <div class="post-header">
-        <p class="name">
-        {{ if .Post.ProfilePic }}
-            <img class="profile-pic profile-pic-24"
-                 src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
-        {{ else }}
-            <span class="identicon-{{ .Post.Memo.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-        {{ end }}
-            <a class="profile" href="profile/{{ .Post.Memo.GetAddressString }}">{{ $len := len .Post.Name }}
-        {{- if gt $len 0 -}}
-            {{ .Post.Name }}
-        {{- else -}}
-            {{ .Post.Memo.GetAddressString }}
-        {{- end -}}
-            </a>
+        <div class="name">
+        {{ template "post/snippets/name.html" dict "Address" .Post.Memo.GetAddressString "ProfilePic" .Post.ProfilePic "IsFeedItem" false "Name" .Post.Name }}
         {{ if .Post.Reputation }}
             {{ template "snippets/reputation.html" .Post.Reputation }}
         {{ end }}
@@ -37,7 +23,7 @@
         {{- if .Post.Memo.Topic }}
             in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
         {{ end }}
-        </p>
+        </div>
         <ul class="block-explorer">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"><span
@@ -63,8 +49,8 @@
              src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
     {{ else }}
         <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
-                    <img class="identicon"/>
-                </span>
+            <img class="identicon"/>
+        </span>
     {{ end }}
         <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s
             post</a>

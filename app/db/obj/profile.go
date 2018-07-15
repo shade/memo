@@ -1,6 +1,8 @@
 package obj
 
-import "time"
+import (
+	"time"
+)
 
 type Profile struct {
 	PkHash       []byte

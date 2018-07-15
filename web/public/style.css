@@ -107,6 +107,20 @@ select {
 .clear {
     clear: both;
 }
+.glyphicon.spinning {
+    animation: spin 1.5s infinite linear;
+    -webkit-animation: spin2 1.5s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
 
 #site-wrapper.active {
     overflow: hidden;
@@ -313,6 +327,82 @@ a.disabled {
 .post .name .profile.profile-feed-item {
     font-weight: normal;
 }
+.post .name {
+    position: relative;
+    min-height: 22px;
+    margin: 0 0 5px;
+    line-height: 22px;
+}
+.mini-profile-name {
+    position: relative;
+    display: inline-block;
+}
+.mini-profile-wrapper {
+    position: absolute;
+    width: 400px;
+    top: 0;
+    left: 0;
+}
+.mini-profile {
+    position: absolute;
+    display: none;
+    font-weight: normal;
+    top: 20px;
+    left: 0;
+    max-width: 400px;
+    min-width: 250px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .2);
+    border-radius: 5px;
+    background: #fff;
+    padding: 5px 10px;
+    z-index: 1;
+}
+/*.mini-profile .name-follow a.btn {
+    color: #fff;
+}
+.mini-profile .name-follow a.btn:hover {
+    text-decoration: none;
+}*/
+.mini-profile .pic {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.mini-profile .name-follow {
+    padding: 5px 0 0 138px;
+    min-height: 135px;
+}
+.mini-profile .name-follow h3 {
+    margin: 0 0 10px;
+    word-break: break-word;
+}
+.mini-profile .body {
+    padding: 5px 0 10px;
+    word-break: break-word;
+}
+.mini-profile .identicon,
+.reply .mini-profile .identicon {
+    width: 128px;
+    height: 128px;
+}
+.mini-profile table td {
+    padding-right: 20px;
+}
+.reply .mini-profile table td p,
+.mini-profile table td p {
+    margin: 0;
+}
+.mini-profile table td p:nth-of-type(1) {
+    font-weight: bold;
+    font-size: 11px;
+    color: #444;
+}
+.mini-profile table td p:nth-of-type(2) {
+    font-weight: bold;
+    font-size: 16px;
+    color: #487521;
+}
 
 .post .post {
     margin: 0 -9px 5px -5px;
@@ -339,11 +429,6 @@ a.disabled {
 }
 .post .reply.vote p:nth-of-type(2) {
     font-weight: bold;
-}
-.post .name {
-    margin: 0 0 5px;
-    line-height: 22px;
-    word-break: break-all;
 }
 .post .message {
     margin: 5px 0 5px;
@@ -742,6 +827,9 @@ body.dark .topics-table .glyphicon {
     word-break: break-word;
     border-bottom: 1px solid #eee;
 }
+.topic-post .profile-link {
+    color: #000;
+}
 .topic-post:nth-of-type(odd) {
     background: #fcfcfc;
 }
@@ -751,7 +839,7 @@ body.dark .topics-table .glyphicon {
 .topic-post:last-of-type {
     border-bottom: none;
 }
-.topic-post .identicon, .topic-post .profile-pic-24 {
+.topic-post .topic-identicon, .topic-post .profile-pic-24 {
     float: left;
     display: block;
     width: 24px;
@@ -770,15 +858,15 @@ body.dark .topics-table .glyphicon {
 .topic-post .name {
     font-weight: bold;
 }
-.topic-post .name a {
+.topic-post .name a.topic-link {
     display: inline-block;
     color: #000;
     text-decoration: none;
 }
-.topic-post .name a:hover {
+.topic-post .name a.topic-link:hover {
     text-decoration: underline;
 }
-.topic-post .name .time {
+.topic-post .name a.topic-link.time {
     font-weight: normal;
     font-size: 12px;
     color: #888;
@@ -830,7 +918,7 @@ body.dark .topics-table .glyphicon {
 .topic-post .like .broadcasting.hidden {
     display: none;
 }
-.topic-post img.imgur {
+.topic-post .imgur img {
     max-width: 50%;
     max-height: 200px;
 }
@@ -883,11 +971,16 @@ a.block-link {
 .topics-index-head {
     margin-bottom: 10px;
 }
-img.imgur {
-    max-width: 50%;
-    max-height: 400px;
+.imgur {
     display: block;
     margin: 10px auto;
+    max-width: 50%;
+    max-height: 400px;
+    text-align: center;
+}
+.imgur img {
+    max-width: 100%;
+    max-height: 400px;
 }
 #private-key-field {
     display: none;

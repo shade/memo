@@ -1,27 +1,12 @@
 {{ $postUnique := getUnique 6 }}
-<div class="post rounded box-shadow" id="post-{{ $postUnique }}">
+<div class="post rounded box-shadow" id="post-{{ $postUnique }}"
+     data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
 {{ if .FeedItem }}
 {{ if .FeedItem.IsLike }}
     <div class="post-header">
-        <p class="name feed-item feed-item-like">
+        <div class="name feed-item feed-item-like">
             <span class="feed-item-glyphicon glyphicon glyphicon-heart" aria-hidden="true"></span>
-        {{ if .FeedItem.ProfilePic }}
-            <a class="image-link" href="profile/{{ .FeedItem.GetAddressString }}">
-                <img class="profile-pic profile-pic-24"
-                     src="/img/profilepics/{{ .FeedItem.GetAddressString }}-24x24.{{ .FeedItem.ProfilePic.GetExtension }}?id={{ .FeedItem.ProfilePic.Id }}">
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .FeedItem.GetAddressString }}">
-                <img class="identicon" src=""/>
-            </span>
-        {{ end }}
-            <a class="profile" href="profile/{{ .FeedItem.GetAddressString }}">{{ $len := len .FeedItem.Name }}
-        {{- if gt $len 0 -}}
-            {{ .FeedItem.Name }}
-        {{- else -}}
-            {{ .FeedItem.GetAddressString }}
-        {{- end -}}
-            </a>
+        {{ template "post/snippets/name.html" dict "Address" .FeedItem.GetAddressString "ProfilePic" .FeedItem.ProfilePic "IsFeedItem" false "Name" .FeedItem.Name }}
         {{ if .FeedItem.Reputation }}
             {{ template "snippets/reputation.html" .FeedItem.Reputation }}
         {{ end }}
@@ -30,30 +15,14 @@
             &middot; {{ formatBigInt .FeedItem.MemoLike.TipAmount }} sat tip
         {{ end }}
             &middot; {{ .FeedItem.TimeAgo }}
-        </p>
+        </div>
     </div>
 {{ end }}
 {{ if .FeedItem.IsPollVote }}
     <div class="post-header">
-        <p class="name feed-item feed-item-vote">
+        <div class="name feed-item feed-item-vote">
             <span class="feed-item-glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span>
-        {{ if .FeedItem.ProfilePic }}
-            <a class="image-link" href="profile/{{ .FeedItem.GetAddressString }}">
-                <img class="profile-pic profile-pic-24"
-                     src="/img/profilepics/{{ .FeedItem.GetAddressString }}-24x24.{{ .FeedItem.ProfilePic.GetExtension }}?id={{ .FeedItem.ProfilePic.Id }}">
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .FeedItem.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-        {{ end }}
-            <a class="profile" href="profile/{{ .FeedItem.GetAddressString }}">{{ $len := len .FeedItem.Name }}
-        {{- if gt $len 0 -}}
-            {{ .FeedItem.Name }}
-        {{- else -}}
-            {{ .FeedItem.GetAddressString }}
-        {{- end -}}
-            </a>
+        {{ template "post/snippets/name.html" dict "Address" .FeedItem.GetAddressString "ProfilePic" .FeedItem.ProfilePic "IsFeedItem" false "Name" .FeedItem.Name }}
         {{ if .FeedItem.Reputation }}
             {{ template "snippets/reputation.html" .FeedItem.Reputation }}
         {{ end }}
@@ -62,29 +31,14 @@
             &middot; {{ formatBigInt .FeedItem.PollVote.TipAmount }} sat tip
         {{ end }}
             &middot; {{ .FeedItem.TimeAgo }}
-        </p>
+        </div>
     </div>
 {{ end }}
 {{ end }}
     <div class="post-header">
-        <p class="name">
-        {{ if .Post.ProfilePic }}
-            <a class="image-link" href="profile/{{ .Post.Memo.GetAddressString }}">
-                <img class="profile-pic profile-pic-24"
-                     src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .Post.Memo.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-        {{ end }}
-            <a class="profile{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} profile-feed-item{{ end }}" href="profile/{{ .Post.Memo.GetAddressString }}">{{ $len := len .Post.Name }}
-        {{- if gt $len 0 -}}
-            {{ .Post.Name }}
-        {{- else -}}
-            {{ .Post.Memo.GetAddressString }}
-        {{- end -}}
-            </a>
+        <div class="name">
+        {{ $isFeedItem := (or .FeedItem.IsLike .FeedItem.IsPollVote) }}
+        {{ template "post/snippets/name.html" dict "Address" .Post.Memo.GetAddressString "ProfilePic" .Post.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Name }}
         {{ if .Post.Reputation }}
             {{ template "snippets/reputation.html" .Post.Reputation }}
         {{ end }}
@@ -105,7 +59,7 @@
         {{- if .Post.Memo.Topic }}
             in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
         {{ end }}
-        </p>
+        </div>
     {{ if .FeedItem }}
         {{ template "posts/snippets/block-explorer.html" .FeedItem.FeedEvent.GetTransactionHashString }}
     {{ else }}
@@ -115,24 +69,14 @@
 {{ if .Post.Parent }}
     <div class="reply{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} reply-feed-item{{ end }}">
         Replying to
-    {{ if .Post.Parent.ProfilePic }}
-        <a class="image-link" href="profile/{{ .Post.Parent.Memo.GetAddressString }}">
-            <img class="profile-pic profile-pic-24"
-                 src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
-        </a>
-    {{ else }}
-        <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
-                <img class="identicon"/>
-            </span>
-    {{ end }}
+        {{ $isFeedItem := (or .FeedItem.IsLike .FeedItem.IsPollVote) }}
+        {{ template "post/snippets/name.html" dict "Address" .Post.Parent.Memo.GetAddressString "ProfilePic" .Post.Parent.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Parent.Name }}'s
     {{ if .Post.Memo.RootTxHash }}
         <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">
-        {{ .Post.Parent.Name }}'s
             post
         </a>
     {{ else }}
         <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">
-        {{ .Post.Parent.Name }}'s
             post
         </a>
     {{ end }}
@@ -152,7 +96,7 @@
     {{ .Post.GetMessage }}
     </div>
 {{ if .Post.IsPoll }}
-    {{ template "snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
+    {{ template "post/snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
 {{ end }}
 {{ if or .Post.Likes (gt .Post.ReplyCount 0) }}
     <p class="likes">
@@ -212,7 +156,7 @@
     </div>
 {{ end }}
 
-{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}
+{{ template "post/snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}
 
 </div>
 
@@ -243,4 +187,7 @@
         MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", false, {{ if .Post.Parent }}true{{ else }}false{{ end }});
     {{ end }}
     })();
+    $(function () {
+        MemoApp.MiniProfile($("#post-{{ $postUnique }}"));
+    });
 </script>

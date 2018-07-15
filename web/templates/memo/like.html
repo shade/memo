@@ -2,7 +2,7 @@
 
 <h2>Like Memo</h2>
 
-{{ template "snippets/post.html" dict "Post" .Post "Compress" true "TimeZone" .TimeZone "UserSettings" .UserSettings }}
+{{ template "post/post.html" dict "Post" .Post "Compress" true "TimeZone" .TimeZone "UserSettings" .UserSettings }}
 
 <form id="form-memo-like" method="post">
     <p>

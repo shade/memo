@@ -26,6 +26,17 @@ func (u *UserStat) Save() error {
 	return nil
 }
 
+func GetUserStat(pkHash []byte) (*UserStat, error) {
+	var userStat UserStat
+	err := find(&userStat, UserStat{
+		PkHash: pkHash,
+	})
+	if err != nil {
+		return nil, jerr.Get("error getting user stat", err)
+	}
+	return &userStat, nil
+}
+
 func AddUpdateStat(userStatObj obj.UserStat) (*UserStat, error) {
 	var userStat = UserStat{
 		PkHash: userStatObj.PkHash,
@@ -69,6 +80,7 @@ type UserStatOrderType int
 
 const (
 	UserStatOrderCreated UserStatOrderType = iota
+	UserStatOrderNewest
 	UserStatOrderPosts
 	UserStatOrderFollowers
 )
@@ -103,6 +115,8 @@ func GetUniqueMemoAPkHashes(offset int, searchString string, orderType UserStatO
 		query = query.Order("user_stats.num_posts DESC")
 	} else if orderType == UserStatOrderFollowers {
 		query = query.Order("user_stats.num_followers DESC")
+	} else if orderType == UserStatOrderNewest {
+		query = query.Order("user_stats.first_post DESC")
 	} else {
 		query = query.Order("user_stats.first_post ASC")
 	}

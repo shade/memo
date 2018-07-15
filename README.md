@@ -14,6 +14,9 @@
     go get github.com/memocash/memo/...
     ```
 
+- Create MySQL database
+  - Use charset `utf8_general_ci`
+
 - Create config.yaml in memo diretory
 
     ```yaml
@@ -44,7 +47,7 @@ go build
 ### Notes
 - Can take about 30 minutes for main-node to full sync
 - Main node can sometimes disconnect while syncing, just restart
-- You may see a few errors, these are mal-formed memos and can be ignored
+- You may see a few errors, these are usually mal-formed memos and can be ignored
 
 
 ### View

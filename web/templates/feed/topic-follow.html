@@ -1,4 +1,4 @@
-<div class="post rounded box-shadow" id="post-{{ .Post.Memo.GetTransactionHashString }}">
+<div class="post rounded box-shadow" id="post-{{ .Item.FeedEvent.GetTransactionHashString }}">
     <div class="post-header post-header-feed-item">
         <div class="name">
         {{ template "post/snippets/name.html" dict "Address" .Item.GetAddressString "ProfilePic" .Item.ProfilePic "IsFeedItem" false "Name" .Item.Name }}
@@ -12,3 +12,9 @@
     {{ template "posts/snippets/block-explorer.html" .Item.FeedEvent.GetTransactionHashString }}
     </div>
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        MemoApp.MiniProfile($("#post-{{ .Item.FeedEvent.GetTransactionHashString }}"));
+    });
+</script>

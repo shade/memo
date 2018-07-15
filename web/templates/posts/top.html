@@ -3,7 +3,7 @@
 {{ template "posts/header.html" dict "Page" "top" "IsLoggedIn" .IsLoggedIn }}
 
 
-<div class="pagination posts-nav">
+<div class="posts-nav">
     <a class="{{ if eq .Range "1h" }}sel{{ end }}" href="posts/top?range=1h">{{ T "last_hour" }}</a>
     <a class="{{ if eq .Range "24h" }}sel{{ end }}" href="posts/top?range=24h">{{ T "last_24_hours" }}</a>
     <a class="{{ if eq .Range "7d" }}sel{{ end }}" href="posts/top?range=7d">{{ T "last_7_days" }}</a>

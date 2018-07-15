@@ -96,6 +96,7 @@ const (
 	UrlProfileSettingsSubmit  = "/settings-submit"
 	UrlProfileNotifications   = "/notifications"
 	UrlProfileTopicsFollowing = "/profile/topics-following"
+	UrlProfileMini            = "/profile/mini"
 
 	TmplProfiles              = "/profile/all"
 	TmplProfileSettings       = "/profile/settings"
@@ -144,9 +145,9 @@ const (
 )
 
 const (
-	TmplSnippetsPost                 = "/snippets/post"
-	TmplSnippetsPostThreaded         = "/snippets/post-threaded"
-	TmplSnippetsPostThreadedLoadMore = "/snippets/post-threaded-load-more"
+	TmplSnippetsPost                 = "/post/post"
+	TmplSnippetsPostThreaded         = "/post/post-threaded"
+	TmplSnippetsPostThreadedLoadMore = "/post/snippets/post-threaded-load-more"
 )
 
 func GetBaseUrl(r *web.Response) string {

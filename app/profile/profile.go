@@ -238,6 +238,36 @@ func GetProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
 	return profile, nil
 }
 
+func GetBasicProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
+	pf, err := GetProfile(pkHash, selfPkHash)
+	if err != nil {
+		return nil, jerr.Get("error getting profile for hash", err)
+	}
+	err = pf.SetFollowingCount()
+	if err != nil {
+		return nil, jerr.Get("error setting following count for profile", err)
+	}
+	err = pf.SetFollowerCount()
+	if err != nil {
+		return nil, jerr.Get("error setting follower count for profile", err)
+	}
+	err = pf.SetTopicsFollowingCount()
+	if err != nil {
+		return nil, jerr.Get("error setting topics following count for profile", err)
+	}
+	if len(selfPkHash) > 0 {
+		err = pf.SetReputation()
+		if err != nil {
+			return nil, jerr.Get("error getting reputation", err)
+		}
+		err = pf.SetCanFollow()
+		if err != nil {
+			return nil, jerr.Get("error setting can follow for profile", err)
+		}
+	}
+	return pf, nil
+}
+
 func GetProfileAndSetBalances(pkHash []byte, selfPkHash []byte) (*Profile, error) {
 	pf, err := GetProfile(pkHash, selfPkHash)
 	if err != nil {

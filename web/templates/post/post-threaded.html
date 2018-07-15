@@ -1,14 +1,12 @@
 {{ $tz := .TimeZone }}
 {{ $settings := .UserSettings }}
 {{ $postUnique := getUnique 6 }}
-<div class="post" id="post-{{ $postUnique }}">
+<div class="post" id="post-{{ $postUnique }}" data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
     <div class="post-header">
         <p class="name">
         {{ if .Post.ProfilePic }}
-            <a class="image-link" href="profile/{{ .Post.Memo.GetAddressString }}">
-                <img class="profile-pic profile-pic-24"
-                     src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
-            </a>
+            <img class="profile-pic profile-pic-24"
+                 src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
         {{ else }}
             <span class="identicon-{{ .Post.Memo.GetAddressString }}">
                 <img class="identicon"/>
@@ -61,10 +59,8 @@
     <div class="reply">
         Replying to
     {{ if .Post.Parent.ProfilePic }}
-        <a class="image-link" href="profile/{{ .Post.Parent.Memo.GetAddressString }}">
-            <img class="profile-pic profile-pic-24"
-                 src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
-        </a>
+        <img class="profile-pic profile-pic-24"
+             src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
     {{ else }}
         <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
                     <img class="identicon"/>
@@ -86,7 +82,7 @@
     </div>
 
 {{ if .Post.IsPoll }}
-    {{ template "snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
+    {{ template "post/snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
 {{ end }}
 
 {{ if or .Post.Likes (gt .Post.ReplyCount 0) }}
@@ -165,16 +161,16 @@
     {{ end }}
     </div>
 
-{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" true "FormHash" $postUnique "ShowParent" .Post.Parent }}
+{{ template "post/snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" true "FormHash" $postUnique "ShowParent" .Post.Parent }}
 
 {{ if .Post.Replies }}
 
 {{ range .Post.Replies }}
-{{ template "snippets/post-threaded.html" dict "Post" . "Compress" false "TimeZone" $tz "UserSettings" $settings }}
+{{ template "post/post-threaded.html" dict "Post" . "Compress" false "TimeZone" $tz "UserSettings" $settings }}
 {{ end }}
 
 {{ if eq (len .Post.Replies) 25 }}
-    {{ template "snippets/post-threaded-load-more.html" dict "Post" .Post "Offset" .Offset }}
+    {{ template "post/snippets/post-threaded-load-more.html" dict "Post" .Post "Offset" .Offset }}
 {{ end }}
 
 {{ end }}

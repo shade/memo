@@ -1,5 +1,5 @@
 {{ $postUnique := getUnique 6 }}
-<div class="post rounded box-shadow" id="post-{{ $postUnique }}">
+<div class="post rounded box-shadow" id="post-{{ $postUnique }}" data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
 {{ if .FeedItem }}
 {{ if .FeedItem.IsLike }}
     <div class="post-header">
@@ -38,10 +38,8 @@
         <p class="name feed-item feed-item-vote">
             <span class="feed-item-glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span>
         {{ if .FeedItem.ProfilePic }}
-            <a class="image-link" href="profile/{{ .FeedItem.GetAddressString }}">
-                <img class="profile-pic profile-pic-24"
-                     src="/img/profilepics/{{ .FeedItem.GetAddressString }}-24x24.{{ .FeedItem.ProfilePic.GetExtension }}?id={{ .FeedItem.ProfilePic.Id }}">
-            </a>
+            <img class="profile-pic profile-pic-24"
+                 src="/img/profilepics/{{ .FeedItem.GetAddressString }}-24x24.{{ .FeedItem.ProfilePic.GetExtension }}?id={{ .FeedItem.ProfilePic.Id }}">
         {{ else }}
             <span class="identicon-{{ .FeedItem.GetAddressString }}">
                 <img class="identicon"/>
@@ -67,24 +65,26 @@
 {{ end }}
 {{ end }}
     <div class="post-header">
-        <p class="name">
-        {{ if .Post.ProfilePic }}
-            <a class="image-link" href="profile/{{ .Post.Memo.GetAddressString }}">
+        <div class="name">
+            <span class="mini-profile-name" data-profile-hash="{{ .Post.Memo.GetAddressString }}">
+            {{ if .Post.ProfilePic }}
                 <img class="profile-pic profile-pic-24"
                      src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}">
-            </a>
-        {{ else }}
-            <span class="identicon-{{ .Post.Memo.GetAddressString }}">
-                <img class="identicon"/>
+            {{ else }}
+                <span class="identicon-{{ .Post.Memo.GetAddressString }}">
+                    <img class="identicon"/>
+                </span>
+            {{ end }}
+                <a class="profile profile-link{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} profile-feed-item{{ end }}"
+                   href="profile/{{ .Post.Memo.GetAddressString }}">{{ $len := len .Post.Name }}
+            {{- if gt $len 0 -}}
+                {{ .Post.Name }}
+            {{- else -}}
+                {{ .Post.Memo.GetAddressString }}
+            {{- end -}}
+                </a>
+                <div class="mini-profile"></div>
             </span>
-        {{ end }}
-            <a class="profile{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} profile-feed-item{{ end }}" href="profile/{{ .Post.Memo.GetAddressString }}">{{ $len := len .Post.Name }}
-        {{- if gt $len 0 -}}
-            {{ .Post.Name }}
-        {{- else -}}
-            {{ .Post.Memo.GetAddressString }}
-        {{- end -}}
-            </a>
         {{ if .Post.Reputation }}
             {{ template "snippets/reputation.html" .Post.Reputation }}
         {{ end }}
@@ -105,7 +105,7 @@
         {{- if .Post.Memo.Topic }}
             in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
         {{ end }}
-        </p>
+        </div>
     {{ if .FeedItem }}
         {{ template "posts/snippets/block-explorer.html" .FeedItem.FeedEvent.GetTransactionHashString }}
     {{ else }}
@@ -152,7 +152,7 @@
     {{ .Post.GetMessage }}
     </div>
 {{ if .Post.IsPoll }}
-    {{ template "snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
+    {{ template "post/snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
 {{ end }}
 {{ if or .Post.Likes (gt .Post.ReplyCount 0) }}
     <p class="likes">
@@ -212,7 +212,7 @@
     </div>
 {{ end }}
 
-{{ template "snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}
+{{ template "post/snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}
 
 </div>
 
@@ -243,4 +243,7 @@
         MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", false, {{ if .Post.Parent }}true{{ else }}false{{ end }});
     {{ end }}
     })();
+    $(function () {
+        MemoApp.MiniProfile($("#post-{{ $postUnique }}"));
+    });
 </script>

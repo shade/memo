@@ -78,37 +78,10 @@ var viewRoute = web.Route{
 		}
 		r.Helper["FeedItems"] = events
 
-		pf, err := profile.GetProfile(pkHash, userPkHash)
+		pf, err := profile.GetBasicProfile(pkHash, userPkHash)
 		if err != nil {
 			r.Error(jerr.Get("error getting profile for hash", err), http.StatusInternalServerError)
 			return
-		}
-		err = pf.SetFollowingCount()
-		if err != nil {
-			r.Error(jerr.Get("error setting following count for profile", err), http.StatusInternalServerError)
-			return
-		}
-		err = pf.SetFollowerCount()
-		if err != nil {
-			r.Error(jerr.Get("error setting follower count for profile", err), http.StatusInternalServerError)
-			return
-		}
-		err = pf.SetTopicsFollowingCount()
-		if err != nil {
-			r.Error(jerr.Get("error setting topics following count for profile", err), http.StatusInternalServerError)
-			return
-		}
-		if len(userPkHash) > 0 {
-			err = pf.SetReputation()
-			if err != nil {
-				r.Error(jerr.Get("error getting reputation", err), http.StatusInternalServerError)
-				return
-			}
-			err = pf.SetCanFollow()
-			if err != nil {
-				r.Error(jerr.Get("error setting can follow for profile", err), http.StatusInternalServerError)
-				return
-			}
 		}
 		err = pf.SetQr()
 		if err != nil {

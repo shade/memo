@@ -16,7 +16,7 @@
     </div>
     <div class="name-follow" id="name-follow-{{ $miniProfileId }}">
         <h3>
-        {{ .Profile.Name }}
+            <a href="profile/{{ .Profile.GetAddressString }}">{{ .Profile.Name }}</a>
         {{ if .Profile.Reputation }}
         {{ template "snippets/reputation.html" .Profile.Reputation }}
         {{ if .Profile.IsSelf }}

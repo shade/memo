@@ -90,7 +90,7 @@
         }).toString();
         $(".profile-identicon-{{ $miniProfileId }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
     {{ if or .Profile.CanFollow .Profile.CanUnfollow }}
-        MemoApp.Form.MiniProfileFollow("{{ $miniProfileId }}", {{ if .Profile.CanUnfollow }}true{{ else }}false{{ end }});
+        MemoApp.Form.MiniProfileFollow("{{ $miniProfileId }}", "{{ .Profile.GetAddressString }}", {{ if .Profile.CanUnfollow }}true{{ else }}false{{ end }});
     {{ end }}
     })();
 </script>

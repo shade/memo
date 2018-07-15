@@ -11,6 +11,9 @@
             if (!$miniProfile) {
                 return;
             }
+            $name.find(".profile-link").click(function(e) {
+                e.preventDefault();
+            });
             var address = $name.attr("data-profile-hash");
             $name.hover(function () {
                 $miniProfile.show();

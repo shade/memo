@@ -12,7 +12,8 @@ const (
 	UrlNeedFunds       = "/need-funds"
 	UrlNewPosts        = "/new-posts"
 	UrlStats           = "/stats"
-	UrlFeed            = "/feed"
+	UrlCharts          = "/charts"
+	UrlActivity        = "/activity"
 	UrlAbout           = "/about"
 	UrlNotFound        = "/404"
 	UrlMemoSetLanguage = "/set-language"
@@ -23,13 +24,14 @@ const (
 	TmplDashboard        = "/index/dashboard"
 	TmplDashboardNoFunds = "/index/dashboard-no-funds"
 	TmplDisclaimer       = "/index/disclaimer"
-	TmplFeed             = "/index/feed"
+	TmplActivity         = "/index/activity"
 	TmplGuides           = "/index/guides"
 	TmplIntroducing      = "/index/introducing-memo"
 	TmplNeedFunds        = "/index/need-funds"
 	TmplOpenSource       = "/index/open-source"
 	TmplProtocol         = "/index/protocol"
 	TmplStats            = "/index/stats"
+	TmplCharts           = "/index/charts"
 )
 
 const (
@@ -83,6 +85,9 @@ const (
 
 const (
 	UrlProfiles               = "/profiles"
+	UrlProfilesNew            = "/profiles/new"
+	UrlProfilesMostActions    = "/profiles/most-actions"
+	UrlProfilesMostFollowers  = "/profiles/most-followers"
 	UrlProfileView            = "/profile"
 	UrlProfileFollowers       = "/profile/followers"
 	UrlProfileFollowing       = "/profile/following"
@@ -92,12 +97,16 @@ const (
 	UrlProfileSettingsSubmit  = "/settings-submit"
 	UrlProfileNotifications   = "/notifications"
 	UrlProfileTopicsFollowing = "/profile/topics-following"
+	UrlProfileMini            = "/profile/mini"
 
-	TmplProfiles             = "/profile/all"
-	TmplProfileSettings      = "/profile/settings"
-	TmplProfileAccount       = "/profile/account"
-	TmplProfileCoins         = "/profile/coins"
-	TmplProfileNotifications = "/profile/notifications"
+	TmplProfiles              = "/profile/all"
+	TmplProfilesNew           = "/profile/new"
+	TmplProfileSettings       = "/profile/settings"
+	TmplProfileAccount        = "/profile/account"
+	TmplProfileCoins          = "/profile/coins"
+	TmplProfileNotifications  = "/profile/notifications"
+	TmplProfilesMostActions   = "/profile/most-actions"
+	TmplProfilesMostFollowers = "/profile/most-followers"
 )
 
 const (
@@ -138,9 +147,9 @@ const (
 )
 
 const (
-	TmplSnippetsPost                 = "/snippets/post"
-	TmplSnippetsPostThreaded         = "/snippets/post-threaded"
-	TmplSnippetsPostThreadedLoadMore = "/snippets/post-threaded-load-more"
+	TmplSnippetsPost                 = "/post/post"
+	TmplSnippetsPostThreaded         = "/post/post-threaded"
+	TmplSnippetsPostThreadedLoadMore = "/post/snippets/post-threaded-load-more"
 )
 
 func GetBaseUrl(r *web.Response) string {

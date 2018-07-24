@@ -2,24 +2,25 @@ package transaction
 
 import (
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
+	"github.com/memocash/memo/app/bitcoin/memo"
 	"github.com/memocash/memo/app/bitcoin/queuer"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/metric"
 	"time"
 )
 
 const waitTime = 200 * time.Millisecond
 
-func QueueAndWaitForTx(tx *wire.MsgTx) error {
-	QueueTx(tx)
-	txHash := tx.TxHash()
-	return WaitForTx(&txHash)
-}
-
-func QueueTx(tx *wire.MsgTx) {
+func QueueTx(tx *memo.Tx) {
+	go func() {
+		err := metric.AddMemoBroadcast(tx.Type)
+		if err != nil {
+			jerr.Get("error adding memo broadcast metric", err).Print()
+		}
+	}()
 	doneChan := make(chan struct{}, 1)
-	queuer.Node.Peer.QueueMessage(tx, doneChan)
+	queuer.Node.Peer.QueueMessage(tx.MsgTx, doneChan)
 	<-doneChan
 }
 

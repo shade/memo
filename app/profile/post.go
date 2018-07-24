@@ -56,6 +56,7 @@ func (p Post) GetMessage() string {
 		msg = format.AddImgurImages(msg)
 		msg = format.AddGiphyImages(msg)
 		msg = format.AddTwitterImages(msg)
+		msg = format.AddTweets(msg)
 	}
 	msg = strings.TrimSpace(msg)
 	msg = format.AddLinks(msg)
@@ -76,17 +77,7 @@ func (p Post) IsPoll() bool {
 func (p Post) GetTimeString(timezone string) string {
 	if p.Memo.BlockId != 0 {
 		if p.Memo.Block != nil {
-			timeLayout := "2006-01-02 15:04:05 MST"
-			if len(timezone) > 0 {
-				displayLocation, err := time.LoadLocation(timezone)
-				if err != nil {
-					jerr.Get("error finding location", err).Print()
-					return p.Memo.Block.Timestamp.Format(timeLayout)
-				}
-				return p.Memo.Block.Timestamp.In(displayLocation).Format(timeLayout)
-			} else {
-				return p.Memo.Block.Timestamp.Format(timeLayout)
-			}
+			return util.GetTimezoneTime(p.Memo.Block.Timestamp, timezone)
 		} else {
 			return "Unknown"
 		}

@@ -16,10 +16,10 @@ type MemoFollow struct {
 	Id           uint   `gorm:"primary_key"`
 	TxHash       []byte `gorm:"unique;size:50"`
 	ParentHash   []byte
-	PkHash       []byte `gorm:"index:pk_hash"`
+	PkHash       []byte `gorm:"index:pk_hash;index:pk_hash_follow"`
 	PkScript     []byte
 	Address      string
-	FollowPkHash []byte `gorm:"index:follow_pk_hash"`
+	FollowPkHash []byte `gorm:"index:follow_pk_hash;index:pk_hash_follow"`
 	BlockId      uint
 	Block        *Block
 	Unfollow     bool

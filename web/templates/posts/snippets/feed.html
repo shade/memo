@@ -1,0 +1,18 @@
+<p class="pagination">
+
+    <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
+       href="{{ .OffsetLink }}?offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
+    <span class="page">{{ .Page }}</span>
+    <a class="{{ if lt (len .Posts) 25 }}disabled{{end}}"
+       href="{{ .OffsetLink }}?offset={{ .NextOffset }}">{{ T "next" }}></a>
+</p>
+
+{{ template "posts/snippets/posts.html" dict "Posts" .Posts "TimeZone" .TimeZone "UserSettings" .UserSettings }}
+
+<p class="pagination">
+    <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
+       href="{{ .OffsetLink }}?offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
+    <span class="page">{{ .Page }}</span>
+    <a class="{{ if lt (len .Posts) 25 }}disabled{{end}}"
+       href="{{ .OffsetLink }}?offset={{ .NextOffset }}">{{ T "next" }}></a>
+</p>

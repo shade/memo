@@ -7,8 +7,8 @@ import (
 )
 
 func SetProfileText(profileText string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoSetProfile,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoSetProfile,
 		Data: []byte(profileText),
 	}}
 	tx, err := Build(transactions, privateKey)

@@ -1,13 +1,14 @@
 {{ template "snippets/header.html" . }}
 
-{{ if not .FeedItems }}
+{{ if not .Posts }}
 <h3>Feed Empty</h3>
 <p>Start following others to see their posts here</p>
 
 {{ else }}
 
-{{ template "feed/header.html" dict "Page" "feed" "IsLoggedIn" .IsLoggedIn }}
-{{ template "feed/items.html" . }}
+{{ template "feed/header.html" dict "Page" "posts" "IsLoggedIn" .IsLoggedIn }}
+
+{{ template "posts/snippets/feed.html" . }}
 
 {{ end }}
 

@@ -17,7 +17,7 @@ var postRoute = web.Route{
 	Handler: func(r *web.Response) {
 		offset := r.Request.GetUrlParameterInt("offset")
 		txHashString := r.Request.GetUrlNamedQueryVariable(urlTxHash.Id)
-		post, err := getPostWithThreads(r, txHashString, offset)
+		post, err := getPostWithThreads(r, txHashString, offset, true)
 		if err != nil {
 			if db.IsRecordNotFoundError(err) {
 				r.Error(jerr.Get("error post not found", err), http.StatusNotFound)
@@ -41,6 +41,7 @@ var postRoute = web.Route{
 var postAjaxRoute = web.Route{
 	Pattern:    res.UrlMemoPostAjax + "/" + urlTxHash.UrlPart(),
 	Handler: func(r *web.Response) {
+		showParent := r.Request.GetUrlParameterBool("showParent")
 		txHashString := r.Request.GetUrlNamedQueryVariable(urlTxHash.Id)
 		txHash, err := chainhash.NewHashFromStr(txHashString)
 		if err != nil {
@@ -68,10 +69,12 @@ var postAjaxRoute = web.Route{
 			r.Error(jerr.Get("error getting post", err), http.StatusInternalServerError)
 			return
 		}
-		err = profile.AttachParentToPosts([]*profile.Post{post})
-		if err != nil {
-			r.Error(jerr.Get("error attaching parent to post", err), http.StatusInternalServerError)
-			return
+		if showParent {
+			err = profile.AttachParentToPosts([]*profile.Post{post})
+			if err != nil {
+				r.Error(jerr.Get("error attaching parent to post", err), http.StatusInternalServerError)
+				return
+			}
 		}
 		err = profile.AttachLikesToPosts([]*profile.Post{post})
 		if err != nil {
@@ -81,6 +84,11 @@ var postAjaxRoute = web.Route{
 		err = profile.AttachPollsToPosts([]*profile.Post{post})
 		if err != nil {
 			r.Error(jerr.Get("error attaching polls to posts", err), http.StatusInternalServerError)
+			return
+		}
+		err = profile.AttachProfilePicsToPosts([]*profile.Post{post})
+		if err != nil {
+			r.Error(jerr.Get("error attaching profile pics to posts", err), http.StatusInternalServerError)
 			return
 		}
 		err = profile.SetShowMediaForPosts([]*profile.Post{post}, userId)
@@ -99,7 +107,8 @@ var postThreadedAjaxRoute = web.Route{
 	Handler: func(r *web.Response) {
 		offset := r.Request.GetUrlParameterInt("offset")
 		txHashString := r.Request.GetUrlNamedQueryVariable(urlTxHash.Id)
-		post, err := getPostWithThreads(r, txHashString, offset)
+		showParent := r.Request.GetUrlParameterBool("showParent")
+		post, err := getPostWithThreads(r, txHashString, offset, showParent)
 		if err != nil {
 			r.Error(jerr.Get("error getting post with threads", err), http.StatusInternalServerError)
 			return

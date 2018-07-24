@@ -97,15 +97,14 @@ func setBloomFilters(n *SNode) {
 		jerr.Get("error getting keys from db", err).Print()
 		return
 	}
-	fmt.Printf("Setting bloom filter (keys: %d)...\n", len(allKeys))
+	codes := memo.GetAllCodes()
+	fmt.Printf("Setting bloom filter (keys: %d, codes: %d)...\n", len(allKeys), len(codes))
 	bloomFilter := bloom.NewFilter(uint32(len(allKeys)*2), 0, 0, wire.BloomUpdateNone)
 	for _, key := range allKeys {
-		fmt.Printf("Adding filter for address: %s\n", key.GetAddress().GetEncoded())
 		bloomFilter.Add(key.GetAddress().GetScriptAddress())
 		bloomFilter.Add(key.GetPublicKey().GetSerialized())
 	}
-	for _, code := range memo.GetAllCodes() {
-		fmt.Printf("Adding filter for code: %x\n", code)
+	for _, code := range codes {
 		bloomFilter.Add(code)
 	}
 	n.Peer.QueueMessage(bloomFilter.MsgFilterLoad(), nil)

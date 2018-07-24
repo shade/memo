@@ -12,9 +12,11 @@ import (
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/rep"
+	"github.com/memocash/memo/app/util"
 	"github.com/memocash/memo/app/util/format"
 	"github.com/skip2/go-qrcode"
 	"strings"
+	"time"
 )
 
 type Profile struct {
@@ -28,9 +30,12 @@ type Profile struct {
 	Balance              int64
 	BalanceBCH           float64
 	hasBalance           bool
-	FollowerCount        uint
-	FollowingCount       uint
-	TopicsFollowingCount uint
+	FollowerCount        int
+	FollowingCount       int
+	TopicsFollowingCount int
+	NumPosts             int
+	FirstPost            time.Time
+	LastPost             time.Time
 	Followers            []*Follower
 	Following            []*Follower
 	Reputation           *rep.Reputation
@@ -38,6 +43,14 @@ type Profile struct {
 	CanUnfollow          bool
 	Qr                   string
 	Pic                  *db.MemoSetPic
+}
+
+func (p Profile) GetFirstPost(timezone string) string {
+	return util.GetTimezoneTime(p.FirstPost, timezone)
+}
+
+func (p Profile) GetLastPost(timezone string) string {
+	return util.GetTimezoneTime(p.LastPost, timezone)
 }
 
 func (p Profile) IsSelf() bool {
@@ -101,7 +114,7 @@ func (p *Profile) SetFollowerCount() error {
 	if err != nil {
 		return jerr.Get("error getting follower count for hash", err)
 	}
-	p.FollowerCount = cnt
+	p.FollowerCount = int(cnt)
 	return nil
 }
 
@@ -110,7 +123,7 @@ func (p *Profile) SetFollowingCount() error {
 	if err != nil {
 		return jerr.Get("error getting following count for hash", err)
 	}
-	p.FollowingCount = cnt
+	p.FollowingCount = int(cnt)
 	return nil
 }
 
@@ -119,7 +132,7 @@ func (p *Profile) SetTopicsFollowingCount() error {
 	if err != nil {
 		return jerr.Get("error getting topic following count for hash", err)
 	}
-	p.TopicsFollowingCount = cnt
+	p.TopicsFollowingCount = int(cnt)
 	return nil
 }
 
@@ -130,6 +143,18 @@ func (p *Profile) SetCanFollow() error {
 	}
 	p.CanFollow = canFollow
 	p.CanUnfollow = !canFollow && bytes.Compare(p.PkHash, p.SelfPkHash) != 0
+	return nil
+}
+
+func (p *Profile) SetNumPosts() error {
+	userStat, err := db.GetUserStat(p.PkHash)
+	if err != nil {
+		if db.IsRecordNotFoundError(err) {
+			return nil
+		}
+		return jerr.Get("error getting num posts", err)
+	}
+	p.NumPosts = userStat.NumPosts
 	return nil
 }
 
@@ -166,26 +191,34 @@ func (p Profile) GetText() string {
 	return profile
 }
 
-func GetProfiles(selfPkHash []byte, searchString string, offset int) ([]*Profile, error) {
-	var pkHashes [][]byte
-	var err error
-	if searchString != "" {
-		pkHashes, err = db.GetUniqueMemoAPkHashesMatchName(searchString, offset)
-	} else {
-		pkHashes, err = db.GetUniqueMemoAPkHashes(offset)
-	}
+func GetProfiles(selfPkHash []byte, searchString string, offset int, orderType db.UserStatOrderType) ([]*Profile, error) {
+	objProfiles, err := db.GetUniqueMemoAPkHashes(offset, searchString, orderType)
 	if err != nil {
-		return nil, jerr.Get("error getting unique pk hashes", err)
+		return nil, jerr.Get("error getting profiles from db", err)
 	}
 	var profiles []*Profile
-	for _, pkHash := range pkHashes {
-		profile, err := GetProfile(pkHash, selfPkHash)
+	for _, objProfile := range objProfiles {
+		profile, err := GetProfile(objProfile.PkHash, selfPkHash)
 		if err != nil {
 			return nil, jerr.Get("error getting profile for hash", err)
 		}
+		profile.NumPosts = objProfile.NumPosts
+		profile.FollowerCount = objProfile.NumFollowers
+		profile.FirstPost = objProfile.FirstPost
+		profile.LastPost = objProfile.LastPost
 		profiles = append(profiles, profile)
 	}
 	return profiles, nil
+}
+
+func AttachReputationToProfiles(profiles []*Profile) error {
+	for _, profile := range profiles {
+		err := profile.SetReputation()
+		if err != nil {
+			return jerr.Get("error setting reputation", err)
+		}
+	}
+	return nil
 }
 
 func GetProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
@@ -224,6 +257,40 @@ func GetProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
 		profile.ProfileTx = memoSetProfile.TxHash
 	}
 	return profile, nil
+}
+
+func GetBasicProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
+	pf, err := GetProfile(pkHash, selfPkHash)
+	if err != nil {
+		return nil, jerr.Get("error getting profile for hash", err)
+	}
+	err = pf.SetFollowingCount()
+	if err != nil {
+		return nil, jerr.Get("error setting following count for profile", err)
+	}
+	err = pf.SetFollowerCount()
+	if err != nil {
+		return nil, jerr.Get("error setting follower count for profile", err)
+	}
+	err = pf.SetTopicsFollowingCount()
+	if err != nil {
+		return nil, jerr.Get("error setting topics following count for profile", err)
+	}
+	err = pf.SetNumPosts()
+	if err != nil {
+		return nil, jerr.Get("error setting num posts for profile", err)
+	}
+	if len(selfPkHash) > 0 {
+		err = pf.SetReputation()
+		if err != nil {
+			return nil, jerr.Get("error getting reputation", err)
+		}
+		err = pf.SetCanFollow()
+		if err != nil {
+			return nil, jerr.Get("error setting can follow for profile", err)
+		}
+	}
+	return pf, nil
 }
 
 func GetProfileAndSetBalances(pkHash []byte, selfPkHash []byte) (*Profile, error) {

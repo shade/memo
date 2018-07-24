@@ -68,6 +68,13 @@ func (e *Event) GetProfileText() string {
 	return profileText
 }
 
+func (e *Event) GetSetName() string {
+	if e.SetName == nil {
+		return ""
+	}
+	return e.SetName.Name
+}
+
 func (e *Event) GetProfilePicMessage() string {
 	var msg = e.SetProfilePic.Url
 	if e.ShowMedia {

@@ -1,7 +1,6 @@
 package db
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcutil"
@@ -9,7 +8,6 @@ import (
 	"github.com/memocash/memo/app/bitcoin/script"
 	"github.com/memocash/memo/app/bitcoin/wallet"
 	"html"
-	"sort"
 	"time"
 )
 
@@ -101,31 +99,8 @@ func GetSetNamesByTxHashes(txHashes [][]byte) ([]*MemoSetName, error) {
 	return memoSetNames, nil
 }
 
-type memoSetNameSortByDate []*MemoSetName
-
-func (txns memoSetNameSortByDate) Len() int      { return len(txns) }
-func (txns memoSetNameSortByDate) Swap(i, j int) { txns[i], txns[j] = txns[j], txns[i] }
-func (txns memoSetNameSortByDate) Less(i, j int) bool {
-	if bytes.Equal(txns[i].ParentHash, txns[j].TxHash) {
-		return true
-	}
-	if bytes.Equal(txns[i].TxHash, txns[j].ParentHash) {
-		return false
-	}
-	if txns[i].Block == nil && txns[j].Block == nil {
-		return false
-	}
-	if txns[i].Block == nil {
-		return true
-	}
-	if txns[j].Block == nil {
-		return false
-	}
-	return txns[i].Block.Height > txns[j].Block.Height
-}
-
 func GetNameForPkHash(pkHash []byte) (*MemoSetName, error) {
-	names, err := GetSetNamesForPkHash(pkHash)
+	names, err := GetNamesForPkHashes([][]byte{pkHash})
 	if err != nil {
 		return nil, jerr.Get("error getting set names for pk hash", err)
 	}
@@ -189,20 +164,6 @@ func GetUniqueMemoAPkHashesMatchName(searchString string, offset int) ([][]byte,
 		pkHashes = append(pkHashes, pkHash)
 	}
 	return pkHashes, nil
-}
-
-func GetSetNamesForPkHash(pkHash []byte) ([]*MemoSetName, error) {
-	var memoSetNames []*MemoSetName
-	err := findPreloadColumns([]string{
-		BlockTable,
-	}, &memoSetNames, &MemoSetName{
-		PkHash: pkHash,
-	})
-	if err != nil {
-		return nil, jerr.Get("error getting memo names", err)
-	}
-	sort.Sort(memoSetNameSortByDate(memoSetNames))
-	return memoSetNames, nil
 }
 
 func GetCountMemoSetName() (uint, error) {

@@ -4,41 +4,72 @@
 
 <div class="footer">
     <div class="container">
-        <div class="col-md-6">
+        <div class="col-md-6 links">
             <a href="/about">{{ T "about" }}</a>
             <a href="/guides">{{ T "Guides" }}</a>
             <a href="protocol">{{ T "protocol" }}</a>
             <a href="disclaimer">{{ T "disclaimer" }}</a>
             <a href="/stats">{{ T "statistics" }}</a>
+            <a href="bitcoincash:qzdxp2z5yuxzlskafh2d8wsq7grg7rt46csg3qcn80">Donate</a>
         </div>
         <div class="col-md-6 text-right-large">
-            <a href="/set-language?code=en-US" language="en-US" class="setlang">English</a>
-            <a href="/set-language?code=es-LA" language="es-LA" class="setlang">Español</a>
-            <a href="/set-language?code=zh-CN" language="zh-CN" class="setlang">中文(简体)</a>
-            <a href="/set-language?code=fr-FR" language="fr-FR" class="setlang">français</a>
-            <a href="/set-language?code=ja-JP" language="ja-JP" class="setlang">日本語</a>
-            <a href="/set-language?code=sv-SE" language="sv-SE" class="setlang">svenska</a>
-            <a href="/set-language?code=ko-KR" language="ko-KR" class="setlang">한국어</a>
-            <a href="/set-language?code=el-GR" language="el-GR" class="setlang">Ελληνικά</a>
-            <a href="/set-language?code=pl-PL" language="pl-PL" class="setlang">Polski</a>
-            <a href="/set-language?code=pt-BR" language="pt-BR" class="setlang">Português</a>
-            <a href="/set-language?code=cs-CZ" language="cs-CZ" class="setlang">Čeština</a>
-            <a href="/set-language?code=nl-NL" language="nl-NL" class="setlang">Nederlands</a>
+            <div class="dropup" id="language-picker" style="display:inline-block">
+                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                {{ $lang := .Lang }}
+                {{ range .Languages }}
+                {{ if eq .Code $lang }}<span class="flag-icon flag-icon-{{ .Flag }}"></span> &nbsp; {{ .Name }}{{ end }}
+                {{ end }}
+                    <span class="caret"></span></button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                {{ range .Languages }}
+                    <li><a href="#" data-lang="{{ .Code }}"><span class="flag-icon flag-icon-{{ .Flag }}"></span>
+                        &nbsp; {{ .Name }}</a></li>
+                {{ end }}
+                </ul>
+            </div>
         </div>
     </div>
 </div>
+<script>
+    $(function () {
+        var $languagePicker = $("#language-picker");
+        $languagePicker.find("a").click(function (e) {
+            var $this = $(this);
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: MemoApp.URL.SetLanguage,
+                data: {
+                    code: $this.attr("data-lang")
+                },
+                success: function () {
+                    window.location.reload();
+                },
+                error: function () {
+                    MemoApp.AddAlert("Error updating language.");
+                }
+            });
+        });
+    });
+</script>
 
 {{ if not (eq .UserSettings.Integrations "none") }}
 <script type="text/javascript" async src="https://www.googletagmanager.com/gtag/js?id={{ .GoogleId }}"></script>
 <script type="text/javascript">
     window.dataLayer = window.dataLayer || [];
+
     function gtag() {
         dataLayer.push(arguments);
     }
+
     gtag('js', new Date());
     gtag('config', '{{ .GoogleId }}');
 </script>
 {{ end }}
+</div>
+</div>
+<div id="site-wrapper-cover"></div>
+<div id="site-modal-wrapper"></div>
 
 </body>
 </html>

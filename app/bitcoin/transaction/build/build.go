@@ -11,33 +11,36 @@ import (
 )
 
 const notEnoughValueErrorText = "unable to find enough value to spend"
+
 var notEnoughValueError = jerr.New(notEnoughValueErrorText)
 
 func IsNotEnoughValueError(err error) bool {
 	return jerr.HasError(err, notEnoughValueErrorText)
 }
 
-func Build(spendOutputs []memo.SpendOutput, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
+func Build(outputs []memo.Output, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
 	spendableTxOuts, err := db.GetSpendableTransactionOutputsForPkHash(privateKey.GetPublicKey().GetAddress().GetScriptAddress())
 	if err != nil {
 		return nil, jerr.Get("error getting spendable tx outs", err)
 	}
 	sort.Sort(db.TxOutSortByValue(spendableTxOuts))
-	memoTx, _, err := buildWithTxOuts(spendOutputs, spendableTxOuts, privateKey)
+	memoTx, _, err := buildWithTxOuts(outputs, spendableTxOuts, privateKey)
 	if err != nil {
 		return nil, jerr.Get("error creating tx", err)
 	}
 	return memoTx, nil
 }
 
-func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.TransactionOut, privateKey *wallet.PrivateKey) (*memo.Tx, []*db.TransactionOut, error) {
+func buildWithTxOuts(outputs []memo.Output, spendableTxOuts []*db.TransactionOut, privateKey *wallet.PrivateKey) (*memo.Tx, []*db.TransactionOut, error) {
 	var minInput = int64(memo.BaseTxFee + memo.InputFeeP2PKH + memo.OutputFeeP2PKH + memo.DustMinimumOutput)
 
-	for _, spendOutput := range spendOutputs {
+	var spendOutputType memo.OutputType
+	for _, spendOutput := range outputs {
 		switch spendOutput.Type {
-		case memo.SpendOutputTypeP2PK:
+		case memo.OutputTypeP2PK:
 			minInput += memo.OutputFeeP2PKH + spendOutput.Amount
 		default:
+			spendOutputType = spendOutput.Type
 			outputFee, err := getMemoOutputFee(spendOutput)
 			if err != nil {
 				return nil, nil, jerr.Get("error getting memo output fee", err)
@@ -65,10 +68,10 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 	var fee = int64(memo.BaseTxFee+len(txOutsToUse)*memo.InputFeeP2PKH) + memo.OutputFeeP2PKH
 
 	var totalOutputValue int64
-	for _, spendOutput := range spendOutputs {
+	for _, spendOutput := range outputs {
 		totalOutputValue += spendOutput.Amount
 		switch spendOutput.Type {
-		case memo.SpendOutputTypeP2PK:
+		case memo.OutputTypeP2PK:
 			fee += memo.OutputFeeP2PKH
 		default:
 			outputFee, err := getMemoOutputFee(spendOutput)
@@ -84,14 +87,14 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 		return nil, nil, jerr.New("change value below dust minimum input")
 	}
 	address := privateKey.GetPublicKey().GetAddress()
-	spendOutputs = append([]memo.SpendOutput{{
-		Type:    memo.SpendOutputTypeP2PK,
+	outputs = append([]memo.Output{{
+		Type:    memo.OutputTypeP2PK,
 		Address: address,
 		Amount:  change,
-	}}, spendOutputs...)
+	}}, outputs...)
 
 	var tx *wire.MsgTx
-	tx, err := transaction.Create(txOutsToUse, privateKey, spendOutputs)
+	tx, err := transaction.Create(txOutsToUse, privateKey, outputs)
 	if err != nil {
 		return nil, nil, jerr.Get("error creating tx", err)
 	}
@@ -113,29 +116,30 @@ func buildWithTxOuts(spendOutputs []memo.SpendOutput, spendableTxOuts []*db.Tran
 	}}, spendableTxOuts...)
 	return &memo.Tx{
 		SelfPkHash: address.GetScriptAddress(),
+		Type:       spendOutputType,
 		MsgTx:      tx,
 		Inputs:     inputs,
 	}, spendableTxOuts, nil
 }
 
-func getMemoOutputFee(spendOutput memo.SpendOutput) (int64, error) {
-	switch spendOutput.Type {
-	case memo.SpendOutputTypeMemoMessage,
-		memo.SpendOutputTypeMemoLike,
-		memo.SpendOutputTypeMemoSetName,
-		memo.SpendOutputTypeMemoSetProfile,
-		memo.SpendOutputTypeMemoSetProfilePic,
-		memo.SpendOutputTypeMemoFollow, memo.SpendOutputTypeMemoUnfollow,
-		memo.SpendOutputTypeMemoTopicFollow, memo.SpendOutputTypeMemoTopicUnfollow:
-		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data)), nil
-	case memo.SpendOutputTypeMemoReply,
-		memo.SpendOutputTypeMemoTopicMessage,
-		memo.SpendOutputTypeMemoPollOption,
-		memo.SpendOutputTypeMemoPollVote:
-		return int64(memo.OutputFeeOpReturn + len(spendOutput.Data) + memo.OutputOpDataFee + len(spendOutput.RefData)), nil
-	case memo.SpendOutputTypeMemoPollQuestionSingle,
-		memo.SpendOutputTypeMemoPollQuestionMulti:
-		return int64(memo.OutputFeeOpReturn + (memo.OutputOpDataFee+1)*2 + len(spendOutput.Data)), nil
+func getMemoOutputFee(output memo.Output) (int64, error) {
+	switch output.Type {
+	case memo.OutputTypeMemoMessage,
+		memo.OutputTypeMemoLike,
+		memo.OutputTypeMemoSetName,
+		memo.OutputTypeMemoSetProfile,
+		memo.OutputTypeMemoSetProfilePic,
+		memo.OutputTypeMemoFollow, memo.OutputTypeMemoUnfollow,
+		memo.OutputTypeMemoTopicFollow, memo.OutputTypeMemoTopicUnfollow:
+		return int64(memo.OutputFeeOpReturn + len(output.Data)), nil
+	case memo.OutputTypeMemoReply,
+		memo.OutputTypeMemoTopicMessage,
+		memo.OutputTypeMemoPollOption,
+		memo.OutputTypeMemoPollVote:
+		return int64(memo.OutputFeeOpReturn + len(output.Data) + memo.OutputOpDataFee + len(output.RefData)), nil
+	case memo.OutputTypeMemoPollQuestionSingle,
+		memo.OutputTypeMemoPollQuestionMulti:
+		return int64(memo.OutputFeeOpReturn + (memo.OutputOpDataFee+1)*2 + len(output.Data)), nil
 	}
 	return 0, jerr.New("unable to get fee for output type")
 }

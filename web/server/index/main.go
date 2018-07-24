@@ -11,10 +11,11 @@ func GetRoutes() []web.Route {
 		introducingMemoRoute,
 		openSourcingMemoRoute,
 		aboutRoute,
-		feedRoute,
+		activityRoute,
 		needFundsRoute,
 		newPostsRoute,
 		statsRoute,
+		chartsRoute,
 		allRoute,
 	}
 }

@@ -1,6 +1,6 @@
 {{ template "snippets/header.html" . }}
 
-{{ template "posts/header.html" dict "Page" "archive" "Username" .Username }}
+{{ template "posts/header.html" dict "Page" "archive" "IsLoggedIn" .IsLoggedIn }}
 
 <div class="pagination">
     <a href="posts/archive?day={{ .PrevDay }}">{{ T "previous_day" }}</a>
@@ -14,7 +14,7 @@
     <a class="{{ if lt (len .Posts) 25 }}disabled{{ end }}" href="{{ .OffsetLink }}&offset={{ .NextOffset }}">{{ T "next" }} &gt;</a>
 </p>
 
-{{ template "snippets/posts.html" dict "Posts" .Posts "TimeZone" .TimeZone "UserSettings" .UserSettings }}
+{{ template "posts/snippets/posts.html" dict "Posts" .Posts "TimeZone" .TimeZone "UserSettings" .UserSettings }}
 
 <p class="pagination">
     <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}" href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>

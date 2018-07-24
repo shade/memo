@@ -10,6 +10,8 @@ var urlAddress = web.UrlParam{
 func GetRoutes() []web.Route {
 	return []web.Route{
 		allRoute,
+		mostActionsRoute,
+		mostFollowersRoute,
 		viewRoute,
 		followersRoute,
 		followingRoute,
@@ -19,6 +21,8 @@ func GetRoutes() []web.Route {
 		notificationsRoute,
 		topicsFollowingRoute,
 		coinsRoute,
+		miniRoute,
+		newRoute,
 	}
 }
 

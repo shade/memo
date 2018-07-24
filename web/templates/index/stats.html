@@ -1,20 +1,57 @@
 {{ template "snippets/header.html" . }}
 
-<h2>{{ T "statistics" }}</h2>
+{{ template "index/snippets/stats-header.html" "stats" }}
 
 <table class="table left table-striped">
+    <tr>
+        <th style="width:70%">{{ T "Posts" }}</th>
+        <td style="width:30%">{{ formatBigInt .MemoPostCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Replies" }}</th>
+        <td>{{ formatBigInt .MemoReplyPostCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Polls" }}</th>
+        <td>{{ formatBigInt .MemoPollQuestionCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Vote comments" }}</th>
+        <td>{{ formatBigInt .MemoVotePostCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Topic posts" }}</th>
+        <td>{{ formatBigInt .MemoTopicPostCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Total" }} Posts</th>
+        <th>{{ formatBigInt .MemoTotalPosts }}</th>
+    </tr>
+</table>
+
+<br/>
+
+<table class="table left table-striped">
+    <tr>
+        <th style="width:70%">{{ T "like" 2 | Title }}</th>
+        <td style="width:30%">{{ formatBigInt .MemoLikeCount }}</td>
+    </tr>
     <tr>
         <th>{{ T "follow" 2 }}</th>
         <td>{{ formatBigInt .MemoFollowCount }}</td>
     </tr>
-    <tr>
-        <th>{{ T "like" 2 | Title }}</th>
-        <td>{{ formatBigInt .MemoLikeCount }}</td>
-    </tr>
-    <tr>
-        <th>{{ T "posts" }}</th>
+    <!--<tr>
+        <th>{{ T "Total posts" }}</th>
         <td>{{ formatBigInt .MemoPostCount }}</td>
     </tr>
+    <tr>
+        <th>{{ T "Reply posts" }}</th>
+        <td>{{ formatBigInt .MemoReplyPostCount }}</td>
+    </tr>
+    <tr>
+        <th>{{ T "Topic posts" }}</th>
+        <td>{{ formatBigInt .MemoTopicPostCount }}</td>
+    </tr>-->
     <tr>
         <th>{{ T "Names_set" }}</th>
         <td>{{ formatBigInt .MemoSetNameCount }}</td>
@@ -27,12 +64,12 @@
         <th>{{ T "Profile pics set" }}</th>
         <td>{{ formatBigInt .MemoSetProfilePicCount }}</td>
     </tr>
-    <tr>
+    <!--<tr>
         <th>{{ T "Polls created" }}</th>
         <td>{{ formatBigInt .MemoPollQuestionCount }}</td>
-    </tr>
+    </tr>-->
     <tr>
-        <th>{{ T "Polls options added" }}</th>
+        <th>{{ T "Poll options added" }}</th>
         <td>{{ formatBigInt .MemoPollOptionCount }}</td>
     </tr>
     <tr>
@@ -48,6 +85,12 @@
         <th>{{ formatBigInt .MemoTotalActionCount }}</th>
     </tr>
 </table>
+
+<div class="row">
+    <div class="col-sm-12">
+        <b>Users: {{ formatInt .UniqueUsers }}</b>
+    </div>
+</div>
 
 <br/>
 <br/>

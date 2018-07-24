@@ -113,12 +113,15 @@ func (t TransactionOut) GetMessage() string {
 
 func GetTransactionOutput(txHash []byte, index uint32) (*TransactionOut, error) {
 	var transactionOut TransactionOut
-	err := find(&transactionOut, TransactionOut{
-		TransactionHash: txHash,
-		Index:           index,
-	})
+	db, err := getDb()
 	if err != nil {
-		return nil, jerr.Get("error finding transaction output", err)
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("`index` = ?", index).
+		Find(&transactionOut, TransactionOut{TransactionHash: txHash})
+	if result.Error != nil {
+		return nil, jerr.Get("error finding transaction output", result.Error)
 	}
 	return &transactionOut, nil
 }

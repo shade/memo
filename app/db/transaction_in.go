@@ -129,12 +129,15 @@ func GetTransactionInputByHashString(hashString string) (*TransactionIn, error) 
 
 func GetTransactionInput(txHash []byte, index uint32) (*TransactionIn, error) {
 	var transactionIn TransactionIn
-	err := find(&transactionIn, TransactionIn{
-		PreviousOutPointHash:  txHash,
-		PreviousOutPointIndex: index,
-	})
+	db, err := getDb()
 	if err != nil {
-		return nil, jerr.Get("error finding transaction inputs", err)
+		return nil, jerr.Get("error getting db", err)
+	}
+	result := db.
+		Where("`index` = ?", index).
+		Find(&transactionIn, TransactionIn{PreviousOutPointHash: txHash})
+	if result.Error != nil {
+		return nil, jerr.Get("error finding transaction input", result.Error)
 	}
 	return &transactionIn, nil
 }

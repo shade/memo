@@ -7,8 +7,8 @@ import (
 )
 
 func SetName(name string, privateKey *wallet.PrivateKey) (*memo.Tx, error) {
-	transactions := []memo.SpendOutput{{
-		Type: memo.SpendOutputTypeMemoSetName,
+	transactions := []memo.Output{{
+		Type: memo.OutputTypeMemoSetName,
 		Data: []byte(name),
 	}}
 	tx, err := Build(transactions, privateKey)

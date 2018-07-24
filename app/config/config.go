@@ -23,7 +23,14 @@ const (
 )
 
 const (
-	ProfilePicsPath   = "PROFILE_PICS_PATH"
+	StatsdNamespace = "STATSD_NAMESPACE"
+)
+
+const (
+	EnvUseMinJs = "USE_MIN_JS"
+)
+
+const (
 	VipsThumbnailPath = "VIPS_THUMBNAIL_PATH"
 	UseVipsThumbnail  = "USE_VIPS_THUMBNAIL"
 )
@@ -41,9 +48,12 @@ type MemcacheConfig struct {
 }
 
 type FilePathsConfig struct {
-	ProfilePicsPath string
 	VipsThumbnailPath string
-	UseVipsThumbnail bool
+	UseVipsThumbnail  bool
+}
+
+type StatsdConfig struct {
+	Namespace string
 }
 
 func (m MemcacheConfig) GetConnectionString() string {
@@ -86,6 +96,10 @@ func GetMemcacheConfig() MemcacheConfig {
 	}
 }
 
+func GetUseMinJs() bool {
+	return viper.GetBool(EnvUseMinJs)
+}
+
 func GetBitcoinNode() BitcoinNodeConfig {
 	return BitcoinNodeConfig{
 		Host: viper.GetString(BitcoinNodeHost),
@@ -93,10 +107,19 @@ func GetBitcoinNode() BitcoinNodeConfig {
 	}
 }
 
+func GetStatsdConfig() StatsdConfig {
+	var statsdConfig = StatsdConfig{
+		Namespace: viper.GetString(StatsdNamespace),
+	}
+	if statsdConfig.Namespace == "" {
+		statsdConfig.Namespace = "memo_dev"
+	}
+	return statsdConfig
+}
+
 func GetFilePaths() FilePathsConfig {
 	return FilePathsConfig{
-		ProfilePicsPath: viper.GetString(ProfilePicsPath),
 		VipsThumbnailPath: viper.GetString(VipsThumbnailPath),
-		UseVipsThumbnail: viper.GetBool(UseVipsThumbnail),
+		UseVipsThumbnail:  viper.GetBool(UseVipsThumbnail),
 	}
 }

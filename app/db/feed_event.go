@@ -94,13 +94,12 @@ func GetRecentFeedForPkHash(pkHash []byte, offset uint) ([]*FeedEvent, error) {
 		"	WHERE pk_hash = ?" +
 		"	GROUP BY pk_hash, follow_pk_hash" +
 		") sq ON (sq.id = memo_follows.id) " +
-		"WHERE unfollow = 0 " +
-		"UNION SELECT ?"
+		"WHERE unfollow = 0 "
 	result := db.
 		Limit(25).
 		Preload(BlockTable).
 		Offset(offset).
-		Joins("JOIN ("+joinSelect+") fsq ON (feed_events.pk_hash = fsq.follow_pk_hash)", pkHash, pkHash).
+		Joins("JOIN ("+joinSelect+") fsq ON (feed_events.pk_hash = fsq.follow_pk_hash)", pkHash).
 		Order("block_height != 0, block_height DESC, id DESC").
 		Find(&feedEvents)
 	if result.Error != nil {

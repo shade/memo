@@ -8,6 +8,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/obj/user_stats"
 )
 
 const MinCheckHeight = 525000
@@ -42,6 +43,14 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 	for _, err := range errors {
 		fmt.Println(err.Error())
 	}
+	go func() {
+		if n.BlocksSyncComplete {
+			err = user_stats.Populate()
+			if err != nil {
+				jerr.Get("error populating user stats", err).Print()
+			}
+		}
+	}()
 	fmt.Printf("Block - height: %5d (%s), found: %4d, saved: %4d, memos: %4d\n",
 		dbBlock.Height,
 		dbBlock.Timestamp.String(),
@@ -97,7 +106,9 @@ func queueBlocks(n *Node) {
 	}
 	n.Peer.QueueMessage(msgGetData, nil)
 	n.BlocksQueued += len(msgGetData.InvList)
-	fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
+	if n.BlocksQueued > 1 {
+		fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
+	}
 }
 
 func getBlock(n *Node, hash chainhash.Hash) {

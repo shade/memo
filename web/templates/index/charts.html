@@ -1,0 +1,81 @@
+{{ template "snippets/header.html" . }}
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highstock/6.0.3/highstock.js"></script>
+{{ if eq .UserSettings.Theme "dark" }}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highstock/6.0.3/js/themes/dark-unica.js"></script>
+{{ end }}
+
+{{ template "index/snippets/stats-header.html" "charts" }}
+
+<div id="cohort-actions-chart"></div>
+<br/>
+<div id="cohort-users-chart"></div>
+<br/>
+<div id="first-posts-chart"></div>
+
+<br/>
+<br/>
+
+<script type="text/javascript">
+    $(function () {
+        createSingleSeriesChart("first-posts-chart", "New Users", {{ .FirstPosts }}, "New Users");
+        createChart("cohort-actions-chart", "On-chain Actions by Cohort", {{ .CohortActions }});
+        createChart("cohort-users-chart", "Active Users by Cohort", {{ .CohortUsers }});
+    });
+
+    function createSingleSeriesChart(id, title, data, seriesName) {
+        createChart(id, title, [{
+            type: 'column',
+            data: data,
+            name: seriesName,
+            dataGrouping: {
+                enabled: false
+            }
+        }]);
+    }
+
+    function createChart(id, title, series) {
+        Highcharts.stockChart(id, {
+            title: {
+                text: title
+            },
+            credits: false,
+            legend: {
+                enabled: true
+            },
+            lang: {
+                thousandsSep: ','
+            },
+            tooltip: {
+                shared: true,
+                formatter: function () {
+                    var html = "<b>" + Highcharts.dateFormat('%Y-%m-%d', this.x) + "</b>";
+                    var total = 0;
+                    $.each(this.points, function () {
+                        total += this.y;
+                        if (this.y === 0) {
+                            return;
+                        }
+                        html += '<br/>' + this.series.name + ": <b>" + Highcharts.numberFormat(this.y, 0, '', ',') + " (" + Highcharts.numberFormat(this.percentage, 0, '', ',') + "%)</b>";
+                    });
+                    return html + "<br/>Total: <b>" + Highcharts.numberFormat(total, 0, '', ',') + "</b>";
+                }
+            },
+            chart: {
+                type: "column",
+                alignTicks: false
+            },
+            rangeSelector: {
+                selected: 1
+            },
+            plotOptions: {
+                column: {
+                    stacking: 'normal'
+                }
+            },
+            series: series
+        });
+    }
+</script>
+
+{{ template "snippets/footer.html" . }}

@@ -1,0 +1,193 @@
+{{ $postUnique := getUnique 6 }}
+<div class="post rounded box-shadow" id="post-{{ $postUnique }}"
+     data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
+{{ if .FeedItem }}
+{{ if .FeedItem.IsLike }}
+    <div class="post-header">
+        <div class="name feed-item feed-item-like">
+            <span class="feed-item-glyphicon glyphicon glyphicon-heart" aria-hidden="true"></span>
+        {{ template "post/snippets/name.html" dict "Address" .FeedItem.GetAddressString "ProfilePic" .FeedItem.ProfilePic "IsFeedItem" false "Name" .FeedItem.Name }}
+        {{ if .FeedItem.Reputation }}
+            {{ template "snippets/reputation.html" .FeedItem.Reputation }}
+        {{ end }}
+            liked {{ if .Post.Parent }}reply{{ else if .Post.Memo.Topic }}topic post{{ else }}post{{ end }}
+        {{ if .FeedItem.MemoLike.TipAmount }}
+            &middot; {{ formatBigInt .FeedItem.MemoLike.TipAmount }} sat tip
+        {{ end }}
+            &middot; {{ .FeedItem.TimeAgo }}
+        </div>
+    </div>
+{{ end }}
+{{ if .FeedItem.IsPollVote }}
+    <div class="post-header">
+        <div class="name feed-item feed-item-vote">
+            <span class="feed-item-glyphicon glyphicon glyphicon-ok" aria-hidden="true"></span>
+        {{ template "post/snippets/name.html" dict "Address" .FeedItem.GetAddressString "ProfilePic" .FeedItem.ProfilePic "IsFeedItem" false "Name" .FeedItem.Name }}
+        {{ if .FeedItem.Reputation }}
+            {{ template "snippets/reputation.html" .FeedItem.Reputation }}
+        {{ end }}
+            voted on poll <b>{{ .FeedItem.PollOption.Option }}</b>
+        {{ if .FeedItem.PollVote.TipAmount }}
+            &middot; {{ formatBigInt .FeedItem.PollVote.TipAmount }} sat tip
+        {{ end }}
+            &middot; {{ .FeedItem.TimeAgo }}
+        </div>
+    </div>
+{{ end }}
+{{ end }}
+    <div class="post-header">
+        <div class="name">
+        {{ $isFeedItem := (or .FeedItem.IsLike .FeedItem.IsPollVote) }}
+        {{ template "post/snippets/name.html" dict "Address" .Post.Memo.GetAddressString "ProfilePic" .Post.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Name }}
+        {{ if .Post.Reputation }}
+            {{ template "snippets/reputation.html" .Post.Reputation }}
+        {{ end }}
+        {{ if and .Post.Memo.RootTxHash .Post.Memo.ParentTxHash }}
+        {{ T "replied_to" }} <a
+                href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+        {{ else if .Post.Memo.ParentTxHash }}
+        {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+        {{ else if .Post.Memo.IsVote }}
+            voted in <a href="post/{{ .Post.VoteQuestion.GetTransactionHashString }}">poll</a>
+        {{ else if .Post.Memo.IsPoll }}
+            {{ T "created poll" }}
+        {{ else }}
+            {{ T "posted" }}
+        {{ end }}
+            &middot; <a title="{{ .Post.GetTimeString .TimeZone }}"
+                        href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.GetTimeAgo }}</a>
+        {{- if .Post.Memo.Topic }}
+            in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
+        {{ end }}
+        </div>
+    {{ if .FeedItem }}
+        {{ template "posts/snippets/block-explorer.html" .FeedItem.FeedEvent.GetTransactionHashString }}
+    {{ else }}
+        {{ template "posts/snippets/block-explorer.html" .Post.Memo.GetTransactionHashString }}
+    {{ end }}
+    </div>
+{{ if .Post.Parent }}
+    <div class="reply{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} reply-feed-item{{ end }}">
+        Replying to
+        {{ $isFeedItem := (or .FeedItem.IsLike .FeedItem.IsPollVote) }}
+        {{ template "post/snippets/name.html" dict "Address" .Post.Parent.Memo.GetAddressString "ProfilePic" .Post.Parent.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Parent.Name }}'s
+    {{ if .Post.Memo.RootTxHash }}
+        <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">
+            post
+        </a>
+    {{ else }}
+        <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">
+            post
+        </a>
+    {{ end }}
+    {{ if .Post.Parent.Reputation }}
+        {{ template "snippets/reputation.html" .Post.Parent.Reputation }}
+    {{ end }}
+        <p>{{ .Post.Parent.GetMessage }}</p>
+    </div>
+{{ end }}
+{{ if .Post.Memo.IsVote }}
+    <div class="reply vote">
+        <p>{{ .Post.VoteQuestion.Message }}</p>
+        <p>{{ .Post.VoteOption.Option }}</p>
+    </div>
+{{ end }}
+    <div class="message{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} message-feed-item{{ end }}">
+    {{ .Post.GetMessage }}
+    </div>
+{{ if .Post.IsPoll }}
+    {{ template "post/snippets/poll.html" dict "Post" .Post "Threaded" false "FormHash" $postUnique }}
+{{ end }}
+{{ if or .Post.Likes (gt .Post.ReplyCount 0) }}
+    <p class="likes">
+        <i>
+        {{ if .Post.Likes }}
+            <a href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ len .Post.Likes }} {{ T "like" (len .Post.Likes)  }}</a>
+            (tip: {{ formatBigInt .Post.GetTotalTip }} satoshis)
+        {{ end }}
+        {{ if and .Post.Likes (gt .Post.ReplyCount 0) }}
+            &middot;
+        {{ end }}
+        {{ if gt .Post.ReplyCount 0 }}
+        {{ if .Post.Memo.RootTxHash }}
+            <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ (T "reply" (.Post.ReplyCount | ToInt)) }}</a>
+        {{ else }}
+            <a href="post/{{ .Post.Memo.GetTransactionHashString }}">{{ .Post.ReplyCount }} {{ (T "reply" (.Post.ReplyCount | ToInt)) }}</a>
+        {{ end }}
+        {{ end }}
+        </i>
+    </p>
+{{ end }}
+{{ if not .Compress }}
+    <div class="actions">
+    {{ if .Post.Memo.Topic }}
+        <a id="view-topic-link-{{ $postUnique }}" class="btn btn-sm btn-default"
+           href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">
+            <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>{{ T "view_topic" | UcFirst }}
+        </a>
+    {{ end }}
+    {{ if .Post.IsLoggedIn }}
+    {{ if not .Post.Memo.Topic }}
+        <a id="reply-link-{{ $postUnique }}" class="btn btn-sm btn-default"
+           href="memo/reply/{{ .Post.Memo.GetTransactionHashString }}">
+            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>{{ T "reply_verb" | Title }}
+        </a>
+    {{ end }}
+        <span class="creating hidden btn btn-sm btn-warning">Creating...</span>
+        <span class="broadcasting hidden btn btn-sm btn-warning">Broadcasting...</span>
+        <div class="like" id="like-{{ $postUnique }}">
+            <span class="like-info" id="like-info-{{ $postUnique }}">
+                <a class="btn btn-sm btn-default like-link" id="like-link-{{ $postUnique }}"
+                   href="#"><span class="glyphicon glyphicon-heart{{ if not .Post.HasLiked }}-empty{{ end }}"
+                                  aria-hidden="true"></span>{{ T "like" 1 | UcFirst }}</a>
+            </span>
+            <form class="like-form hidden form-inline" id="like-form-{{ $postUnique }}">
+                <label for="tip-{{ $postUnique }}">Tip</label>
+                <input id="tip-{{ $postUnique }}" type="text" name="tip"
+                       class="form-control input-sm"
+                       placeholder="0" value="{{ .UserSettings.GetDefaultTipString }}"/>
+                <input class="btn btn-sm btn-primary" type="submit" value="Like">
+                <a href="#" class="like-cancel btn btn-sm btn-default"
+                   id="like-cancel-{{ $postUnique }}">Cancel</a>
+            </form>
+        </div>
+    {{ end }}
+
+    </div>
+{{ end }}
+
+{{ template "post/snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}
+
+</div>
+
+<script type="text/javascript">
+    (function () {
+        var foreground = {{ if eq .UserSettings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
+        var background = [0, 0, 0, 0];
+        var data = new Identicon('{{ .Post.Memo.GetAddressString }}', {
+            foreground: foreground,
+            background: background,
+            size: 24,
+            form: 'svg',
+            margin: 0
+        }).toString();
+        $(".identicon-{{ .Post.Memo.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+    {{ if .Post.Parent }}
+        data = new Identicon('{{ .Post.Parent.Memo.GetAddressString }}', {
+            foreground: foreground,
+            background: background,
+            size: 18,
+            form: 'svg',
+            margin: 0
+        }).toString();
+        $(".identicon-{{ .Post.Parent.Memo.GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+    {{ end }}
+    {{ if .Post.IsLoggedIn }}
+        MemoApp.Form.ReplyLink("{{ $postUnique }}");
+        MemoApp.Form.NewLike("{{ .Post.Memo.GetTransactionHashString }}", "{{ $postUnique }}", false, {{ if .Post.Parent }}true{{ else }}false{{ end }});
+    {{ end }}
+    })();
+    $(function () {
+        MemoApp.MiniProfile($("#post-{{ $postUnique }}"));
+    });
+</script>

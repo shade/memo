@@ -50,6 +50,10 @@
 
 <script type="text/javascript">
     $(function () {
+        setTopicHeight();
+        $(window).resize(function() {
+            setTopicHeight();
+        });
         // handles html encoding
         var topicName = $("#topic-name").val();
     {{ if .IsLoggedIn }}
@@ -62,6 +66,13 @@
         MemoApp.WatchNewTopics(topicName, $allPosts);
         MemoApp.LoadMore(topicName, $allPosts);
     });
+    function setTopicHeight() {
+        var height = $(window).height() - 324;
+        if (height < 250) {
+            height = 250;
+        }
+        $("#all-posts").css("max-height", height);
+    }
 </script>
 
 <br/>

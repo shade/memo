@@ -38,13 +38,13 @@ var MemoApp = {
     /**
      * @param message {string}
      */
-    MemoApp.AddAlert = function(message) {
+    MemoApp.AddAlert = function (message) {
         alertId++;
         $(".alert-banner").append("<p id='alert-banner-message-" + alertId + "'>" + message + "</p>");
         var $alertMessage = $("#alert-banner-message-" + alertId);
         $alertMessage.hide().slideDown();
-        setTimeout(function() {
-            $alertMessage.slideUp(function() {
+        setTimeout(function () {
+            $alertMessage.slideUp(function () {
                 $alertMessage.remove();
             })
         }, 5000);
@@ -78,18 +78,64 @@ var MemoApp = {
         return parseInt(s);
     };
 
-    MemoApp.GetPassword = function() {
-        if (!localStorage.WalletPassword || localStorage.WalletPassword.length === 0) {
-            MemoApp.AddAlert("We've updated how wallets are unlocked. Please re-login to unlock your wallet.");
-            window.location = MemoApp.URL.Logout + "?a=re-login";
-        }
-        return localStorage.WalletPassword;
+    MemoApp.GetPassword = function () {
+        return localStorage.WalletPassword || "";
     };
+
+    /**
+     * @param {function=} callback
+     */
+    MemoApp.ReEnterPassword = function (callback) {
+        var html =
+            "<form id='re-enter-password-form'>" +
+            "<p>" +
+            "<label for='re-enter-password'>Password</label>" +
+            "<input type='password' name='password' id='re-enter-password' class='form-control' autocomplete='Password' autofocus/>" +
+            "</p><p>" +
+            "<input type='submit' class='btn btn-primary' value='Unlock'/> " +
+            "<a name='cancel' class='btn btn-default' href='#'>Cancel</a>" +
+            "</p>" +
+            "</form>";
+        MemoApp.Modal("Unlock Wallet", html, 8);
+        var $form = $("#re-enter-password-form");
+        var $cancel = $form.find("[name=cancel]");
+        $form.submit(function (e) {
+            e.preventDefault();
+            var password = $form.find("[name=password]").val();
+            if (!password || password.length === 0) {
+                MemoApp.AddAlert("Password is empty.");
+                return;
+            }
+            localStorage.WalletPassword = password;
+            MemoApp.CloseModal();
+            if (typeof callback === "function") {
+                callback();
+            }
+        });
+        $cancel.click(function (e) {
+            e.preventDefault();
+            MemoApp.CloseModal();
+        });
+    };
+
+    var twitterEnabled = false;
+    /**
+     * @param {boolean} isEnabled
+     */
+    MemoApp.SetTwitter = function(isEnabled) {
+        twitterEnabled = isEnabled;
+    };
+
+    MemoApp.ReloadTwitter = function () {
+        if (twitterEnabled) {
+            twttr.widgets.load();
+        }
+    }
 
     /**
      * @param {string} password
      */
-    MemoApp.SetPassword = function(password) {
+    MemoApp.SetPassword = function (password) {
         localStorage.WalletPassword = password;
     };
 
@@ -108,7 +154,7 @@ var MemoApp = {
      * @param {string} path
      * @return {WebSocket}
      */
-    MemoApp.GetSocket = function(path) {
+    MemoApp.GetSocket = function (path) {
         var loc = window.location;
         var protocol = window.location.protocol.toLowerCase() === "https:" ? "wss" : "ws";
         var socket = new WebSocket(protocol + "://" + loc.hostname + ":" + loc.port + path);
@@ -129,7 +175,9 @@ var MemoApp = {
 
     MemoApp.URL = {
         Index: "",
+        SetLanguage: "set-language",
         Profile: "profile",
+        ProfileMini: "profile/mini",
         LoadKey: "key/load",
         LoginSubmit: "login-submit",
         SignupSubmit: "signup-submit",

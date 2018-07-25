@@ -53,6 +53,10 @@ func (p Profile) GetLastPost(timezone string) string {
 	return util.GetTimezoneTime(p.LastPost, timezone)
 }
 
+func (p Profile) GetJoined() string {
+	return p.FirstPost.Format("Jan 02, 2006")
+}
+
 func (p Profile) IsSelf() bool {
 	return bytes.Equal(p.PkHash, p.SelfPkHash)
 }
@@ -146,7 +150,7 @@ func (p *Profile) SetCanFollow() error {
 	return nil
 }
 
-func (p *Profile) SetNumPosts() error {
+func (p *Profile) SetUserStats() error {
 	userStat, err := db.GetUserStat(p.PkHash)
 	if err != nil {
 		if db.IsRecordNotFoundError(err) {
@@ -155,6 +159,8 @@ func (p *Profile) SetNumPosts() error {
 		return jerr.Get("error getting num posts", err)
 	}
 	p.NumPosts = userStat.NumPosts
+	p.FirstPost = userStat.FirstPost
+	p.LastPost = userStat.LastPost
 	return nil
 }
 
@@ -276,9 +282,9 @@ func GetBasicProfile(pkHash []byte, selfPkHash []byte) (*Profile, error) {
 	if err != nil {
 		return nil, jerr.Get("error setting topics following count for profile", err)
 	}
-	err = pf.SetNumPosts()
+	err = pf.SetUserStats()
 	if err != nil {
-		return nil, jerr.Get("error setting num posts for profile", err)
+		return nil, jerr.Get("error setting user stats for profile", err)
 	}
 	if len(selfPkHash) > 0 {
 		err = pf.SetReputation()

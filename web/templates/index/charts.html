@@ -19,8 +19,8 @@
 <script type="text/javascript">
     $(function () {
         createSingleSeriesChart("first-posts-chart", "New Users", {{ .FirstPosts }}, "New Users");
-        createChart("cohort-actions-chart", "On-chain Actions by Cohort", {{ .CohortActions }});
-        createChart("cohort-users-chart", "Active Users by Cohort", {{ .CohortUsers }});
+        createChart("cohort-actions-chart", "On-chain Actions by User Creation Month", {{ .CohortActions }});
+        createChart("cohort-users-chart", "Active Users by User Creation Month", {{ .CohortUsers }});
     });
 
     function createSingleSeriesChart(id, title, data, seriesName) {

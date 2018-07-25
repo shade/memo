@@ -380,8 +380,12 @@ body.dark .mini-profile table td p:nth-of-type(1) {
     min-height: 135px;
 }
 .mini-profile .name-follow h3 {
-    margin: 0 0 10px;
+    margin: 0;
     word-break: break-word;
+}
+.mini-profile .name-follow .joined {
+    margin: 2px 0;
+    font-size: 12px;
 }
 .mini-profile .body {
     padding: 5px 0 10px;
@@ -638,7 +642,11 @@ body.dark table.table {
     word-break: break-word;
 }
 .profile h3 {
-    margin: 0 0 10px;
+    margin: 0;
+}
+.profile .joined {
+    font-size: 12px;
+    margin: 5px 0;
 }
 .profile table.table {
     font-size: 12px;

@@ -450,7 +450,7 @@ body.dark .mini-profile table td p:nth-of-type(1) {
     font-weight: bold;
 }
 .post .message {
-    margin: 5px 0 5px;
+    margin: 5px 0 0;
     font-size: 28px;
 }
 .post .message.message-feed-item {
@@ -460,7 +460,7 @@ body.dark .mini-profile table td p:nth-of-type(1) {
     padding-bottom: 10px;
 }
 .post .likes {
-    margin: 0 0 10px;
+    margin: 0 0 5px;
 }
 .post .like {
     font-size: 12px;
@@ -546,7 +546,7 @@ body.dark .post .post-header .block-explorer ul a {
     display: none;
 }
 .post .actions {
-    margin: 5px 0;
+    margin: 0 0 5px;
 }
 .post .reply-form {
     margin-bottom: 5px;

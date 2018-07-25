@@ -485,9 +485,17 @@ body.dark .mini-profile table td p:nth-of-type(1) {
     padding-right: 25px;
 }
 .post .feed-item-post {
-    color: #888;
     border-left: 25px solid #f8f8f8;
     padding-left: 10px;
+}
+.post .feed-item-post .message {
+    color: #888;
+}
+body.dark .post .feed-item-post {
+    border-color: #35485a;
+}
+body.dark .post .feed-item-post .message {
+    color: #aaa;
 }
 .post .post-header-feed-item {
     padding-bottom: 5px;

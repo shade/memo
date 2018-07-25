@@ -157,7 +157,7 @@ func GetRecentBlock() (*Block, error) {
 		if IsRecordNotFoundError(result.Error) {
 			return GetGenesis()
 		}
-		return nil, jerr.Get("error querying first block", err)
+		return nil, jerr.Get("error querying first block", result.Error)
 	}
 	return &block, nil
 }

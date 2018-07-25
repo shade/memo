@@ -51,6 +51,8 @@ var chartsRoute = web.Route{
 		}
 		r.Helper["CohortUsers"] = string(cohortUsersJson)
 
+		r.Helper["Title"] = "Memo - Charts"
+
 		r.RenderTemplate(res.TmplCharts)
 	},
 }

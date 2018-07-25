@@ -98,6 +98,8 @@ var statsRoute = web.Route{
 			memoTopicFollowCount)
 		r.Helper["UniqueUsers"] = uniqueUsers
 
+		r.Helper["Title"] = "Memo - Stats"
+
 		r.RenderTemplate(res.TmplStats)
 	},
 }

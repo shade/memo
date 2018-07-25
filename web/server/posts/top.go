@@ -76,6 +76,7 @@ var topRoute = web.Route{
 		r.Helper["OffsetLink"] = fmt.Sprintf("%s?range=%s", strings.TrimLeft(res.UrlPostsTop, "/"), timeRange)
 		r.Helper["Posts"] = posts
 		r.Helper["Range"] = timeRange
+		r.Helper["Title"] = "Memo - Top Posts"
 		r.Render()
 	},
 }

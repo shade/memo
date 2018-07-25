@@ -68,6 +68,7 @@ var rankedRoute = web.Route{
 		res.SetPageAndOffset(r, offset)
 		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", strings.TrimLeft(res.UrlPostsRanked, "/"))
 		r.Helper["Posts"] = posts
+		r.Helper["Title"] = "Memo - Ranked Posts"
 		r.Render()
 	},
 }

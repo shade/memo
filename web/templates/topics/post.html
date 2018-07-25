@@ -1,6 +1,5 @@
 <div class="topic-post" id="topic-post-{{ .Post.Memo.GetTransactionHashString }}">
     <a href="profile/{{ .Post.Memo.GetAddressString }}">
-
     {{ if .Post.ProfilePic }}
         <a class="image-link" href="profile/{{ .Post.Memo.GetAddressString }}">
             <img class="profile-pic profile-pic-24" src="/img/profilepics/{{ .Post.Memo.GetAddressString }}-24x24.{{ .Post.ProfilePic.GetExtension }}?id={{ .Post.ProfilePic.Id }}"/>
@@ -23,6 +22,9 @@
             <div class="like" id="like-{{ .Post.Memo.GetTransactionHashString }}">
                 <span class="like-info" id="like-info-{{ .Post.Memo.GetTransactionHashString }}">
                 {{- if .Post.Likes }}
+                {{ if .Post.HasLiked }}
+                    <span class="glyphicon glyphicon-heart red" aria-hidden="true"></span>
+                {{ end }}
                     <a id="like-link-{{ .Post.Memo.GetTransactionHashString }}" class="topic-link" href="#">
                     {{- len .Post.Likes }}
                         like{{ if not (eq (len .Post.Likes) 1) }}s{{ end }}</a>

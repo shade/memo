@@ -90,6 +90,7 @@ var archiveRoute = web.Route{
 		r.Helper["NextDay"] = timeStart.Add(24 * time.Hour).Format("2006-01-02")
 		r.Helper["Posts"] = posts
 		r.Helper["Day"] = day
+		r.Helper["Title"] = "Memo - Archive"
 		r.Render()
 	},
 }

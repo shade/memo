@@ -85,6 +85,7 @@ func GetMemoCohortStats() ([]obj.MemoCohortStat, error) {
 		"DATE(DATE_FORMAT(`timestamp`, '%Y-%m-%d')) AS date").
 		Joins("JOIN blocks ON (memo_tests.block_id = blocks.id)").
 		Joins("JOIN user_stats ON (memo_tests.pk_hash = user_stats.pk_hash)").
+		Where("HEX(memo_tests.pk_script) REGEXP '6A026D(0|1).*'").
 		Group("date, cohort").
 		Order("date ASC")
 	var memoCohortStats []obj.MemoCohortStat
@@ -122,6 +123,7 @@ func GetUserStats() ([]obj.UserStat, error) {
 		"MAX(`timestamp`) AS last_post").
 		Joins("JOIN blocks ON (memo_tests.block_id = blocks.id)").
 		Joins(joinSql).
+		Where("HEX(memo_tests.pk_script) REGEXP '6A026D(0|1).*'").
 		Group("memo_tests.pk_hash")
 	var userStats []obj.UserStat
 	result := query.Find(&userStats)

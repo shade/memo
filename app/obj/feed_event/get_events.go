@@ -189,6 +189,9 @@ func getEvents(feedEvents []*db.FeedEvent, userId uint, pkHash []byte) ([]*Event
 		showMedia = true
 		for _, post := range posts {
 			post.ShowMedia = true
+			if post.Parent != nil {
+				post.Parent.ShowMedia = true
+			}
 		}
 	}
 	var events []*Event

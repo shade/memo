@@ -403,7 +403,16 @@ a.disabled {
     font-size: 16px;
     color: #487521;
 }
+.mini-profile-name {
+    max-width: 100%;
+    word-break: break-all;
+}
 
+.post-anchor {
+    display: block;
+    position: relative;
+    top: -55px;
+}
 .post .post {
     margin: 0 -9px 5px -5px;
 }
@@ -469,6 +478,11 @@ a.disabled {
     margin: 0;
     padding-right: 25px;
 }
+.post .feed-item-post {
+    color: #888;
+    border-left: 25px solid #f8f8f8;
+    padding-left: 10px;
+}
 .post .post-header-feed-item {
     padding-bottom: 5px;
 }
@@ -526,7 +540,6 @@ body.dark .post .post-header .block-explorer ul a {
     color: #555;
     padding-bottom: 8px;
     margin-bottom: 8px;
-    border-bottom: 1px solid #ddd;
 }
 .dark .post .feed-item {
     color: #bbb;
@@ -575,7 +588,7 @@ body.dark table.table {
 .profile {
     position: relative;
 }
-.profile .identicon {
+.view-profile .identicon {
     width: 128px;
     height: 128px;
 }
@@ -1036,9 +1049,15 @@ a.block-link {
         text-align: unset;
     }
 }
-h1.home-header {
+.home-header {
+    margin-bottom: 30px;
+}
+.home-header h1 {
     text-align: center;
-    margin: 40px 0 20px;
+    margin: 20px 0 10px;
+}
+.home-header h2 {
+    text-align: center;
 }
 .home-list {
     text-align: center;

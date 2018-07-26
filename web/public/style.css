@@ -1207,6 +1207,31 @@ table.poll-results td:nth-of-type(2) {
 .topic-view-nav a.btn {
     margin: 5px 0;
 }
+.no-threads {
+    text-align: center;
+    margin: 20px 0 40px;
+    font-size: 18px;
+}
+.threads div {
+    word-break: break-word;
+    background-color: #fff;
+    padding: 5px 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
+}
+.threads div p a {
+    color: #000;
+    font-size: 18px;
+}
+body.dark .threads div {
+    background: #304559;
+    border-color: #666;
+}
+body.dark .threads div p a {
+    color: #e0e0e0;
+}
 
 body.dark #new-poll-form .glyphicon-remove {
     color: rgba(255,50,50,0.75);

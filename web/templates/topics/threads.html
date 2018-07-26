@@ -1,37 +1,22 @@
 {{ template "snippets/header.html" . }}
 
 <div class="center">
-    <h2>{{ T "Topic" }} - {{ .Topic }}</h2>
+    <h2>{{ T "Topic Threads" }} - {{ .Topic }}</h2>
     <p class="topic-view-nav">
         <a class="btn btn-default" href="topic/{{ .TopicEncoded }}">Back to {{ .Topic }}</a>
-        <a href="topics{{ if .LastTopicList }}/{{ .LastTopicList }}{{ end }}" class="btn btn-default">{{ T "All topics" }}</a>
+        <a href="topics{{ if .LastTopicList }}/{{ .LastTopicList }}{{ end }}"
+           class="btn btn-default">{{ T "All topics" }}</a>
     </p>
 </div>
 
 {{ if .Threads }}
-{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Threads }}
 
-<table class="table table-condensed table-striped">
-    <thead>
-    <tr>
-        <th style="width:50%;">Message</th>
-        <th>Replies</th>
-        <th>Recent Reply</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{ range .Threads }}
-    <tr>
-        <td><a href="post/{{ .GetTransactionHashString }}">{{ .Message }}</a></td>
-        <td>{{ .NumReplies }}</td>
-        <td>{{ .GetRecentTimeAgo }}</td>
-    </tr>
-    {{ end }}
-    </tbody>
-</table>
-{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Threads }}
+{{ template "posts/snippets/threads.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Threads" .Threads }}
+
 {{ else }}
-<p class="center" style="margin:20px 0 40px; font-size:18px;">No threads for topic yet</p>
+
+<p class="no-threads">No threads for topic yet</p>
+
 {{ end }}
 
 {{ template "snippets/footer.html" . }}

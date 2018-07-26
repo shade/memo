@@ -1,0 +1,18 @@
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Threads }}
+
+<div class="threads">
+{{ range .Threads }}
+    <div>
+        <p>
+            <a href="post/{{ .GetTransactionHashString }}">{{ .Message }}</a>
+        </p>
+        {{ .GetRecentTimeAgo }}
+        &middot; <a href="post/{{ .GetTransactionHashString }}">{{ .NumReplies }} replies</a>
+    {{ if .Topic }}
+        &middot; <a href="topic/{{ .GetUrlEncodedTopic }}">{{ .Topic }}</a>
+    {{ end }}
+    </div>
+{{ end }}
+</div>
+
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Threads }}

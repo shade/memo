@@ -37,7 +37,7 @@ var threadsRoute = web.Route{
 		}
 		r.Helper["LastTopicList"] = lastTopicList
 		r.Helper["Threads"] = threads
-		r.Helper["Title"] = "Memo Topic - " + safeTopic
+		r.Helper["Title"] = "Memo - Topic Thread - " + safeTopic
 		r.Helper["Topic"] = safeTopic
 		r.Helper["TopicEncoded"] = urlEncodedTopic
 		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", strings.TrimLeft(res.UrlTopicView+"/"+urlEncodedTopic+res.UrlTopicThreads, "/"))

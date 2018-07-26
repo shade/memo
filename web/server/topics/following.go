@@ -49,7 +49,7 @@ var followingRoute = web.Route{
 			r.Error(jerr.Get("error setting topic follow count for user", err), http.StatusInternalServerError)
 			return
 		}
-		r.Helper["Title"] = "Memo Topics"
+		r.Helper["Title"] = "Memo - Topics Following"
 		r.Helper["Topics"] = topics
 		r.Helper["SearchString"] = searchString
 		res.SetPageAndOffset(r, offset)

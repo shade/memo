@@ -8,7 +8,7 @@ import (
 var openSourcingMemoRoute = web.Route{
 	Pattern: res.UrlOpenSource,
 	Handler: func(r *web.Response) {
-		r.Helper["Title"] = "Open Sourcing Memo"
+		r.Helper["Title"] = "Memo - Open Sourcing Memo"
 		r.RenderTemplate(res.TmplOpenSource)
 	},
 }

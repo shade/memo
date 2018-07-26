@@ -14,6 +14,20 @@ type ReplyNotification struct {
 	Name         string
 }
 
+func (n ReplyNotification) GetNotification() *Notification {
+	return &Notification{
+		Type:             TypeReply,
+		DbNotification:   n.Notification,
+		PkHash:           n.Post.PkHash,
+		Time:             n.GetTime(),
+		AddressString:    n.Post.GetAddressString(),
+		PostHashString:   n.Post.GetTransactionHashString(),
+		Message:          n.Post.GetMessage(),
+		ParentMessage:    n.Parent.GetMessage(),
+		ParentHashString: n.Parent.GetTransactionHashString(),
+	}
+}
+
 func (n ReplyNotification) GetName() string {
 	return n.Name
 }

@@ -25,17 +25,15 @@
                 <span class="glyphicon glyphicon-heart" aria-hidden="true"></span>
             </td>
             <td>
-                <span class="identicon-{{ .GetAddressString }}">
-                    <img class="identicon"/>
-                </span>
-                <a href="profile/{{ .GetAddressString }}" class="name">{{ .Generic.GetName }}</a> liked your
-                <a href="post/{{ .GetPostHashString }}">post</a>
-            {{ if gt .GetTipAmount 0 }}
-                <span class="tip">(tip: {{ formatBigInt .GetTipAmount }} satoshis)</span>
+            {{ template "profile/snippets/name.html" dict "Address" .AddressString "ProfilePic" .ProfilePic "Name" .Name }}
+                liked your
+                <a href="post/{{ .PostHashString }}">post</a>
+            {{ if gt .TipAmount 0 }}
+                <span class="tip">(tip: {{ formatBigInt .TipAmount }} satoshis)</span>
             {{ end }}
                 <span class="time-ago">{{ .GetTimeAgo }}</span>
                 <div class="notify-post">
-                    <a href="post/{{ .GetPostHashString }}">{{ .GetPostMessage }}</a>
+                    <a href="post/{{ .PostHashString }}">{{ .Message }}</a>
                 </div>
             </td>
         {{ else if .IsReply }}
@@ -43,17 +41,14 @@
                 <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
             </td>
             <td>
-                <span class="identicon-{{ .GetAddressString }}">
-                    <img class="identicon"/>
-                </span>
-                <a href="profile/{{ .GetAddressString }}" class="name">{{ .Generic.GetName }}</a>
-                <a href="post/{{ .GetPostHashString }}">replied</a> to your
-                <a href="post/{{ .GetParentHashString }}">post</a>
+            {{ template "profile/snippets/name.html" dict "Address" .AddressString "ProfilePic" .ProfilePic "Name" .Name }}
+                <a href="post/{{ .PostHashString }}">replied</a> to your
+                <a href="post/{{ .ParentHashString }}">post</a>
                 <span class="time-ago">{{ .GetTimeAgo }}</span>
                 <div class="notify-post">
-                    <a href="post/{{ .GetParentHashString }}">{{ .GetParentMessage }}</a>
+                    <a href="post/{{ .ParentHashString }}">{{ .ParentMessage }}</a>
                     <div class="reply">
-                        <a href="post/{{ .GetPostHashString }}">{{ .GetPostMessage }}</a>
+                        <a href="post/{{ .PostHashString }}">{{ .Message }}</a>
                     </div>
                 </div>
             </td>
@@ -62,10 +57,7 @@
                 <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
             </td>
             <td>
-                <span class="identicon-{{ .GetAddressString }}">
-                    <img class="identicon"/>
-                </span>
-                <a href="profile/{{ .GetAddressString }}" class="name">{{ .Generic.GetName }}</a>
+            {{ template "profile/snippets/name.html" dict "Address" .AddressString "ProfilePic" .ProfilePic "Name" .Name }}
                 followed you.
                 <span class="time-ago">{{ .GetTimeAgo }}</span>
             </td>
@@ -75,14 +67,14 @@
             (function () {
                 var foreground = {{ if eq $settings.Theme "dark" }}[224, 224, 224, 255]{{ else }}[180, 180, 180, 255]{{ end }};
                 var background = [0, 0, 0, 0];
-                var data = new Identicon('{{ .GetAddressString }}', {
+                var data = new Identicon('{{ .AddressString }}', {
                     foreground: foreground,
                     background: background,
                     size: 24,
                     form: 'svg',
                     margin: 0
                 }).toString();
-                $(".identicon-{{ .GetAddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
+                $(".identicon-{{ .AddressString }}").html('<img class="identicon" src="data:image/png;base64,' + data + '">');
             })();
         </script>
         {{ end }}
@@ -100,5 +92,11 @@
 {{ end }}
 
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        MemoApp.MiniProfile($(".notifications-table"));
+    });
+</script>
 
 {{ template "snippets/footer.html" . }}

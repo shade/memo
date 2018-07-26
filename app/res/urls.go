@@ -137,8 +137,8 @@ const (
 	UrlTopicsFollowSubmit = "/topics/follow-submit"
 	UrlTopicsFollowers    = "/topics/followers"
 
-	TmplTopicView    = "/topics/view"
-	TmplTopicPost    = "/topics/post"
+	TmplTopicView = "/topics/view"
+	TmplTopicPost = "/topics/post"
 )
 
 const (

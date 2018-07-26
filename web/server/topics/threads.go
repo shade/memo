@@ -19,11 +19,12 @@ var threadsRoute = web.Route{
 		preHandler(r)
 		topicRaw := r.Request.GetUrlNamedQueryVariable(urlTopicName.Id)
 		unescaped, err := url.QueryUnescape(topicRaw)
-		safeTopic := html_parser.EscapeWithEmojis(unescaped)
 		if err != nil {
 			r.Error(jerr.Get("error unescaping topic", err), http.StatusUnprocessableEntity)
 			return
 		}
+		safeTopic := html_parser.EscapeWithEmojis(unescaped)
+		urlEncodedTopic := url.QueryEscape(safeTopic)
 		offset := r.Request.GetUrlParameterInt("offset")
 		threads, err := db.GetThreads(uint(offset), unescaped)
 		if err != nil {
@@ -38,12 +39,9 @@ var threadsRoute = web.Route{
 		r.Helper["Threads"] = threads
 		r.Helper["Title"] = "Memo Topic - " + safeTopic
 		r.Helper["Topic"] = safeTopic
-		r.Helper["TopicEncoded"] = topicRaw
+		r.Helper["TopicEncoded"] = urlEncodedTopic
+		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", strings.TrimLeft(res.UrlTopicView+"/"+urlEncodedTopic+res.UrlTopicThreads, "/"))
 		res.SetPageAndOffset(r, offset)
-		if len(threads) != 0 {
-			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", strings.TrimLeft(res.UrlTopicView + "/" + threads[0].GetUrlEncodedTopic() + res.UrlTopicThreads, "/"))
-			r.Helper["TopicEncoded"] = threads[0].GetUrlEncodedTopic()
-		}
 		r.RenderTemplate(res.UrlTopicThreads)
 	},
 }

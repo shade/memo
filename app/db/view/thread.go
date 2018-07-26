@@ -19,7 +19,7 @@ type Thread struct {
 func (t Thread) GetTransactionHashString() string {
 	hash, err := chainhash.NewHash(t.RootTxHash)
 	if err != nil {
-		jerr.Get("error getting chainhash from memo post", err).Print()
+		jerr.Get("error getting chainhash from root tx hash", err).Print()
 		return ""
 	}
 	return hash.String()

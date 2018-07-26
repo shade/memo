@@ -12,9 +12,11 @@
         {{ if and .Post.Memo.RootTxHash .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a
                 href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+        {{ if .Post.Parent }}
             by {{ template "post/snippets/name.html" dict "Address" .Post.Parent.Memo.GetAddressString "ProfilePic" .Post.Parent.ProfilePic "Name" .Post.Parent.Name }}
         {{ if .Post.Parent.Reputation }}
             {{ template "snippets/reputation.html" .Post.Parent.Reputation }}
+        {{ end }}
         {{ end }}
         {{ else if .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
@@ -48,7 +50,7 @@
     </div>
 {{ if .Post.Parent }}
     <div class="reply">
-        {{ .Post.Parent.GetMessage }}
+    {{ .Post.Parent.GetMessage }}
     </div>
 {{ end }}
 {{ if .Post.Memo.IsVote }}

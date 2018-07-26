@@ -611,15 +611,11 @@ func GetOlderPostsForTopic(topic string, firstPostId uint) ([]*MemoPost, error) 
 	return memoPosts, nil
 }
 
-func GetThreads(offset uint) ([]*view.Thread, error) {
+func GetThreads(offset uint, topic string) ([]*view.Thread, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
 	}
-	joinSelect := "JOIN (" +
-		"	SELECT tx_hash, topic, message" +
-		"	FROM memo_posts" +
-		") topic_posts ON (memo_posts.root_tx_hash = topic_posts.tx_hash)"
 	query := db.
 		Table("memo_posts").
 		Select("" +
@@ -628,12 +624,25 @@ func GetThreads(offset uint) ([]*view.Thread, error) {
 		"root_tx_hash, " +
 		"COUNT(memo_posts.`id`) AS num_replies, " +
 		"CAST(MAX(IF(COALESCE(blocks.timestamp, memo_posts.created_at) < memo_posts.created_at, blocks.timestamp, memo_posts.created_at)) AS DATETIME) AS recent_reply").
-		Joins(joinSelect).
 		Joins("LEFT JOIN blocks ON (memo_posts.block_id = blocks.id)").
 		Group("memo_posts.root_tx_hash").
 		Order("recent_reply DESC").
 		Limit(25).
 		Offset(offset)
+	if topic != "" {
+		joinSelect := "JOIN (" +
+			"	SELECT tx_hash, topic, message" +
+			"	FROM memo_posts" +
+			"   WHERE topic = ?" +
+			") topic_posts ON (memo_posts.root_tx_hash = topic_posts.tx_hash)"
+		query = query.Joins(joinSelect, topic)
+	} else {
+		joinSelect := "JOIN (" +
+			"	SELECT tx_hash, topic, message" +
+			"	FROM memo_posts" +
+			") topic_posts ON (memo_posts.root_tx_hash = topic_posts.tx_hash)"
+		query = query.Joins(joinSelect)
+	}
 	var threads []*view.Thread
 	result := query.Scan(&threads)
 	if result.Error != nil {

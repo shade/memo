@@ -15,7 +15,7 @@ var threadsRoute = web.Route{
 	Handler: func(r *web.Response) {
 		preHandler(r)
 		offset := r.Request.GetUrlParameterInt("offset")
-		threads, err := db.GetThreads(uint(offset))
+		threads, err := db.GetThreads(uint(offset), "")
 		if err != nil {
 			r.Error(jerr.Get("error getting threads from db", err), http.StatusInternalServerError)
 			return

@@ -130,14 +130,15 @@ const (
 	UrlTopicsCreate       = "/topics/create"
 	UrlTopicsCreateSubmit = "/topics/create-submit"
 	UrlTopicView          = "/topic"
+	UrlTopicThreads       = "/topics/threads"
 	UrlTopicsSocket       = "/topics/socket"
 	UrlTopicsMorePosts    = "/topics/more-posts"
 	UrlTopicsPostAjax     = "/topics/post-ajax"
 	UrlTopicsFollowSubmit = "/topics/follow-submit"
 	UrlTopicsFollowers    = "/topics/followers"
 
-	TmplTopicView = "/topics/view"
-	TmplTopicPost = "/topics/post"
+	TmplTopicView    = "/topics/view"
+	TmplTopicPost    = "/topics/post"
 )
 
 const (

@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"time"
 )
 
@@ -35,7 +35,7 @@ func AddUpdateTopicInfo(topicName string, numPosts int, followers int, recentPos
 	return nil
 }
 
-func GetTopicInfo(offset uint, searchString string, pkHash []byte, orderType obj.TopicOrderType) ([]*obj.Topic, error) {
+func GetTopicInfo(offset uint, searchString string, pkHash []byte, orderType view.TopicOrderType) ([]*view.Topic, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -59,9 +59,9 @@ func GetTopicInfo(offset uint, searchString string, pkHash []byte, orderType obj
 			Where("memo_topic_follows.unfollow = 0")
 	}
 	switch orderType {
-	case obj.TopicOrderTypeFollowers:
+	case view.TopicOrderTypeFollowers:
 		query = query.Order("follower_count DESC")
-	case obj.TopicOrderTypePosts:
+	case view.TopicOrderTypePosts:
 		query = query.Order("post_count DESC")
 	}
 	query = query.Order("recent_post DESC")
@@ -70,9 +70,9 @@ func GetTopicInfo(offset uint, searchString string, pkHash []byte, orderType obj
 	if result.Error != nil {
 		return nil, jerr.Get("error getting topic infos", result.Error)
 	}
-	var topics []*obj.Topic
+	var topics []*view.Topic
 	for _, topicInfo := range topicInfos {
-		topics = append(topics, &obj.Topic{
+		topics = append(topics, &view.Topic{
 			Name:         topicInfo.TopicName,
 			RecentTime:   topicInfo.RecentPost,
 			CountPosts:   topicInfo.PostCount,

@@ -7,7 +7,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/script"
 	"github.com/memocash/memo/app/bitcoin/wallet"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"html"
 	"net/url"
 	"time"
@@ -471,7 +471,7 @@ func GetCountMemoPosts() (uint, uint, uint, uint, error) {
 	return postCount, votePostCount, topicPostCount, replyPostCount, nil
 }
 
-func GetTopicInfoFromPosts(topicNames ...string) ([]*obj.Topic, error) {
+func GetTopicInfoFromPosts(topicNames ...string) ([]*view.Topic, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -502,9 +502,9 @@ func GetTopicInfoFromPosts(topicNames ...string) ([]*obj.Topic, error) {
 		return nil, jerr.Get("error getting distinct topics", err)
 	}
 	defer rows.Close()
-	var topics []*obj.Topic
+	var topics []*view.Topic
 	for rows.Next() {
-		var topic obj.Topic
+		var topic view.Topic
 		err := rows.Scan(&topic.Name, &topic.RecentTime, &topic.CountPosts, &topic.CountFollows)
 		if err != nil {
 			return nil, jerr.Get("error scanning row with topic", err)
@@ -514,7 +514,7 @@ func GetTopicInfoFromPosts(topicNames ...string) ([]*obj.Topic, error) {
 	return topics, nil
 }
 
-func AttachUnreadToTopics(topics []*obj.Topic, userPkHash []byte) error {
+func AttachUnreadToTopics(topics []*view.Topic, userPkHash []byte) error {
 	var topicNames []string
 	for _, topic := range topics {
 		topicNames = append(topicNames, topic.Name)
@@ -609,4 +609,35 @@ func GetOlderPostsForTopic(topic string, firstPostId uint) ([]*MemoPost, error) 
 		memoPosts[i], memoPosts[j] = memoPosts[j], memoPosts[i]
 	}
 	return memoPosts, nil
+}
+
+func GetThreads(offset uint) ([]*view.Thread, error) {
+	db, err := getDb()
+	if err != nil {
+		return nil, jerr.Get("error getting db", err)
+	}
+	joinSelect := "JOIN (" +
+		"	SELECT tx_hash, topic, message" +
+		"	FROM memo_posts" +
+		") topic_posts ON (memo_posts.root_tx_hash = topic_posts.tx_hash)"
+	query := db.
+		Table("memo_posts").
+		Select("" +
+		"topic_posts.topic AS topic, " +
+		"topic_posts.message AS message, " +
+		"root_tx_hash, " +
+		"COUNT(memo_posts.`id`) AS num_replies, " +
+		"CAST(MAX(IF(COALESCE(blocks.timestamp, memo_posts.created_at) < memo_posts.created_at, blocks.timestamp, memo_posts.created_at)) AS DATETIME) AS recent_reply").
+		Joins(joinSelect).
+		Joins("LEFT JOIN blocks ON (memo_posts.block_id = blocks.id)").
+		Group("memo_posts.root_tx_hash").
+		Order("recent_reply DESC").
+		Limit(25).
+		Offset(offset)
+	var threads []*view.Thread
+	result := query.Scan(&threads)
+	if result.Error != nil {
+		return nil, jerr.Get("error getting threads", result.Error)
+	}
+	return threads, nil
 }

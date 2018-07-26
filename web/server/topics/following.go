@@ -7,7 +7,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"github.com/memocash/memo/app/html-parser"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -30,7 +30,7 @@ var followingRoute = web.Route{
 			r.Error(jerr.Get("error getting pk hash from cache", err), http.StatusInternalServerError)
 			return
 		}
-		topics, err := db.GetTopicInfo(uint(offset), searchString, userPkHash, obj.TopicOrderTypeRecent)
+		topics, err := db.GetTopicInfo(uint(offset), searchString, userPkHash, view.TopicOrderTypeRecent)
 		if err != nil {
 			r.Error(jerr.Get("error getting topics from db", err), http.StatusInternalServerError)
 			return

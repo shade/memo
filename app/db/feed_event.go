@@ -53,7 +53,7 @@ func (f *FeedEvent) Save() error {
 	}
 	feed, err := GetFeedByTxHash(f.TxHash)
 	if err != nil {
-		return jerr.Get("error getting feed event", result.Error)
+		return jerr.Get("error getting feed event", err)
 	}
 	if feed.BlockHeight != 0 {
 		return nil

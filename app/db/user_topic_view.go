@@ -69,7 +69,7 @@ func SetLastTopicPostId(userPkHash []byte, topic string, lastPostId uint) error 
 		userTopicView.LastPostId = lastPostId
 		result := save(userTopicView)
 		if result.Error != nil {
-			return jerr.Get("error saving user topic viewed", err)
+			return jerr.Get("error saving user topic viewed", result.Error)
 		}
 		return nil
 	}

@@ -1,0 +1,30 @@
+{{ template "snippets/header.html" . }}
+
+{{ template "posts/snippets/header.html" dict "Page" "threads" "IsLoggedIn" .IsLoggedIn }}
+
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Threads }}
+
+<table class="table table-condensed table-striped">
+    <thead>
+    <tr>
+        <th>Topic</th>
+        <th style="width:50%;">Message</th>
+        <th>Replies</th>
+        <th>Recent Reply</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{ range .Threads }}
+    <tr>
+        <td><a href="topic/{{ .GetUrlEncodedTopic }}">{{ .Topic }}</a></td>
+        <td><a href="post/{{ .GetTransactionHashString }}">{{ .Message }}</a></td>
+        <td>{{ .NumReplies }}</td>
+        <td>{{ .GetRecentTimeAgo }}</td>
+    </tr>
+    {{ end }}
+    </tbody>
+</table>
+
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Threads }}
+
+{{ template "snippets/footer.html" . }}

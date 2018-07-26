@@ -1,6 +1,6 @@
 {{ template "snippets/header.html" . }}
 
-{{ template "posts/header.html" dict "Page" "polls" "IsLoggedIn" .IsLoggedIn }}
+{{ template "posts/snippets/header.html" dict "Page" "polls" "IsLoggedIn" .IsLoggedIn }}
 
 <p class="pagination">
     <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}"

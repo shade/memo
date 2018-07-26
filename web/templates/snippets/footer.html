@@ -66,6 +66,13 @@
     gtag('config', '{{ .GoogleId }}');
 </script>
 {{ end }}
+{{ if eq .UserSettings.Integrations "all" }}
+<script type="text/javascript">
+    MemoApp.SetTwitter(true);
+    MemoApp.InitTwitter();
+</script>
+<script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
+{{ end }}
 </div>
 </div>
 <div id="site-wrapper-cover"></div>

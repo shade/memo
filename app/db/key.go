@@ -188,7 +188,7 @@ func ContainsWatchedPkHash(pkHashes [][]byte) (bool, error) {
 		Where("pk_hash in (?)", pkHashes).
 		Find(&keys)
 	if result.Error != nil {
-		return false, jerr.Get("error running query", err)
+		return false, jerr.Get("error running query", result.Error)
 	}
 	return len(keys) != 0, nil
 }

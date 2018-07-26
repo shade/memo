@@ -27,6 +27,7 @@ func GetRoutes() []web.Route {
 		mostFollowedRoute,
 		mostPostsRoute,
 		followersRoute,
+		threadsRoute,
 	}
 }
 

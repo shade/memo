@@ -1,4 +1,4 @@
-package obj
+package view
 
 import (
 	"github.com/memocash/memo/app/util"

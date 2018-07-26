@@ -51,6 +51,11 @@ var accountRoute = web.Route{
 			r.Error(jerr.Get("error creating qr", err), http.StatusInternalServerError)
 			return
 		}
+		err = pf.SetUserStats()
+		if err != nil {
+			r.Error(jerr.Get("error setting user stats", err), http.StatusInternalServerError)
+			return
+		}
 
 		r.Helper["Profile"] = pf
 		r.RenderTemplate(res.TmplProfileAccount)

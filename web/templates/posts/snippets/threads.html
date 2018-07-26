@@ -6,8 +6,9 @@
         <p>
             <a href="post/{{ .GetTransactionHashString }}">{{ .Message }}</a>
         </p>
-        {{ .GetRecentTimeAgo }}
-        &middot; <a href="post/{{ .GetTransactionHashString }}">{{ .NumReplies }} replies</a>
+
+        <a href="post/{{ .GetTransactionHashString }}">{{ .NumReplies }} replies</a>
+        &middot; Active {{ .GetRecentTimeAgo }}
     {{ if .Topic }}
         &middot; <a href="topic/{{ .GetUrlEncodedTopic }}">{{ .Topic }}</a>
     {{ end }}

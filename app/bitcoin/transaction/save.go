@@ -5,9 +5,12 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
+	"time"
+	"github.com/memocash/memo/app/metric"
 )
 
 func ConditionallySaveTransaction(msg *wire.MsgTx, dbBlock *db.Block) (bool, bool, error) {
+	saveStart := time.Now()
 	dbTxn, err := db.ConvertMsgToTransaction(msg)
 	if err != nil {
 		// Don't log, lots of mal-formed txns
@@ -38,6 +41,10 @@ func ConditionallySaveTransaction(msg *wire.MsgTx, dbBlock *db.Block) (bool, boo
 	err = ClearCaches(pkHashes)
 	if err != nil {
 		return false, false, jerr.Get("error clearing transaction caches", err)
+	}
+	err = metric.AddTransactionSaveTime(time.Since(saveStart))
+	if err != nil {
+		return false, false, jerr.Get("error add transaction save time metric", err)
 	}
 	return true, savingMemo, nil
 }

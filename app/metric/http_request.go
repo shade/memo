@@ -15,6 +15,9 @@ func AddHttpRequest(url string, code int) error {
 	if err != nil {
 		return jerr.Get("error getting statsd", err)
 	}
+	if c == nil {
+		return nil
+	}
 	tags := []string{
 		fmt.Sprintf("%s:%s", TagUrl, url),
 		fmt.Sprintf("%s:%d", TagCode, code),

@@ -10,6 +10,9 @@ func AddTransactionSaveTime(duration time.Duration) error {
 	if err != nil {
 		return jerr.Get("error getting statsd", err)
 	}
+	if c == nil {
+		return nil
+	}
 	err = c.Gauge(NameTransactionSaveTime, duration.Seconds(), nil, 1)
 	if err != nil {
 		return jerr.Get("error incrementing http request", err)

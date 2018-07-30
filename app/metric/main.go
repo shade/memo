@@ -15,12 +15,19 @@ const (
 )
 
 var statsdClient *statsd.Client
+var statsdDisabled bool
 
 func getStatsd() (*statsd.Client, error) {
-	if statsdClient == nil {
+	if statsdDisabled {
+		return nil, nil
+	} else if statsdClient == nil {
 		statsdConfig := config.GetStatsdConfig()
+		if statsdConfig.Port == 0 || statsdConfig.Host == "" {
+			statsdDisabled = true
+			return nil, nil
+		}
 		var err error
-		statsdClient, err = statsd.New("127.0.0.1:8125")
+		statsdClient, err = statsd.New(fmt.Sprintf("%s:%d", statsdConfig.Host, statsdConfig.Port))
 		if err != nil {
 			return nil, jerr.Get("error getting statsd client", err)
 		}

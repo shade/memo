@@ -9,6 +9,8 @@ import (
 	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/obj/user_stats"
+	"time"
+	"github.com/memocash/memo/app/metric"
 )
 
 const MinCheckHeight = 525000
@@ -23,9 +25,10 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 	var memosSaved int
 	var txnsSaved int
 	for _, txn := range block.Transactions() {
+		saveStart := time.Now()
 		savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(txn.MsgTx(), dbBlock)
 		if err != nil {
-			jerr.Get("error conditionally saving transaction", err).Print()
+			jerr.Getf(err, "error conditionally saving transaction: %s", txn.Hash().String()).Print()
 			continue
 		}
 		if savedTxn {
@@ -34,6 +37,7 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 		if savedMemo {
 			memosSaved++
 		}
+		metric.AddTransactionSaveTime(time.Since(saveStart))
 	}
 	_, errors := transaction.ProcessNotifications()
 	for _, err := range errors {

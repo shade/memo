@@ -19,9 +19,9 @@ var transactionInColumns = []string{
 
 type TransactionIn struct {
 	Id                    uint            `gorm:"primary_key"`
-	Index                 uint            `gorm:"unique_index:transaction_in_index;"`
+	Index                 uint
 	HashString            string          `gorm:"index:hash_string"`
-	TransactionHash       []byte          `gorm:"unique_index:transaction_in_index;"`
+	TransactionHash       []byte
 	Transaction           *Transaction    `gorm:"foreignkey:TransactionHash"`
 	KeyPkHash             []byte          `gorm:"index:pk_hash"`
 	Key                   *Key            `gorm:"foreignkey:KeyPkHash"`
@@ -134,7 +134,7 @@ func GetTransactionInput(txHash []byte, index uint32) (*TransactionIn, error) {
 		return nil, jerr.Get("error getting db", err)
 	}
 	result := db.
-		Where("`index` = ?", index).
+	Where("`previous_out_point_index` = ?", index).
 		Find(&transactionIn, TransactionIn{PreviousOutPointHash: txHash})
 	if result.Error != nil {
 		return nil, jerr.Get("error finding transaction input", result.Error)

@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	NameHttpRequest   = "http_request"
-	NameMemoBroadcast = "memo_broadcast"
-	NameMemoSave = "memo_save"
+	NameHttpRequest         = "http_request"
+	NameMemoBroadcast       = "memo_broadcast"
+	NameMemoSave            = "memo_save"
+	NameTransactionSaveTime = "transaction_save_time"
 )
 
 var statsdClient *statsd.Client

@@ -117,7 +117,6 @@ func (t *Transaction) Save() error {
 			return jerr.Get("transaction already exists", alreadyExistsError)
 		}
 	}
-	//fmt.Printf("Saving transaction: %#v\n", t)
 	result := save(t)
 	if result.Error != nil {
 		return jerr.Get("error saving transaction", result.Error)

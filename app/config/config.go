@@ -24,6 +24,8 @@ const (
 
 const (
 	StatsdNamespace = "STATSD_NAMESPACE"
+	StatsdHost      = "STATSD_HOST"
+	StatsdPort      = "STATSD_PORT"
 )
 
 const (
@@ -54,6 +56,8 @@ type FilePathsConfig struct {
 
 type StatsdConfig struct {
 	Namespace string
+	Host      string
+	Port      int
 }
 
 func (m MemcacheConfig) GetConnectionString() string {
@@ -110,6 +114,8 @@ func GetBitcoinNode() BitcoinNodeConfig {
 func GetStatsdConfig() StatsdConfig {
 	var statsdConfig = StatsdConfig{
 		Namespace: viper.GetString(StatsdNamespace),
+		Host:      viper.GetString(StatsdHost),
+		Port:      viper.GetInt(StatsdPort),
 	}
 	if statsdConfig.Namespace == "" {
 		statsdConfig.Namespace = "memo_dev"

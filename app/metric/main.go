@@ -9,6 +9,7 @@ import (
 
 const (
 	NameHttpRequest         = "http_request"
+	NameHttpRequestTime     = "http_request_time"
 	NameMemoBroadcast       = "memo_broadcast"
 	NameMemoSave            = "memo_save"
 	NameTransactionSaveTime = "transaction_save_time"

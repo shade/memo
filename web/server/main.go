@@ -25,6 +25,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"time"
 )
 
 func isLoggedIn(r *web.Response) bool {
@@ -160,7 +161,7 @@ func postHandler(r *web.Response) {
 		if responseCode == 0 {
 			responseCode = http.StatusOK
 		}
-		err := metric.AddHttpRequest(r.Request.HttpRequest.URL.Path, responseCode)
+		err := metric.AddHttpRequest(r.Request.HttpRequest.URL.Path, r.Pattern, time.Since(r.StartTs), responseCode)
 		if err != nil {
 			jerr.Get("error adding metric", err).Print()
 		}

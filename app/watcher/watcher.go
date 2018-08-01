@@ -2,32 +2,9 @@ package watcher
 
 import (
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/db"
 	"time"
 )
-
-type Item struct {
-	Socket     *web.Socket
-	Topic      string
-	LastPostId uint
-	LastLikeId uint
-	Error      chan error
-}
-
-var items []*Item
-
-func RegisterSocket(socket *web.Socket, topic string, lastPostId uint, lastLikeId uint) error {
-	var item = &Item{
-		Socket:     socket,
-		Topic:      topic,
-		LastPostId: lastPostId,
-		LastLikeId: lastLikeId,
-		Error:      make(chan error),
-	}
-	items = append(items, item)
-	return <-item.Error
-}
 
 type txSend struct {
 	Hash string
@@ -44,22 +21,22 @@ func init() {
 				lastPing = time.Now()
 			}
 			var topicLastPostIds = make(map[string]uint)
-			for i := 0; i < len(items); i++ {
-				var item = items[i]
-				_, ok := topicLastPostIds[item.Topic]
+			for i := 0; i < len(topicSockets); i++ {
+				var topicSocket = topicSockets[i]
+				_, ok := topicLastPostIds[topicSocket.Topic]
 				if !ok {
-					topicLastPostIds[item.Topic] = item.LastPostId
+					topicLastPostIds[topicSocket.Topic] = topicSocket.LastPostId
 				}
-				if item.LastPostId < topicLastPostIds[item.Topic] {
-					topicLastPostIds[item.Topic] = item.LastPostId
+				if topicSocket.LastPostId < topicLastPostIds[topicSocket.Topic] {
+					topicLastPostIds[topicSocket.Topic] = topicSocket.LastPostId
 				}
 				if needsPing {
-					err := item.Socket.Ping()
+					err := topicSocket.Socket.Ping()
 					if err != nil {
-						go func(item *Item, err error) {
-							item.Error <- nil
-						}(item, err)
-						items = append(items[:i], items[i+1:]...)
+						go func(socket *TopicSocket, err error) {
+							socket.Error <- nil
+						}(topicSocket, err)
+						topicSockets = append(topicSockets[:i], topicSockets[i+1:]...)
 						i--
 					}
 				}
@@ -67,13 +44,13 @@ func init() {
 			for topic, lastPostId := range topicLastPostIds {
 				recentPosts, err := db.GetRecentPostsForTopic(topic, lastPostId)
 				if err != nil && !db.IsRecordNotFoundError(err) {
-					for i := 0; i < len(items); i++ {
-						var item = items[i]
-						if item.Topic == topic {
-							go func(item *Item, err error) {
-								item.Error <- jerr.Get("error getting recent post for topic", err)
-							}(item, err)
-							items = append(items[:i], items[i+1:]...)
+					for i := 0; i < len(topicSockets); i++ {
+						var topicSocket = topicSockets[i]
+						if topicSocket.Topic == topic {
+							go func(socket *TopicSocket, err error) {
+								socket.Error <- jerr.Get("error getting recent post for topic", err)
+							}(topicSocket, err)
+							topicSockets = append(topicSockets[:i], topicSockets[i+1:]...)
 							i--
 						}
 					}
@@ -81,19 +58,19 @@ func init() {
 				if len(recentPosts) > 0 {
 					for _, recentPost := range recentPosts {
 						txHash := recentPost.GetTransactionHashString()
-						for i := 0; i < len(items); i++ {
-							var item = items[i]
-							if item.Topic == topic && item.LastPostId < recentPost.Id {
-								item.LastPostId = recentPost.Id
-								err = item.Socket.WriteJSON(txSend{
+						for i := 0; i < len(topicSockets); i++ {
+							var topicSocket = topicSockets[i]
+							if topicSocket.Topic == topic && topicSocket.LastPostId < recentPost.Id {
+								topicSocket.LastPostId = recentPost.Id
+								err = topicSocket.Socket.WriteJSON(txSend{
 									Hash: txHash,
 									Type: 1,
 								})
 								if err != nil {
-									go func(item *Item, err error) {
-										item.Error <- nil
-									}(item, err)
-									items = append(items[:i], items[i+1:]...)
+									go func(socket *TopicSocket, err error) {
+										socket.Error <- nil
+									}(topicSocket, err)
+									topicSockets = append(topicSockets[:i], topicSockets[i+1:]...)
 									i--
 								}
 							}
@@ -102,25 +79,25 @@ func init() {
 				}
 			}
 			var topicLastLikeIds = make(map[string]uint)
-			for _, item := range items {
-				_, ok := topicLastLikeIds[item.Topic]
+			for _, topicSocket := range topicSockets {
+				_, ok := topicLastLikeIds[topicSocket.Topic]
 				if !ok {
-					topicLastLikeIds[item.Topic] = item.LastLikeId
+					topicLastLikeIds[topicSocket.Topic] = topicSocket.LastLikeId
 				}
-				if item.LastLikeId < topicLastLikeIds[item.Topic] {
-					topicLastLikeIds[item.Topic] = item.LastLikeId
+				if topicSocket.LastLikeId < topicLastLikeIds[topicSocket.Topic] {
+					topicLastLikeIds[topicSocket.Topic] = topicSocket.LastLikeId
 				}
 			}
 			for topic, lastLikeId := range topicLastLikeIds {
 				recentLikes, err := db.GetRecentLikesForTopic(topic, lastLikeId)
 				if err != nil && !db.IsRecordNotFoundError(err) {
-					for i := 0; i < len(items); i++ {
-						var item = items[i]
-						if item.Topic == topic {
-							go func(item *Item, err error) {
-								item.Error <- jerr.Get("error getting recent like for topic", err)
-							}(item, err)
-							items = append(items[:i], items[i+1:]...)
+					for i := 0; i < len(topicSockets); i++ {
+						var topicSocket = topicSockets[i]
+						if topicSocket.Topic == topic {
+							go func(socket *TopicSocket, err error) {
+								socket.Error <- jerr.Get("error getting recent like for topic", err)
+							}(topicSocket, err)
+							topicSockets = append(topicSockets[:i], topicSockets[i+1:]...)
 							i--
 						}
 					}
@@ -128,19 +105,19 @@ func init() {
 				if len(recentLikes) > 0 {
 					for _, recentLike := range recentLikes {
 						txHash := recentLike.GetLikeTransactionHashString()
-						for i := 0; i < len(items); i++ {
-							var item = items[i]
-							if item.Topic == topic && item.LastLikeId < recentLike.Id {
-								item.LastLikeId = recentLike.Id
-								err = item.Socket.WriteJSON(txSend{
+						for i := 0; i < len(topicSockets); i++ {
+							var topicSocket = topicSockets[i]
+							if topicSocket.Topic == topic && topicSocket.LastLikeId < recentLike.Id {
+								topicSocket.LastLikeId = recentLike.Id
+								err = topicSocket.Socket.WriteJSON(txSend{
 									Hash: txHash,
 									Type: 2,
 								})
 								if err != nil {
-									go func(item *Item, err error) {
-										item.Error <- jerr.Get("error writing to socket", err)
-									}(item, err)
-									items = append(items[:i], items[i+1:]...)
+									go func(socket *TopicSocket, err error) {
+										socket.Error <- jerr.Get("error writing to socket", err)
+									}(topicSocket, err)
+									topicSockets = append(topicSockets[:i], topicSockets[i+1:]...)
 									i--
 								}
 							}

@@ -1,4 +1,5 @@
 {{ $postUnique := getUnique 6 }}
+<a name="post-{{ .Post.Memo.GetTransactionHashString }}"></a>
 <div class="post rounded box-shadow" id="post-{{ $postUnique }}"
      data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
 {{ if .FeedItem }}
@@ -35,7 +36,10 @@
     </div>
 {{ end }}
 {{ end }}
-    <div class="post-header">
+{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }}
+<div class="feed-item-post">
+{{ end }}
+    <div class="post-header ">
         <div class="name">
         {{ $isFeedItem := (or .FeedItem.IsLike .FeedItem.IsPollVote) }}
         {{ template "post/snippets/name.html" dict "Address" .Post.Memo.GetAddressString "ProfilePic" .Post.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Name }}
@@ -45,6 +49,10 @@
         {{ if and .Post.Memo.RootTxHash .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a
                 href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+            by {{ template "post/snippets/name.html" dict "Address" .Post.Parent.Memo.GetAddressString "ProfilePic" .Post.Parent.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Parent.Name }}
+        {{ if .Post.Parent.Reputation }}
+            {{ template "snippets/reputation.html" .Post.Parent.Reputation }}
+        {{ end }}
         {{ else if .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
         {{ else if .Post.Memo.IsVote }}
@@ -68,22 +76,7 @@
     </div>
 {{ if .Post.Parent }}
     <div class="reply{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }} reply-feed-item{{ end }}">
-        Replying to
-        {{ $isFeedItem := (or .FeedItem.IsLike .FeedItem.IsPollVote) }}
-        {{ template "post/snippets/name.html" dict "Address" .Post.Parent.Memo.GetAddressString "ProfilePic" .Post.Parent.ProfilePic "IsFeedItem" $isFeedItem "Name" .Post.Parent.Name }}'s
-    {{ if .Post.Memo.RootTxHash }}
-        <a href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Parent.Memo.GetTransactionHashString }}">
-            post
-        </a>
-    {{ else }}
-        <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">
-            post
-        </a>
-    {{ end }}
-    {{ if .Post.Parent.Reputation }}
-        {{ template "snippets/reputation.html" .Post.Parent.Reputation }}
-    {{ end }}
-        <p>{{ .Post.Parent.GetMessage }}</p>
+    {{ .Post.Parent.GetMessage }}
     </div>
 {{ end }}
 {{ if .Post.Memo.IsVote }}
@@ -154,6 +147,10 @@
     {{ end }}
 
     </div>
+{{ end }}
+
+{{ if or .FeedItem.IsLike .FeedItem.IsPollVote }}
+</div>
 {{ end }}
 
 {{ template "post/snippets/reply-form.html" dict "Post" .Post "Hidden" true "Threaded" false "FormHash" $postUnique "ShowParent" .Post.Parent }}

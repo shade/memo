@@ -13,7 +13,7 @@ var Languages = []lang{{
 }, {
 	Code: "es-LA",
 	Name: "Español",
-	Flag: "mx",
+	Flag: "es",
 }, {
 	Code: "zh-CN",
 	Name: "中文(简体)",

@@ -1,4 +1,4 @@
-<div class="profile">
+<div class="profile view-profile">
     <div class="row">
         <div class="col-sm-6">
             <div class="pic">
@@ -25,6 +25,7 @@
                 {{ end }}
                 {{ end }}
                 </h3>
+                <p class="joined">Joined <b>{{ .Profile.GetJoined }}</b></p>
                 <p>
                 {{ .Profile.GetText }}
                 </p>
@@ -44,6 +45,7 @@
                         &nbsp;<span class="glyphicon glyphicon-th"></span>&nbsp;
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right">
+                        <li class="dropdown-header">Block Explorer</li>
                         <li><a target="_blank"
                                href="https://explorer.bitcoin.com/bch/address/{{ .Profile.GetAddressString }}">
                         {{ T "Bitcoin.com" }}
@@ -51,6 +53,10 @@
                         <li><a target="_blank"
                                href="https://blockchair.com/bitcoin-cash/address/{{ .Profile.GetAddressString }}">
                         {{ T "Blockchair" }}
+                        </a></li>
+                        <li><a target="_blank"
+                               href="https://bch.btc.com/{{ .Profile.GetAddressString }}">
+                            BTC.com
                         </a></li>
                     </ul>
                 </div>
@@ -61,9 +67,9 @@
                 <tbody>
                 <tr>
                     <td colspan="2">
-                        <a href="{{ .Profile.GetCashAddressString }}">{{ .Profile.GetCashAddressOnlyString }}</a><br>
+                        <a href="{{ .Profile.GetCashAddressString }}">{{ .Profile.GetCashAddressOnlyString }}</a>
                         <span class="click-for-qr">
-                            <a href="#" id="qr-code-link">Show QR code &amp; legacy address</a>
+                            <a href="#" id="qr-code-link"><span class="glyphicon glyphicon-triangle-bottom"></span></a>
                         </span>
                         <div id="qr-code">
                             <img src="data:image/png;base64,{{ .Profile.Qr }}"/>
@@ -84,18 +90,24 @@
                 {{ end }}
                 {{ if or (not .Profile.IsSelf) (not .Profile.HasBalance) }}
                 <tr>
-                    <th>{{ T "followers" }}</th>
+                    <th>{{ T "Actions" }}</th>
                     <td>
-                        <a href="profile/followers/{{ .Profile.GetAddressString }}">
-                        {{ .Profile.FollowerCount }}
-                        </a>
+                    {{ formatInt .Profile.NumPosts }}
                     </td>
                 </tr>
                 <tr>
                     <th>{{ T "following" }}</th>
                     <td>
                         <a href="profile/following/{{ .Profile.GetAddressString }}">
-                        {{ .Profile.FollowingCount }}
+                        {{ formatInt .Profile.FollowingCount }}
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <th>{{ T "followers" }}</th>
+                    <td>
+                        <a href="profile/followers/{{ .Profile.GetAddressString }}">
+                        {{ formatInt .Profile.FollowerCount }}
                         </a>
                     </td>
                 </tr>
@@ -103,7 +115,7 @@
                     <th>{{ T "topics_following" | UcFirst }}</th>
                     <td>
                         <a href="profile/topics-following/{{ .Profile.GetAddressString }}">
-                        {{ .Profile.TopicsFollowingCount }}
+                        {{ formatInt .Profile.TopicsFollowingCount }}
                         </a>
                     </td>
                 </tr>

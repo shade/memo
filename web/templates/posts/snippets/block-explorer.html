@@ -3,6 +3,7 @@
         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"><span
                 class="glyphicon glyphicon-th"></span></a>
         <ul class="dropdown-menu dropdown-menu-right">
+            <li class="dropdown-header">Block Explorer</li>
             <li><a target="_blank"
                    href="https://explorer.bitcoin.com/bch/tx/{{ . }}">
                 Bitcoin.com
@@ -10,6 +11,10 @@
             <li><a target="_blank"
                    href="https://blockchair.com/bitcoin-cash/transaction/{{ . }}">
                 Blockchair
+            </a></li>
+            <li><a target="_blank"
+                   href="https://bch.btc.com/{{ . }}">
+                BTC.com
             </a></li>
         </ul>
     </li>

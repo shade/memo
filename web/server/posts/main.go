@@ -10,6 +10,7 @@ func GetRoutes() []web.Route {
 		archiveRoute,
 		personalizedRoute,
 		pollsRoute,
+		threadsRoute,
 	}
 }
 

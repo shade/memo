@@ -1,92 +1,109 @@
 package notify
 
 import (
-	"time"
+	"bytes"
+	"github.com/jchavannes/jgo/jerr"
+	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/util"
+	"time"
 )
 
-type Generic interface {
-	GetName() string
-	GetAddressString() string
-	GetPostHashString() string
-	GetMessage() string
-	GetTime() time.Time
-}
+type NotificationType string
+
+const (
+	TypeLike   = "like"
+	TypeFollow = "follow"
+	TypeReply  = "reply"
+)
 
 type Notification struct {
-	Generic Generic
+	DbId           uint
+	DbNotification *db.Notification
+	Type           NotificationType
+	Name           string
+	PkHash         []byte
+	AddressString  string
+	PostHashString string
+	Message        string
+	Time           time.Time
+	ProfilePic     *db.MemoSetPic
+	// Reply
+	ParentMessage    string
+	ParentHashString string
+	// Like
+	TipAmount int64
 }
 
 func (n Notification) IsLike() bool {
-	_, ok := n.Generic.(*LikeNotification)
-	return ok
+	return n.Type == TypeLike
 }
 
 func (n Notification) IsReply() bool {
-	_, ok := n.Generic.(*ReplyNotification)
-	return ok
+	return n.Type == TypeReply
 }
 
 func (n Notification) IsNewFollower() bool {
-	_, ok := n.Generic.(*NewFollowerNotification)
-	return ok
-}
-
-func (n Notification) GetName() string {
-	return n.Generic.GetName()
-}
-
-func (n Notification) GetAddressString() string {
-	return n.Generic.GetAddressString()
-}
-
-func (n Notification) GetPostHashString() string {
-	return n.Generic.GetPostHashString()
-}
-
-func (n Notification) GetParentHashString() string {
-	reply, ok := n.Generic.(*ReplyNotification)
-	if !ok {
-		return ""
-	}
-	return reply.Parent.GetTransactionHashString()
-}
-
-func (n Notification) GetPostMessage() string {
-	msg := n.Generic.GetMessage()
-	return msg
-}
-
-func (n Notification) GetParentMessage() string {
-	var msg string
-	switch g := n.Generic.(type) {
-	case *ReplyNotification:
-		msg = g.Parent.GetMessage()
-	}
-	return msg
+	return n.Type == TypeFollow
 }
 
 func (n Notification) GetTimeAgo() string {
-	ts := n.Generic.GetTime()
-	return util.GetTimeAgo(ts)
-}
-
-func (n Notification) GetTipAmount() int64 {
-	like, ok := n.Generic.(*LikeNotification)
-	if !ok {
-		return 0
-	}
-	return like.Like.TipAmount
+	return util.GetTimeAgo(n.Time)
 }
 
 func (n Notification) GetId() uint {
-	switch g := n.Generic.(type) {
-	case *ReplyNotification:
-		return g.Notification.Id
-	case *LikeNotification:
-		return g.Notification.Id
-	case *NewFollowerNotification:
-		return g.Notification.Id
+	if n.DbNotification == nil {
+		return 0
 	}
-	return 0
+	return n.DbNotification.Id
+}
+
+func AttachProfilePicsToNotifications(notifications []*Notification) error {
+	var picPkHashes [][]byte
+	for _, notification := range notifications {
+		for _, namePkHash := range picPkHashes {
+			if bytes.Equal(namePkHash, notification.PkHash) {
+				continue
+			}
+		}
+		picPkHashes = append(picPkHashes, notification.PkHash)
+	}
+	setPics, err := db.GetPicsForPkHashes(picPkHashes)
+	if err != nil {
+		return jerr.Get("error getting profile pics for pk hashes", err)
+	}
+	for _, setPic := range setPics {
+		for _, notification := range notifications {
+			if bytes.Equal(notification.PkHash, setPic.PkHash) {
+				notification.ProfilePic = setPic
+			}
+		}
+	}
+	return nil
+}
+
+func AttachNamesToNotifications(notifications []*Notification) error {
+	var namePkHashes [][]byte
+	for _, notification := range notifications {
+		for _, namePkHash := range namePkHashes {
+			if bytes.Equal(namePkHash, notification.PkHash) {
+				continue
+			}
+		}
+		namePkHashes = append(namePkHashes, notification.PkHash)
+	}
+	setNames, err := db.GetNamesForPkHashes(namePkHashes)
+	if err != nil {
+		return jerr.Get("error getting set names for pk hashes", err)
+	}
+	for _, notification := range notifications {
+		for _, setName := range setNames {
+			if bytes.Equal(notification.PkHash, setName.PkHash) {
+				notification.Name = setName.Name
+			}
+		}
+		if notification.Name == "" {
+			notification.Name = notification.AddressString[:16]
+		}
+	}
+	return nil
 }

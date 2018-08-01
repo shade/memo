@@ -637,6 +637,9 @@ func SetShowMediaForPosts(posts []*Post, userId uint) error {
 	if userId == 0 {
 		for _, post := range posts {
 			post.ShowMedia = true
+			if post.Parent != nil {
+				post.Parent.ShowMedia = true
+			}
 		}
 		return nil
 	}
@@ -647,6 +650,9 @@ func SetShowMediaForPosts(posts []*Post, userId uint) error {
 	if settings.Integrations == db.SettingIntegrationsAll {
 		for _, post := range posts {
 			post.ShowMedia = true
+			if post.Parent != nil {
+				post.Parent.ShowMedia = true
+			}
 		}
 	}
 	return nil

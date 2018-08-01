@@ -32,7 +32,7 @@
             var password = MemoApp.GetPassword();
             if (!password.length) {
                 MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
-                MemoApp.ReEnterPassword(function() {
+                MemoApp.ReEnterPassword(function () {
                     $followTopicConfirm.submit();
                 });
                 return;
@@ -82,7 +82,7 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
-                        MemoApp.ReEnterPassword(function() {
+                        MemoApp.ReEnterPassword(function () {
                             $followTopicConfirm.click();
                         });
                         return;
@@ -173,7 +173,7 @@
             var password = MemoApp.GetPassword();
             if (!password.length) {
                 MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
-                MemoApp.ReEnterPassword(function() {
+                MemoApp.ReEnterPassword(function () {
                     $form.submit();
                 });
                 return;
@@ -202,7 +202,7 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
-                        MemoApp.ReEnterPassword(function() {
+                        MemoApp.ReEnterPassword(function () {
                             $form.submit();
                         });
                         return;
@@ -258,9 +258,13 @@
                             MemoApp.ReloadTwitter();
                             return;
                         }
+                        var scrolledToBottom = false;
+                        if ($allPosts[0].scrollHeight - $allPosts.scrollTop() <= $allPosts.outerHeight() + 5) {
+                            scrolledToBottom = true;
+                        }
                         $allPosts.append(html);
                         MemoApp.ReloadTwitter();
-                        if ($allPosts[0].scrollHeight - $allPosts.scrollTop() === $allPosts.outerHeight()) {
+                        if (scrolledToBottom) {
                             $allPosts.scrollTop($allPosts[0].scrollHeight);
                         }
                     },
@@ -402,7 +406,7 @@
             var password = MemoApp.GetPassword();
             if (!password.length) {
                 MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
-                MemoApp.ReEnterPassword(function() {
+                MemoApp.ReEnterPassword(function () {
                     $form.submit();
                 });
                 return;
@@ -462,7 +466,7 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
-                        MemoApp.ReEnterPassword(function() {
+                        MemoApp.ReEnterPassword(function () {
                             $form.submit();
                         });
                         return;
@@ -522,7 +526,7 @@
             var password = MemoApp.GetPassword();
             if (!password.length) {
                 MemoApp.AddAlert("Password not set. Please re-enter and submit again.");
-                MemoApp.ReEnterPassword(function() {
+                MemoApp.ReEnterPassword(function () {
                     $form.submit();
                 });
                 return;
@@ -573,7 +577,7 @@
                         MemoApp.AddAlert("Error unlocking key. " +
                             "Please verify your password is correct. " +
                             "If this problem persists, please try refreshing the page.");
-                        MemoApp.ReEnterPassword(function() {
+                        MemoApp.ReEnterPassword(function () {
                             $form.submit();
                         });
                         return;

@@ -126,11 +126,20 @@ var MemoApp = {
         twitterEnabled = isEnabled;
     };
 
+    MemoApp.InitTwitter = function () {
+        if (twitterEnabled) {
+            if ($("body").hasClass("dark")) {
+                $(".twitter-tweet").attr("data-theme", "dark");
+            }
+        }
+    };
+
     MemoApp.ReloadTwitter = function () {
         if (twitterEnabled) {
+            MemoApp.InitTwitter();
             twttr.widgets.load();
         }
-    }
+    };
 
     /**
      * @param {string} password

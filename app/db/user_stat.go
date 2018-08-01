@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"github.com/jchavannes/jgo/jerr"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"time"
 )
 
@@ -37,7 +37,7 @@ func GetUserStat(pkHash []byte) (*UserStat, error) {
 	return &userStat, nil
 }
 
-func AddUpdateStat(userStatObj obj.UserStat) (*UserStat, error) {
+func AddUpdateStat(userStatObj view.UserStat) (*UserStat, error) {
 	var userStat = UserStat{
 		PkHash: userStatObj.PkHash,
 	}
@@ -56,7 +56,7 @@ func AddUpdateStat(userStatObj obj.UserStat) (*UserStat, error) {
 	return &userStat, nil
 }
 
-func GetUserFirstPostStats() ([]obj.UserDateStat, error) {
+func GetUserFirstPostStats() ([]view.UserDateStat, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -68,7 +68,7 @@ func GetUserFirstPostStats() ([]obj.UserDateStat, error) {
 		Where("num_posts > 1").
 		Group("date").
 		Order("date ASC")
-	var userDataStats []obj.UserDateStat
+	var userDataStats []view.UserDateStat
 	result := query.Find(&userDataStats)
 	if result.Error != nil {
 		return nil, jerr.Get("error getting user first post stats", result.Error)
@@ -85,12 +85,12 @@ const (
 	UserStatOrderFollowers
 )
 
-func GetUniqueMemoAPkHashes(offset int, searchString string, orderType UserStatOrderType) ([]*obj.Profile, error) {
+func GetUniqueMemoAPkHashes(offset int, searchString string, orderType UserStatOrderType) ([]*view.Profile, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
 	}
-	var profiles []*obj.Profile
+	var profiles []*view.Profile
 	query := db.
 		Table("user_stats").
 		Select("user_stats.pk_hash AS pk_hash," +

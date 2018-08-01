@@ -7,6 +7,9 @@
 - Memcache
 - Bitcoin node (ABC, Unlimited, etc)
 
+#### Optional
+- Statsd
+
 ### Setup
 
 - Get repo
@@ -30,6 +33,9 @@
     
     BITCOIN_NODE_HOST: 127.0.0.1
     BITCOIN_NODE_PORT: 8333
+
+    STATSD_HOST: 127.0.0.1
+    STATSD_PORT: 8125
     ```
 
 ### Running

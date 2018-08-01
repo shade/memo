@@ -41,7 +41,7 @@ var followersRoute = web.Route{
 			return
 		}
 		var topicName = html_parser.EscapeWithEmojis(unescaped)
-		r.Helper["Title"] = fmt.Sprintf("Memo Topic Followers - %s", topicName)
+		r.Helper["Title"] = fmt.Sprintf("Memo - Topic Followers - %s", topicName)
 		r.Helper["Topic"] = topicName
 		r.Helper["TopicEncoded"] = url.QueryEscape(topicName)
 		r.Helper["TopicFollowers"] = topicFollowers

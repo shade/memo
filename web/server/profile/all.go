@@ -23,6 +23,7 @@ var allRoute = web.Route{
 
 func profilesByDate(r *web.Response, oldestToNewest bool) {
 	r.Helper["Nav"] = "profiles"
+	r.Helper["Title"] = "Memo - Profiles"
 	offset := r.Request.GetUrlParameterInt("offset")
 	searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
 	var selfPkHash []byte

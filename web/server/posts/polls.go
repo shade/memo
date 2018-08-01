@@ -68,6 +68,7 @@ var pollsRoute = web.Route{
 		res.SetPageAndOffset(r, offset)
 		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", strings.TrimLeft(res.UrlPostsPolls, "/"))
 		r.Helper["Posts"] = posts
+		r.Helper["Title"] = "Memo - Polls"
 		r.RenderTemplate(res.TmplPostsPolls)
 	},
 }

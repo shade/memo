@@ -26,6 +26,7 @@ func onHeaders(n *Node, msg *wire.MsgHeaders) {
 			return
 		}
 		if dbBlock != nil {
+			lastBlock = dbBlock
 			// Block already exists
 			continue
 		}

@@ -49,7 +49,7 @@ func SetLastNotificationId(userId uint, lastNotificationId uint) error {
 		userAction.LastNotificationId = lastNotificationId
 		result := save(userAction)
 		if result.Error != nil {
-			return jerr.Get("error saving user action", err)
+			return jerr.Get("error saving user action", result.Error)
 		}
 		return nil
 	}

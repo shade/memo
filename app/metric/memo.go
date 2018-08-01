@@ -15,6 +15,9 @@ func AddMemoBroadcast(outputType memo.OutputType) error {
 	if err != nil {
 		return jerr.Get("error getting statsd", err)
 	}
+	if c == nil {
+		return nil
+	}
 	tags := []string{
 		fmt.Sprintf("%s:%s", TagOutputType, outputType.String()),
 	}

@@ -13,6 +13,16 @@ type NewFollowerNotification struct {
 	Name         string
 }
 
+func (n NewFollowerNotification) GetNotification() *Notification {
+	return &Notification{
+		Type:           TypeFollow,
+		DbNotification: n.Notification,
+		PkHash:         n.Follow.PkHash,
+		Time:           n.GetTime(),
+		AddressString:  n.Follow.GetAddressString(),
+	}
+}
+
 func (n NewFollowerNotification) GetName() string {
 	return n.Name
 }

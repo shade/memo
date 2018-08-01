@@ -1,0 +1,7 @@
+{{ template "snippets/header.html" . }}
+
+{{ template "posts/snippets/header.html" dict "Page" "threads" "IsLoggedIn" .IsLoggedIn }}
+
+{{ template "posts/snippets/threads.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Threads" .Threads }}
+
+{{ template "snippets/footer.html" . }}

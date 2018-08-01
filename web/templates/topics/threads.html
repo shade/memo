@@ -1,0 +1,22 @@
+{{ template "snippets/header.html" . }}
+
+<div class="center">
+    <h2>{{ T "Topic Threads" }} - {{ .Topic }}</h2>
+    <p class="topic-view-nav">
+        <a class="btn btn-default" href="topic/{{ .TopicEncoded }}">Back to {{ .Topic }}</a>
+        <a href="topics{{ if .LastTopicList }}/{{ .LastTopicList }}{{ end }}"
+           class="btn btn-default">{{ T "All topics" }}</a>
+    </p>
+</div>
+
+{{ if .Threads }}
+
+{{ template "posts/snippets/threads.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Threads" .Threads }}
+
+{{ else }}
+
+<p class="no-threads">No threads for topic yet</p>
+
+{{ end }}
+
+{{ template "snippets/footer.html" . }}

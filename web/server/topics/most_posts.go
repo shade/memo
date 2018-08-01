@@ -7,7 +7,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/cache"
 	"github.com/memocash/memo/app/db"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"github.com/memocash/memo/app/html-parser"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -20,7 +20,7 @@ var mostPostsRoute = web.Route{
 		preHandler(r)
 		offset := r.Request.GetUrlParameterInt("offset")
 		searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
-		topics, err := db.GetTopicInfo(uint(offset), searchString, []byte{}, obj.TopicOrderTypePosts)
+		topics, err := db.GetTopicInfo(uint(offset), searchString, []byte{}, view.TopicOrderTypePosts)
 		if err != nil {
 			r.Error(jerr.Get("error getting topics from db", err), http.StatusInternalServerError)
 			return
@@ -48,7 +48,7 @@ var mostPostsRoute = web.Route{
 			r.Error(jerr.Get("error setting topic follow count for user", err), http.StatusInternalServerError)
 			return
 		}
-		r.Helper["Title"] = "Memo Topics"
+		r.Helper["Title"] = "Memo - Topics"
 		r.Helper["Topics"] = topics
 		r.Helper["SearchString"] = searchString
 		res.SetPageAndOffset(r, offset)

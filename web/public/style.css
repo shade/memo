@@ -358,6 +358,12 @@ a.disabled {
     padding: 5px 10px;
     z-index: 1;
 }
+body.dark .mini-profile {
+    background: #2b3e50;
+}
+body.dark .mini-profile table td p:nth-of-type(1) {
+    color: #e0e0e0;
+}
 /*.mini-profile .name-follow a.btn {
     color: #fff;
 }
@@ -374,8 +380,12 @@ a.disabled {
     min-height: 135px;
 }
 .mini-profile .name-follow h3 {
-    margin: 0 0 10px;
+    margin: 0;
     word-break: break-word;
+}
+.mini-profile .name-follow .joined {
+    margin: 2px 0;
+    font-size: 12px;
 }
 .mini-profile .body {
     padding: 5px 0 10px;
@@ -403,7 +413,16 @@ a.disabled {
     font-size: 16px;
     color: #487521;
 }
+.mini-profile-name {
+    max-width: 100%;
+    word-break: break-all;
+}
 
+.post-anchor {
+    display: block;
+    position: relative;
+    top: -55px;
+}
 .post .post {
     margin: 0 -9px 5px -5px;
 }
@@ -431,7 +450,7 @@ a.disabled {
     font-weight: bold;
 }
 .post .message {
-    margin: 5px 0 5px;
+    margin: 5px 0 0;
     font-size: 28px;
 }
 .post .message.message-feed-item {
@@ -441,7 +460,7 @@ a.disabled {
     padding-bottom: 10px;
 }
 .post .likes {
-    margin: 0 0 10px;
+    margin: 0 0 5px;
 }
 .post .like {
     font-size: 12px;
@@ -468,6 +487,19 @@ a.disabled {
 .post .post-header {
     margin: 0;
     padding-right: 25px;
+}
+.post .feed-item-post {
+    border-left: 25px solid #f8f8f8;
+    padding-left: 10px;
+}
+.post .feed-item-post .message {
+    color: #888;
+}
+body.dark .post .feed-item-post {
+    border-color: #35485a;
+}
+body.dark .post .feed-item-post .message {
+    color: #aaa;
 }
 .post .post-header-feed-item {
     padding-bottom: 5px;
@@ -514,7 +546,7 @@ body.dark .post .post-header .block-explorer ul a {
     display: none;
 }
 .post .actions {
-    margin: 5px 0;
+    margin: 0 0 5px;
 }
 .post .reply-form {
     margin-bottom: 5px;
@@ -526,7 +558,6 @@ body.dark .post .post-header .block-explorer ul a {
     color: #555;
     padding-bottom: 8px;
     margin-bottom: 8px;
-    border-bottom: 1px solid #ddd;
 }
 .dark .post .feed-item {
     color: #bbb;
@@ -575,7 +606,7 @@ body.dark table.table {
 .profile {
     position: relative;
 }
-.profile .identicon {
+.view-profile .identicon {
     width: 128px;
     height: 128px;
 }
@@ -611,7 +642,11 @@ body.dark table.table {
     word-break: break-word;
 }
 .profile h3 {
-    margin: 0 0 10px;
+    margin: 0;
+}
+.profile .joined {
+    font-size: 12px;
+    margin: 5px 0;
 }
 .profile table.table {
     font-size: 12px;
@@ -1036,9 +1071,15 @@ a.block-link {
         text-align: unset;
     }
 }
-h1.home-header {
+.home-header {
+    margin-bottom: 30px;
+}
+.home-header h1 {
     text-align: center;
-    margin: 40px 0 20px;
+    margin: 20px 0 10px;
+}
+.home-header h2 {
+    text-align: center;
 }
 .home-list {
     text-align: center;
@@ -1165,6 +1206,31 @@ table.poll-results td:nth-of-type(2) {
 }
 .topic-view-nav a.btn {
     margin: 5px 0;
+}
+.no-threads {
+    text-align: center;
+    margin: 20px 0 40px;
+    font-size: 18px;
+}
+.threads div {
+    word-break: break-word;
+    background-color: #fff;
+    padding: 5px 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, .05);
+}
+.threads div p a {
+    color: #000;
+    font-size: 18px;
+}
+body.dark .threads div {
+    background: #304559;
+    border-color: #666;
+}
+body.dark .threads div p a {
+    color: #e0e0e0;
 }
 
 body.dark #new-poll-form .glyphicon-remove {

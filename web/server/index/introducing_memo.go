@@ -8,7 +8,7 @@ import (
 var introducingMemoRoute = web.Route{
 	Pattern: res.UrlIntroducing,
 	Handler: func(r *web.Response) {
-		r.Helper["Title"] = "Introducing Memo"
+		r.Helper["Title"] = "Memo - Introducing Memo"
 		r.RenderTemplate(res.TmplIntroducing)
 	},
 }

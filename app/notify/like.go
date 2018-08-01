@@ -14,6 +14,19 @@ type LikeNotification struct {
 	Name         string
 }
 
+func (n LikeNotification) GetNotification() *Notification {
+	return &Notification{
+		Type:           TypeLike,
+		DbNotification: n.Notification,
+		PkHash:         n.Like.PkHash,
+		Time:           n.GetTime(),
+		AddressString:  n.Like.GetAddressString(),
+		PostHashString: n.Like.GetLikeTransactionHashString(),
+		Message:        n.Post.GetMessage(),
+		TipAmount:      n.Like.TipAmount,
+	}
+}
+
 func (n LikeNotification) GetName() string {
 	return n.Name
 }

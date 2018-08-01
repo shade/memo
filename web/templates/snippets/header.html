@@ -29,12 +29,6 @@
             MemoApp.Form.LogoutButton($("#header-logout"));
         });
     </script>
-{{ if eq .UserSettings.Integrations "all" }}
-    <script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
-    <script type="text/javascript">
-        MemoApp.SetTwitter(true);
-    </script>
-{{ end }}
 </head>
 <body {{ if eq .UserSettings.Theme "dark" }}class="dark"{{ end }}>
 {{ if not .IsMobileApp }}

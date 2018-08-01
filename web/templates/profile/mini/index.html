@@ -8,9 +8,9 @@
     </a>
 {{ else }}
     <a href="profile/{{ .Profile.GetAddressString }}">
-            <span class="profile-identicon-{{ $miniProfileId }}">
-                    <img class="identicon"/>
-            </span>
+        <span class="profile-identicon-{{ $miniProfileId }}">
+                <img class="identicon"/>
+        </span>
     </a>
 {{ end }}
 </div>
@@ -25,24 +25,25 @@
     {{ end }}
     {{ end }}
     </h3>
+    <p class="joined">Joined <b>{{ .Profile.GetJoined }}</b></p>
 {{ if .Profile.CanFollow }}
     <span>
-            <a class="btn btn-sm btn-primary follow"
-               href="#">{{ T "follow" 1 }}</a>
+        <a class="btn btn-sm btn-primary follow"
+           href="#">{{ T "follow" 1 }}</a>
         </span>
     <span>
-            <a class="btn btn-sm btn-primary hidden confirm-follow"
-               href="#">{{ T "Confirm follow" }}</a>
-        </span>
+        <a class="btn btn-sm btn-primary hidden confirm-follow"
+           href="#">{{ T "Confirm follow" }}</a>
+    </span>
 {{ else if .Profile.CanUnfollow }}
     <span>
-            <a class="btn btn-sm btn-default unfollow"
-               href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }}</a>
-        </span>
+        <a class="btn btn-sm btn-default unfollow"
+           href="memo/unfollow/{{ .Profile.GetAddressString }}">{{ T "unfollow" }}</a>
+    </span>
     <span>
-            <a class="btn btn-sm btn-primary hidden confirm-unfollow"
-               href="#">{{ T "Confirm unfollow" }}</a>
-        </span>
+        <a class="btn btn-sm btn-primary hidden confirm-unfollow"
+           href="#">{{ T "Confirm unfollow" }}</a>
+    </span>
 {{ end }}
     <span class="cancel hidden btn btn-sm btn-default">Cancel</span>
     <span class="creating hidden btn btn-sm btn-warning">Creating...</span>

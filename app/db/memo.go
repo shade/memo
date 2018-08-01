@@ -7,7 +7,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/script"
 	"github.com/memocash/memo/app/bitcoin/wallet"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"html"
 	"time"
 )
@@ -72,7 +72,7 @@ func GetMemoTest(txHash []byte) (*MemoTest, error) {
 	return &memoTest, nil
 }
 
-func GetMemoCohortStats() ([]obj.MemoCohortStat, error) {
+func GetMemoCohortStats() ([]view.MemoCohortStat, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -85,9 +85,10 @@ func GetMemoCohortStats() ([]obj.MemoCohortStat, error) {
 		"DATE(DATE_FORMAT(`timestamp`, '%Y-%m-%d')) AS date").
 		Joins("JOIN blocks ON (memo_tests.block_id = blocks.id)").
 		Joins("JOIN user_stats ON (memo_tests.pk_hash = user_stats.pk_hash)").
+		Where("HEX(memo_tests.pk_script) REGEXP '6A026D(0|1).*'").
 		Group("date, cohort").
 		Order("date ASC")
-	var memoCohortStats []obj.MemoCohortStat
+	var memoCohortStats []view.MemoCohortStat
 	result := query.Find(&memoCohortStats)
 	if result.Error != nil {
 		return nil, jerr.Get("error getting memo stats", result.Error)
@@ -95,7 +96,7 @@ func GetMemoCohortStats() ([]obj.MemoCohortStat, error) {
 	return memoCohortStats, nil
 }
 
-func GetUserStats() ([]obj.UserStat, error) {
+func GetUserStats() ([]view.UserStat, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -122,8 +123,9 @@ func GetUserStats() ([]obj.UserStat, error) {
 		"MAX(`timestamp`) AS last_post").
 		Joins("JOIN blocks ON (memo_tests.block_id = blocks.id)").
 		Joins(joinSql).
+		Where("HEX(memo_tests.pk_script) REGEXP '6A026D(0|1).*'").
 		Group("memo_tests.pk_hash")
-	var userStats []obj.UserStat
+	var userStats []view.UserStat
 	result := query.Find(&userStats)
 	if result.Error != nil {
 		return nil, jerr.Get("error getting user stats", result.Error)

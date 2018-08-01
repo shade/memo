@@ -1,6 +1,7 @@
 {{ $tz := .TimeZone }}
 {{ $settings := .UserSettings }}
 {{ $postUnique := getUnique 6 }}
+<a class="post-anchor" name="post-{{ .Post.Memo.GetTransactionHashString }}"></a>
 <div class="post" id="post-{{ $postUnique }}" data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
     <div class="post-header">
         <div class="name">
@@ -11,6 +12,12 @@
         {{ if and .Post.Memo.RootTxHash .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a
                 href="post/{{ .Post.Memo.GetRootTransactionHashString }}#post-{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
+        {{ if .Post.Parent }}
+            by {{ template "post/snippets/name.html" dict "Address" .Post.Parent.Memo.GetAddressString "ProfilePic" .Post.Parent.ProfilePic "Name" .Post.Parent.Name }}
+        {{ if .Post.Parent.Reputation }}
+            {{ template "snippets/reputation.html" .Post.Parent.Reputation }}
+        {{ end }}
+        {{ end }}
         {{ else if .Post.Memo.ParentTxHash }}
         {{ T "replied_to" }} <a href="post/{{ .Post.Memo.GetParentTransactionHashString }}">post</a>
         {{ else if .Post.Memo.IsVote }}
@@ -24,37 +31,11 @@
             in <a href="topic/{{ .Post.Memo.GetUrlEncodedTopic }}">{{ .Post.Memo.Topic }}</a>
         {{ end }}
         </div>
-        <ul class="block-explorer">
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"><span
-                        class="glyphicon glyphicon-th"></span></a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                    <li><a target="_blank"
-                           href="https://explorer.bitcoin.com/bch/tx/{{ .Post.Memo.GetTransactionHashString }}">
-                        Bitcoin.com Explorer
-                    </a></li>
-                    <li><a target="_blank"
-                           href="https://blockchair.com/bitcoin-cash/transaction/{{ .Post.Memo.GetTransactionHashString }}">
-                        Blockchair
-                    </a></li>
-                </ul>
-            </li>
-        </ul>
+        {{ template "posts/snippets/block-explorer.html" .Post.Memo.GetTransactionHashString }}
     </div>
 {{ if .Post.Parent }}
     <div class="reply">
-        Replying to
-    {{ if .Post.Parent.ProfilePic }}
-        <img class="profile-pic profile-pic-24"
-             src="/img/profilepics/{{ .Post.Parent.Memo.GetAddressString }}-24x24.{{ .Post.Parent.ProfilePic.GetExtension }}?id={{ .Post.Parent.ProfilePic.Id }}"/>
-    {{ else }}
-        <span class="identicon-{{ .Post.Parent.Memo.GetAddressString }}">
-            <img class="identicon"/>
-        </span>
-    {{ end }}
-        <a href="post/{{ .Post.Parent.Memo.GetTransactionHashString }}">{{ .Post.Parent.Name }}'s
-            post</a>
-        <p>{{ .Post.Parent.GetMessage }}</p>
+    {{ .Post.Parent.GetMessage }}
     </div>
 {{ end }}
 {{ if .Post.Memo.IsVote }}

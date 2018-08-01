@@ -65,6 +65,7 @@ var newRoute = web.Route{
 		}
 		res.SetPageAndOffset(r, offset)
 		r.Helper["Posts"] = posts
+		r.Helper["Title"] = "Memo - New Posts"
 		r.Render()
 	},
 }

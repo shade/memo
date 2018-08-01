@@ -115,7 +115,7 @@ var viewRoute = web.Route{
 		if err != nil {
 			jerr.Get("error getting last topic list", err).Print()
 		}
-		r.Helper["Title"] = "Memo Topic - " + topicPosts[0].Memo.Topic
+		r.Helper["Title"] = "Memo - Topic - " + topicPosts[0].Memo.Topic
 		r.Helper["Topic"] = topicPosts[0].Memo.Topic
 		r.Helper["TopicEncoded"] = topicPosts[0].Memo.GetUrlEncodedTopic()
 		r.Helper["Posts"] = topicPosts

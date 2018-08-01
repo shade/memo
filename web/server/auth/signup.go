@@ -24,6 +24,7 @@ var signupRoute = web.Route{
 	Pattern: res.UrlSignup,
 	Handler: func(r *web.Response) {
 		r.Helper["Nav"] = "signup"
+		r.Helper["Title"] = "Memo - Signup"
 		if auth.IsLoggedIn(r.Session.CookieId) {
 			r.SetRedirect(res.GetUrlWithBaseUrl(res.UrlIndex, r))
 			return

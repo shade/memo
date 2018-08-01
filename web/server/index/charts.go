@@ -5,7 +5,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/db"
-	"github.com/memocash/memo/app/db/obj"
+	"github.com/memocash/memo/app/db/view"
 	"github.com/memocash/memo/app/res"
 	"net/http"
 )
@@ -37,19 +37,21 @@ var chartsRoute = web.Route{
 			r.Error(jerr.Get("error getting cohort stats", err), http.StatusInternalServerError)
 			return
 		}
-		cohortActionsJson, err := json.Marshal(obj.GetCohortStatData(cohortStats, false))
+		cohortActionsJson, err := json.Marshal(view.GetCohortStatData(cohortStats, false))
 		if err != nil {
 			r.Error(jerr.Get("error marshalling cohort actions", err), http.StatusInternalServerError)
 			return
 		}
 		r.Helper["CohortActions"] = string(cohortActionsJson)
 
-		cohortUsersJson, err := json.Marshal(obj.GetCohortStatData(cohortStats, true))
+		cohortUsersJson, err := json.Marshal(view.GetCohortStatData(cohortStats, true))
 		if err != nil {
 			r.Error(jerr.Get("error marshalling cohort users", err), http.StatusInternalServerError)
 			return
 		}
 		r.Helper["CohortUsers"] = string(cohortUsersJson)
+
+		r.Helper["Title"] = "Memo - Charts"
 
 		r.RenderTemplate(res.TmplCharts)
 	},

@@ -20,6 +20,7 @@ type Node struct {
 	NodeStatus         *db.NodeStatus
 	BlockHashes        map[string]*db.Block
 	PrevBlockHashes    map[string]*db.Block
+	PreviousFilterSize int
 	MemoTxnsFound      int
 	AllTxnsFound       int
 	UserNode           bool

@@ -11,7 +11,8 @@ var memoCmd = &cobra.Command{
 
 func Execute() {
 	memoCmd.AddCommand(webCmd)
-	memoCmd.AddCommand(mainNodeCmd)
+	memoCmd.AddCommand(actionNodeCmd)
+	memoCmd.AddCommand(userNodeCmd)
 	memoCmd.AddCommand(scannerCmd)
 	memoCmd.AddCommand(scanRecentCmd)
 	memoCmd.AddCommand(fixPostEmojisCmd)

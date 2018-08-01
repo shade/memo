@@ -23,7 +23,7 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 	var memosSaved int
 	var txnsSaved int
 	for _, txn := range block.Transactions() {
-		savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(txn.MsgTx(), dbBlock)
+		savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(txn.MsgTx(), dbBlock, n.UserNode)
 		if err != nil {
 			jerr.Getf(err, "error conditionally saving transaction: %s", txn.Hash().String()).Print()
 			continue

@@ -165,7 +165,7 @@ func onMerkleBlock(n *SNode, msg *wire.MsgMerkleBlock) {
 
 func onTx(n *SNode, msg *wire.MsgTx) {
 	block := findHashBlock([]map[string]*db.Block{n.BlockHashes, n.PrevBlockHashes}, msg.TxHash())
-	savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(msg, block)
+	savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(msg, block, true)
 	if err != nil {
 		jerr.Get("error conditionally saving transaction", err).Print()
 	}

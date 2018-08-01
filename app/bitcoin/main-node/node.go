@@ -12,29 +12,40 @@ import (
 	"net"
 )
 
-var BitcoinNode Node
+var ActionNode Node
+var UserNode Node
 
 type Node struct {
 	Peer               *peer.Peer
 	NodeStatus         *db.NodeStatus
+	UserNode           bool
 	BlocksQueued       int
 	HeaderSyncComplete bool
 	BlocksSyncComplete bool
 }
 
-func Start() {
-	BitcoinNode.Start()
+func StartActionNode() {
+	ActionNode.Start(false)
 }
 
-func WaitForDisconnect() {
-	BitcoinNode.Peer.WaitForDisconnect()
+func WaitForActionNodeDisconnect() {
+	ActionNode.Peer.WaitForDisconnect()
 }
 
-func (n *Node) Start() {
+func StartUserNode() {
+	UserNode.Start(true)
+}
+
+func WaitForUserNodeDisconnect() {
+	UserNode.Peer.WaitForDisconnect()
+}
+
+func (n *Node) Start(userNode bool) {
 	nodeStatus, err := db.GetNodeStatus()
 	if err != nil {
 		log.Fatal(err)
 	}
+	n.UserNode = userNode
 	transaction.EnableBatchPostProcessing()
 	bitcoinNodeConfig := config.GetBitcoinNode()
 	n.NodeStatus = nodeStatus

@@ -12,7 +12,7 @@ func onTx(n *Node, msg *wire.MsgTx) {
 	if !n.HeaderSyncComplete || !n.BlocksSyncComplete  {
 		return
 	}
-	savedTxn, memoTxn, err := transaction.ConditionallySaveTransaction(msg, nil)
+	savedTxn, memoTxn, err := transaction.ConditionallySaveTransaction(msg, nil, n.UserNode)
 	if err != nil {
 		jerr.Get("error conditionally saving transaction", err).Print()
 	}

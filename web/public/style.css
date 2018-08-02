@@ -297,11 +297,11 @@ a.disabled {
     border-top: 1px solid rgba(0,0,0,0.2);
 }
 .footer div {
-    padding: 5px 0;
+    padding: 0 0 5px;
 }
 .footer .links a {
     display: inline-block;
-    margin: 0 10px;
+    margin: 0 10px 5px;
 }
 .footer .dropdown-menu>li>a {
     padding: 3px 10px;
@@ -330,7 +330,7 @@ a.disabled {
 .post .name {
     position: relative;
     min-height: 22px;
-    margin: 0 0 5px;
+    margin: 0 0 0;
     line-height: 22px;
 }
 .mini-profile-name {
@@ -416,9 +416,10 @@ body.dark .mini-profile table td p:nth-of-type(1) {
 .mini-profile-name {
     max-width: 100%;
     word-break: break-all;
+    margin-bottom: 3px;
 }
 
-.post-anchor {
+.anchor {
     display: block;
     position: relative;
     top: -55px;
@@ -1225,6 +1226,22 @@ table.poll-results td:nth-of-type(2) {
     color: #000;
     font-size: 18px;
 }
+.no-funds {
+    text-align: center;
+    word-break: break-word;
+    font-size: 16px;
+}
+.no-funds p {
+    line-height: 30px;
+}
+.no-funds p a {
+    text-decoration: underline;
+}
+.no-funds div {
+    padding-top: 20px;
+}
+
+
 body.dark .threads div {
     background: #304559;
     border-color: #666;

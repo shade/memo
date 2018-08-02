@@ -1,11 +1,4 @@
-<p class="pagination">
-
-    <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
-       href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
-    <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="{{ .OffsetLink }}&offset={{ .NextOffset }}">
-    {{ T "next" }}></a>
-</p>
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .FeedItems }}
 
 {{ $tz := .TimeZone }}
 {{ $settings := .UserSettings }}
@@ -13,10 +6,4 @@
 {{ template "feed/item.html" dict "Item" . "TimeZone" $tz "UserSettings" $settings }}
 {{ end }}
 
-<p class="pagination">
-    <a class="{{ if (eq .Offset 0) }}disabled{{ end }}"
-       href="{{ .OffsetLink }}&offset={{ .PrevOffset }}">< {{ T "previous" }}</a>
-    <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .FeedItems) 25 }}disabled{{end}}" href="{{ .OffsetLink }}&offset={{ .NextOffset }}">
-    {{ T "next" }}></a>
-</p>
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .FeedItems }}

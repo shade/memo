@@ -1,17 +1,16 @@
 {{ template "snippets/header.html" . }}
 
 {{ if eq .Profile.Balance 0 }}
-<h3>
-    You need some Bitcoin Cash (BCH) to get started
-</h3>
-<p>
-    <b>Step 1.</b> Copy your address below<br/>
-</p>
-<p>
-    <b>Step 2.</b> Paste your address into your bitcoin cash wallet to send yourself some funds.
-    If you don't have any BCH <a target="_blank" href="https://free.bitcoin.com">visit the bitcoin.com faucet</a> to get
-    some for free!
-</p>
+<div class="center">
+    <h3>
+        You need some Bitcoin Cash to get started
+    </h3>
+    <br/>
+    <p>
+        <a class="btn btn-primary" href="/">Click here to fund your account</a>
+    </p>
+    <br/>
+</div>
 {{ end }}
 
 <br/>

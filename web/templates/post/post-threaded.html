@@ -1,7 +1,7 @@
 {{ $tz := .TimeZone }}
 {{ $settings := .UserSettings }}
 {{ $postUnique := getUnique 6 }}
-<a class="post-anchor" name="post-{{ .Post.Memo.GetTransactionHashString }}"></a>
+<a class="anchor" name="post-{{ .Post.Memo.GetTransactionHashString }}"></a>
 <div class="post" id="post-{{ $postUnique }}" data-tx-hash="{{ .Post.Memo.GetTransactionHashString }}">
     <div class="post-header">
         <div class="name">

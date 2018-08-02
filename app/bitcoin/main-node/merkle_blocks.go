@@ -6,6 +6,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/obj/user_stats"
 )
 
 func onMerkleBlock(n *Node, msg *wire.MsgMerkleBlock) {
@@ -27,14 +28,27 @@ func onMerkleBlock(n *Node, msg *wire.MsgMerkleBlock) {
 	for _, err := range errors {
 		fmt.Println(err.Error())
 	}
-	fmt.Printf("Merkle block height: %5d (%s), hashes: %4d (Prev saved: %4d, memos: %4d)\n",
+	if n.BlocksSyncComplete && ! n.UserNode {
+		go func() {
+			err = user_stats.Populate()
+			if err != nil {
+				jerr.Get("error populating user stats", err).Print()
+			}
+		}()
+	}
+	var prevSaved string
+	if ! n.BlocksSyncComplete {
+		prevSaved = "prev "
+	}
+	fmt.Printf("Merkle block height: %5d (%s), hashes: %4d (%ssaved: %4d, memos: %4d)\n",
 		dbBlock.Height,
 		dbBlock.Timestamp.String(),
 		len(transactionHashes),
+		prevSaved,
 		n.AllTxnsFound,
 		n.MemoTxnsFound,
 	)
-	if dbBlock.Height == n.NodeStatus.HeightChecked + 1 {
+	if dbBlock.Height == n.NodeStatus.HeightChecked+1 {
 		n.NodeStatus.HeightChecked = dbBlock.Height
 		err = n.NodeStatus.Save()
 	}
@@ -59,7 +73,7 @@ func queueMerkleBlocks(n *Node, first bool) {
 		n.NodeStatus.HeightChecked = MinCheckHeight
 	}
 	var initialHeight = n.NodeStatus.HeightChecked
-	if ! first {
+	if ! first || n.BlocksSyncComplete {
 		initialHeight++
 	}
 	blocks, err := db.GetBlocksInHeightRange(initialHeight, initialHeight+1999)
@@ -91,5 +105,7 @@ func queueMerkleBlocks(n *Node, first bool) {
 	n.PrevBlockHashes = n.BlockHashes
 	n.BlockHashes = make(map[string]*db.Block)
 	n.BlocksQueued += len(msgGetData.InvList)
-	fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
+	if n.BlocksQueued > 1 {
+		fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
+	}
 }

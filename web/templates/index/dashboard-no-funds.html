@@ -1,33 +1,27 @@
 {{ template "snippets/header.html" . }}
 
-<div class="col-sm-6 col-sm-offset-3 center">
-    <h3>
-        You need some Bitcoin Cash to get started
-    </h3>
+<div class="col-sm-12 no-funds">
+    <h3>You need some Bitcoin Cash to get started</h3>
+    <br/>
     <p>
-        <b>Step 1.</b> Copy your address below or scan the QR code
+        Follow the steps below to fund your account.<br/>
+        Or <a href="about#contact">contact us</a> to get some free BCH.
     </p>
-    <p>
-        <b>Step 2.</b> Paste the address into your bitcoin cash wallet to send yourself some funds.
-        If you don't have any BCH <a target="_blank" href="https://free.bitcoin.com">visit the bitcoin.com faucet</a> to
-        get
-        some for free!
-    </p>
+    <br/>
+</div>
 
-    <div class="center">
-        <a href="{{ .Profile.GetCashAddressString }}">{{ .Profile.GetCashAddressOnlyString }}</a><br>
-        <img src="data:image/png;base64,{{ .Profile.Qr }}"/>
-        <br/>
-        <span class="click-for-qr">Legacy Address</span>
-        <br/>
-    {{ .Profile.GetAddressString }}
-        <br/>
-        <br/>
-        <br/>
-        <p>
-            <a class="btn btn-default btn-lg" href="all">View All Activity</a>
-        </p>
-    </div>
+{{ template "snippets/get-funds.html" . }}
+<br/>
+
+<div class="col-sm-12 center">
+    <h4>
+        Alternatively...
+    </h4>
+    <br/>
+    <p>
+        <a class="btn btn-default btn-lg" href="all">View All Activity</a>
+    </p>
+    <br/>
     <br/>
 </div>
 

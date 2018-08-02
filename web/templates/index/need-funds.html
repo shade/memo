@@ -1,16 +1,15 @@
 {{ template "snippets/header.html" . }}
 
-<h2>Need Funds</h2>
+<div class="col-sm-12 center">
+    <h2>Need Funds</h2>
+    <br/>
+    <p style="line-height:30px;">
+        You do not have enough funds to perform actions.<br/>
+        To top up, follow the instructions below.
+    </p>
+    <br/>
+</div>
 
-<p>
-    In order to perform actions you need Bitcoin Cash to pay for the transactions.
-    Please send some BCH to your address: <b>{{ .Key.GetAddress.GetEncoded }}</b>
-</p>
-
-<p>
-    You don't need much to begin, actions cost less than one cent each (yes, $0.01).
-    If you don't have any BCH, try visiting a faucet like
-    <a href="https://free.bitcoin.com/" target="_blank">free.bitcoin.com</a>.
-</p>
+{{ template "snippets/get-funds.html" . }}
 
 {{ template "snippets/footer.html" . }}

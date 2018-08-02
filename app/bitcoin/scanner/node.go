@@ -134,8 +134,6 @@ func queueMerkleBlocks(n *SNode, startingBlockHeight uint) error {
 			return jerr.Get("error adding inventory vector: %s\n", err)
 		}
 	}
-	n.PrevBlockHashes = n.BlockHashes
-	n.BlockHashes = make(map[string]*db.Block)
 	n.BlocksQueued += len(blocks)
 	n.Peer.QueueMessage(msgGetData, nil)
 	fmt.Printf("Queued %d merkle blocks\n", len(blocks))
@@ -148,6 +146,9 @@ func onMerkleBlock(n *SNode, msg *wire.MsgMerkleBlock) {
 		jerr.Get("error getting block from db", err).Print()
 		return
 	}
+
+	n.PrevBlockHashes = n.BlockHashes
+	n.BlockHashes = make(map[string]*db.Block)
 
 	transactionHashes := transaction.GetTransactionsFromMerkleBlock(msg)
 	for _, transactionHash := range transactionHashes {
@@ -165,7 +166,7 @@ func onMerkleBlock(n *SNode, msg *wire.MsgMerkleBlock) {
 
 func onTx(n *SNode, msg *wire.MsgTx) {
 	block := findHashBlock([]map[string]*db.Block{n.BlockHashes, n.PrevBlockHashes}, msg.TxHash())
-	savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(msg, block, true)
+	savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(msg, block, false)
 	if err != nil {
 		jerr.Get("error conditionally saving transaction", err).Print()
 	}

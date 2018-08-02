@@ -1,0 +1,35 @@
+<div class="col-sm-6 col-sm-offset-3 no-funds">
+    <h4>Step 1</h4>
+
+    <div>
+        Copy your address or scan the QR code.
+        <br/>
+        <br/>
+        <a href="{{ .Profile.GetCashAddressString }}">{{ .Profile.GetCashAddressOnlyString }}</a>
+        <br/>
+        <br/>
+        <img src="data:image/png;base64,{{ .Profile.Qr }}"/>
+        <br/>
+        <br/>
+        <span class="click-for-qr">Legacy Address</span>
+        <br/>
+        {{ .Profile.GetAddressString }}
+    </div>
+
+    <br/>
+    <br/>
+    <br/>
+
+    <h4>Step 2</h4>
+    <p>
+        Send funds using a Bitcoin Cash wallet.<br/>
+        10 cents USD is enough to start.
+        The average action costs 0.2 cents.<br/>
+        If you don't have any BCH <a target="_blank" href="https://free.bitcoin.com">visit the bitcoin.com faucet</a> to
+        get some for free!<br/>
+        Or <a href="about#contact">contact us</a> to get some free BCH.
+    </p>
+
+    <br/>
+    <br/>
+</div>

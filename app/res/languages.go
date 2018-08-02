@@ -54,6 +54,10 @@ var Languages = []lang{{
 	Code: "nl-NL",
 	Name: "Nederlands",
 	Flag: "nl",
+}, {
+	Code: "ru-RU",
+	Name: "ру́сский",
+	Flag: "ru",
 }}
 
 func IsValidLang(code string) bool {

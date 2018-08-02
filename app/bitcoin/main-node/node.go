@@ -12,29 +12,45 @@ import (
 	"net"
 )
 
-var BitcoinNode Node
+var ActionNode Node
+var UserNode Node
 
 type Node struct {
 	Peer               *peer.Peer
 	NodeStatus         *db.NodeStatus
+	BlockHashes        map[string]*db.Block
+	PrevBlockHashes    map[string]*db.Block
+	PreviousFilterSize int
+	MemoTxnsFound      int
+	AllTxnsFound       int
+	UserNode           bool
 	BlocksQueued       int
 	HeaderSyncComplete bool
 	BlocksSyncComplete bool
 }
 
-func Start() {
-	BitcoinNode.Start()
+func StartActionNode() {
+	ActionNode.Start(false)
 }
 
-func WaitForDisconnect() {
-	BitcoinNode.Peer.WaitForDisconnect()
+func WaitForActionNodeDisconnect() {
+	ActionNode.Peer.WaitForDisconnect()
 }
 
-func (n *Node) Start() {
+func StartUserNode() {
+	UserNode.Start(true)
+}
+
+func WaitForUserNodeDisconnect() {
+	UserNode.Peer.WaitForDisconnect()
+}
+
+func (n *Node) Start(userNode bool) {
 	nodeStatus, err := db.GetNodeStatus()
 	if err != nil {
 		log.Fatal(err)
 	}
+	n.UserNode = userNode
 	transaction.EnableBatchPostProcessing()
 	bitcoinNodeConfig := config.GetBitcoinNode()
 	n.NodeStatus = nodeStatus
@@ -43,13 +59,14 @@ func (n *Node) Start() {
 		UserAgentVersion: "0.1.0",
 		ChainParams:      &wallet.MainNetParams,
 		Listeners: peer.MessageListeners{
-			OnVerAck:  n.OnVerAck,
-			OnHeaders: n.OnHeaders,
-			OnInv:     n.OnInv,
-			OnBlock:   n.OnBlock,
-			OnTx:      n.OnTx,
-			OnReject:  n.OnReject,
-			OnPing:    n.OnPing,
+			OnVerAck:      n.OnVerAck,
+			OnHeaders:     n.OnHeaders,
+			OnInv:         n.OnInv,
+			OnBlock:       n.OnBlock,
+			OnTx:          n.OnTx,
+			OnReject:      n.OnReject,
+			OnPing:        n.OnPing,
+			OnMerkleBlock: n.OnMerkleBlock,
 		},
 	}, bitcoinNodeConfig.GetConnectionString())
 	if err != nil {
@@ -90,4 +107,8 @@ func (n *Node) OnReject(p *peer.Peer, msg *wire.MsgReject) {
 
 func (n *Node) OnPing(p *peer.Peer, msg *wire.MsgPing) {
 	n.Peer.QueueMessage(wire.NewMsgPong(msg.Nonce), nil)
+}
+
+func (n *Node) OnMerkleBlock(p *peer.Peer, msg *wire.MsgMerkleBlock) {
+	onMerkleBlock(n, msg)
 }

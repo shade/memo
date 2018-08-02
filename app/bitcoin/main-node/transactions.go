@@ -6,23 +6,40 @@ import (
 	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/transaction"
+	"github.com/memocash/memo/app/db"
 )
 
 func onTx(n *Node, msg *wire.MsgTx) {
-	if !n.HeaderSyncComplete || !n.BlocksSyncComplete  {
+	block := findHashBlock([]map[string]*db.Block{n.BlockHashes, n.PrevBlockHashes}, msg.TxHash())
+	if (!n.HeaderSyncComplete || !n.BlocksSyncComplete) && block == nil {
 		return
 	}
-	savedTxn, memoTxn, err := transaction.ConditionallySaveTransaction(msg, nil)
+	savedTxn, memoTxn, err := transaction.ConditionallySaveTransaction(msg, block, n.UserNode)
 	if err != nil {
 		jerr.Get("error conditionally saving transaction", err).Print()
 	}
 	if savedTxn {
+		n.AllTxnsFound++
 		if memoTxn {
-			fmt.Printf("Saved unconfirmed memo txn: %s\n", msg.TxHash().String())
-		} else {
+			n.MemoTxnsFound++
+			if block == nil {
+				fmt.Printf("Saved unconfirmed memo txn: %s\n", msg.TxHash().String())
+			}
+		} else if block == nil {
 			fmt.Printf("Saved unconfirmed txn: %s\n", msg.TxHash().String())
 		}
 	}
+}
+
+func findHashBlock(blockHashes []map[string]*db.Block, hash chainhash.Hash) *db.Block {
+	for _, hashMap := range blockHashes {
+		for hashString, block := range hashMap {
+			if hashString == hash.String() {
+				return block
+			}
+		}
+	}
+	return nil
 }
 
 func getTransaction(n *Node, txId chainhash.Hash) {

@@ -90,7 +90,7 @@ func IsAlreadyExistsError(e error) bool {
 }
 
 func IsDuplicateEntryError(e error) bool {
-	return hasErrorPart(e, "Duplicate entry")
+	return jerr.HasErrorPart(e, "Duplicate entry")
 }
 
 func hasError(e error, s string) bool {

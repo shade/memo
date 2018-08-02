@@ -26,6 +26,7 @@ func onHeaders(n *Node, msg *wire.MsgHeaders) {
 			return
 		}
 		if dbBlock != nil {
+			lastBlock = dbBlock
 			// Block already exists
 			continue
 		}
@@ -37,7 +38,14 @@ func onHeaders(n *Node, msg *wire.MsgHeaders) {
 		block.Height = parentBlock.Height + 1
 		err = block.Save()
 		if err != nil {
-			jerr.Get("error saving block", err).Print()
+			if ! db.IsDuplicateEntryError(err) {
+				jerr.Get("error saving block", err).Print()
+			} else {
+				block, err = db.GetBlockByHash(*block.GetChainhash())
+				if err != nil {
+					jerr.Get("error getting duplicate block", err).Print()
+				}
+			}
 		}
 		if block.Height % 10000 == 0 {
 			fmt.Printf("Header scan at height: %d\n", block.Height)
@@ -49,7 +57,7 @@ func onHeaders(n *Node, msg *wire.MsgHeaders) {
 			fmt.Println("Header sync complete")
 			n.HeaderSyncComplete = true
 		}
-		queueBlocks(n)
+		queueMerkleBlocks(n, true)
 		return
 	}
 	if lastBlock == nil {

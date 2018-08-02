@@ -9,7 +9,7 @@ import (
 	"github.com/memocash/memo/app/metric"
 )
 
-func ConditionallySaveTransaction(msg *wire.MsgTx, dbBlock *db.Block) (bool, bool, error) {
+func ConditionallySaveTransaction(msg *wire.MsgTx, dbBlock *db.Block, userNode bool) (bool, bool, error) {
 	saveStart := time.Now()
 	dbTxn, err := db.ConvertMsgToTransaction(msg)
 	if err != nil {
@@ -23,7 +23,9 @@ func ConditionallySaveTransaction(msg *wire.MsgTx, dbBlock *db.Block) (bool, boo
 	}
 	pkHashes := GetPkHashesFromTxn(dbTxn)
 	var savingMemo bool
-	if memoOutput == nil {
+	if (memoOutput == nil && !userNode) || (memoOutput != nil && userNode) {
+		return false, false, nil
+	} else if memoOutput == nil {
 		watched, err := db.ContainsWatchedPkHash(pkHashes)
 		if err != nil && ! db.IsRecordNotFoundError(err) {
 			return false, false, jerr.Get("error checking db for watched addresses", err)

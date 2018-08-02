@@ -2,38 +2,22 @@ package main_node
 
 import (
 	"fmt"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/jchavannes/bchutil"
 	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/memocash/memo/app/bitcoin/transaction"
 	"github.com/memocash/memo/app/db"
-	"github.com/memocash/memo/app/obj/user_stats"
 )
 
-const MinCheckHeight = 525000
-
-func onBlock(n *Node, msg *wire.MsgBlock) {
-	block := bchutil.NewBlock(msg)
-	dbBlock, err := db.GetBlockByHash(*block.Hash())
+func onMerkleBlock(n *Node, msg *wire.MsgMerkleBlock) {
+	dbBlock, err := db.GetBlockByHash(msg.Header.BlockHash())
 	if err != nil {
-		jerr.Getf(err, "error getting dbBlock (%s)", block.Hash().String()).Print()
+		jerr.Getf(err, "error getting dbBlock (%s)", msg.Header.BlockHash().String()).Print()
 		return
 	}
-	var memosSaved int
-	var txnsSaved int
-	for _, txn := range block.Transactions() {
-		savedTxn, savedMemo, err := transaction.ConditionallySaveTransaction(txn.MsgTx(), dbBlock, n.UserNode)
-		if err != nil {
-			jerr.Getf(err, "error conditionally saving transaction: %s", txn.Hash().String()).Print()
-			continue
-		}
-		if savedTxn {
-			txnsSaved++
-		}
-		if savedMemo {
-			memosSaved++
-		}
+
+	transactionHashes := transaction.GetTransactionsFromMerkleBlock(msg)
+	for _, transactionHash := range transactionHashes {
+		n.BlockHashes[transactionHash.GetTxId().String()] = dbBlock
 	}
 	_, errors := transaction.ProcessNotifications()
 	for _, err := range errors {
@@ -43,20 +27,12 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 	for _, err := range errors {
 		fmt.Println(err.Error())
 	}
-	go func() {
-		if n.BlocksSyncComplete {
-			err = user_stats.Populate()
-			if err != nil {
-				jerr.Get("error populating user stats", err).Print()
-			}
-		}
-	}()
-	fmt.Printf("Block - height: %5d (%s), found: %4d, saved: %4d, memos: %4d\n",
+	fmt.Printf("Merkle block height: %5d (%s), hashes: %4d (Prev saved: %4d, memos: %4d)\n",
 		dbBlock.Height,
 		dbBlock.Timestamp.String(),
-		len(block.Transactions()),
-		txnsSaved,
-		memosSaved,
+		len(transactionHashes),
+		n.AllTxnsFound,
+		n.MemoTxnsFound,
 	)
 	if dbBlock.Height == n.NodeStatus.HeightChecked + 1 {
 		n.NodeStatus.HeightChecked = dbBlock.Height
@@ -66,20 +42,27 @@ func onBlock(n *Node, msg *wire.MsgBlock) {
 		jerr.Get("error saving node status", err).Print()
 		return
 	}
+	n.AllTxnsFound = 0
+	n.MemoTxnsFound = 0
+
 	n.BlocksQueued--
 	if n.BlocksQueued == 0 {
-		queueBlocks(n)
+		queueMerkleBlocks(n, false)
 	}
 }
 
-func queueBlocks(n *Node) {
+func queueMerkleBlocks(n *Node, first bool) {
 	if n.BlocksQueued != 0 {
 		return
 	}
 	if n.NodeStatus.HeightChecked < MinCheckHeight {
 		n.NodeStatus.HeightChecked = MinCheckHeight
 	}
-	blocks, err := db.GetBlocksInHeightRange(n.NodeStatus.HeightChecked+1, n.NodeStatus.HeightChecked+2000)
+	var initialHeight = n.NodeStatus.HeightChecked
+	if ! first {
+		initialHeight++
+	}
+	blocks, err := db.GetBlocksInHeightRange(initialHeight, initialHeight+1999)
 	if err != nil {
 		jerr.Get("error getting blocks in height range", err).Print()
 		return
@@ -96,7 +79,7 @@ func queueBlocks(n *Node) {
 	msgGetData := wire.NewMsgGetData()
 	for _, block := range blocks {
 		err := msgGetData.AddInvVect(&wire.InvVect{
-			Type: wire.InvTypeBlock,
+			Type: wire.InvTypeFilteredBlock,
 			Hash: *block.GetChainhash(),
 		})
 		if err != nil {
@@ -105,13 +88,8 @@ func queueBlocks(n *Node) {
 		}
 	}
 	n.Peer.QueueMessage(msgGetData, nil)
+	n.PrevBlockHashes = n.BlockHashes
+	n.BlockHashes = make(map[string]*db.Block)
 	n.BlocksQueued += len(msgGetData.InvList)
-	if n.BlocksQueued > 1 {
-		fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
-	}
-}
-
-func getBlock(n *Node, hash chainhash.Hash) {
-	getBlocks := wire.NewMsgGetBlocks(&hash)
-	n.Peer.QueueMessage(getBlocks, nil)
+	fmt.Printf("Blocks queued: %d\n", n.BlocksQueued)
 }

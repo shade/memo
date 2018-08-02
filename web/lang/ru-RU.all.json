@@ -1,370 +1,370 @@
 [
   {
     "id": "home",
-    "translation": ""
+    "translation": "Домой"
   },
   {
     "id": "dashboard",
-    "translation": ""
+    "translation": "Панель управления"
   },
   {
     "id": "new_memo",
-    "translation": ""
+    "translation": "Новое Memo"
   },
   {
     "id": "posts",
-    "translation": ""
+    "translation": "Посты"
   },
   {
     "id": "profiles",
-    "translation": ""
+    "translation": "Профили"
   },
   {
     "id": "login",
-    "translation": ""
+    "translation": "Войти"
   },
   {
     "id": "logout",
-    "translation": " <b>{{.Username}}</b>"
+    "translation": "Выйти <b>{{.Username}}</b>"
   },
   {
     "id": "about",
-    "translation": ""
+    "translation": "О нас"
   },
   {
     "id": "protocol",
-    "translation": ""
+    "translation": "Протокол"
   },
   {
     "id": "disclaimer",
-    "translation": ""
+    "translation": "Дисклеймер"
   },
   {
     "id": "statistics",
-    "translation": ""
+    "translation": "Статистика"
   },
   {
     "id": "name",
-    "translation": ""
+    "translation": "Имя"
   },
   {
     "id": "address",
-    "translation": ""
+    "translation": "Адрес"
   },
   {
     "id": "followers",
-    "translation": ""
+    "translation": "Подписчики"
   },
   {
     "id": "following",
-    "translation": ""
+    "translation": "Подписки"
   },
   {
     "id": "balance",
-    "translation": ""
+    "translation": "Баланс"
   },
   {
     "id": "profile",
-    "translation": ""
+    "translation": "Профиль"
   },
   {
     "id": "actions",
-    "translation": ""
+    "translation": "Активности"
   },
   {
     "id": "view_your_profile",
-    "translation": ""
+    "translation": "Посмотреть свой профиль"
   },
   {
     "id": "set_name",
-    "translation": ""
+    "translation": "Добавить имя"
   },
   {
     "id": "set_profile",
-    "translation": ""
+    "translation": "Добавить описание профиля"
   },
   {
     "id": "export_key",
-    "translation": ""
+    "translation": "Экспортировать ключ"
   },
   {
     "id": "change_password",
-    "translation": ""
+    "translation": "Изменить пароль"
   },
   {
     "id": "reply",
     "translation": {
-      "one": "",
-      "other": ""
+      "one": "ответ",
+      "other": "ответы"
     }
   },
   {
     "id": "reply_verb",
-    "translation": ""
+    "translation": "ответить"
   },
   {
     "id": "like",
     "translation": {
-      "one": "",
-      "other": ""
+      "one": "лайк",
+      "other": "лайки"
     }
   },
   {
     "id": "top",
-    "translation": ""
+    "translation": "Топ"
   },
   {
     "id": "personalized",
-    "translation": ""
+    "translation": "Персонализированные"
   },
   {
     "id": "new",
-    "translation": ""
+    "translation": "новые"
   },
   {
     "id": "archive",
-    "translation": ""
+    "translation": "Архив"
   },
   {
     "id": "last_hour",
-    "translation": ""
+    "translation": "Последний час"
   },
   {
     "id": "last_24_hours",
-    "translation": ""
+    "translation": "Последние 24 часа"
   },
   {
     "id": "last_7_days",
-    "translation": ""
+    "translation": "Последние 7 дней"
   },
   {
     "id": "all_time",
-    "translation": ""
+    "translation": "За все время"
   },
   {
     "id": "message",
-    "translation": ""
+    "translation": "Сообщение"
   },
   {
     "id": "password",
-    "translation": ""
+    "translation": "Пароль"
   },
   {
     "id": "save_password",
-    "translation": ""
+    "translation": "Сохранить пароль"
   },
   {
     "id": "post",
-    "translation": ""
+    "translation": "Отправить"
   },
   {
     "id": "profile_text",
-    "translation": ""
+    "translation": "Описание профиля"
   },
   {
     "id": "feed",
-    "translation": ""
+    "translation": "Лента"
   },
   {
     "id": "posted_at",
-    "translation": ""
+    "translation": "отправлено в"
   },
   {
     "id": "posted",
-    "translation": ""
+    "translation": "отправлено"
   },
   {
     "id": "view_on_block_explorer",
-    "translation": ""
+    "translation": "Посмотреть в обозревателе блоков"
   },
   {
     "id": "view_address_on_block_explorer",
-    "translation": ""
+    "translation": "Посмотреть адрес в обозревателе блоков"
   },
   {
     "id": "view_name_on_block_explorer",
-    "translation": ""
+    "translation": "Посмотреть имя в обозревателе блоков"
   },
   {
     "id": "page",
-    "translation": ""
+    "translation": "Страница"
   },
   {
     "id": "previous",
-    "translation": ""
+    "translation": "Предыдущий"
   },
   {
     "id": "next",
-    "translation": ""
+    "translation": "Следующий"
   },
   {
     "id": "connections",
-    "translation": ""
+    "translation": "Соединения"
   },
   {
     "id": "follow",
     "translation": {
-      "one": "",
-      "other": ""
+      "one": "Подписаться",
+      "other": "Подписчики"
     }
   },
   {
     "id": "unfollow",
-    "translation": ""
+    "translation": "Отменить подписку"
   },
   {
     "id": "next_day",
-    "translation": ""
+    "translation": "Следующий день"
   },
   {
     "id": "previous_day",
-    "translation": ""
+    "translation": "Предыдущий день"
   },
   {
     "id": "Topic",
-    "translation": ""
+    "translation": "Тема"
   },
   {
     "id": "Topics",
-    "translation": ""
+    "translation": "Темы"
   },
   {
     "id": "Send",
-    "translation": ""
+    "translation": "Отправить"
   },
   {
     "id": "Existing_Topics",
-    "translation": ""
+    "translation": "Существующие темы"
   },
   {
     "id": "Create_new_topic",
-    "translation": ""
+    "translation": "Создать новую тему"
   },
   {
     "id": "Most_recent_post",
-    "translation": ""
+    "translation": "Последние посты"
   },
   {
     "id": "Total_posts",
-    "translation": ""
+    "translation": "Всего постов"
   },
   {
     "id": "Back_to_topics",
-    "translation": ""
+    "translation": "Назад к темам "
   },
   {
     "id": "Forget_password",
-    "translation": ""
+    "translation": "Удалить пароль"
   },
   {
     "id": "Names_set",
-    "translation": ""
+    "translation": "Имена"
   },
   {
     "id": "Total",
-    "translation": ""
+    "translation": "Всего"
   },
   {
     "id": "Delete_Account",
-    "translation": ""
+    "translation": "Удалить аккаунт"
   },
   {
     "id": "Guides",
-    "translation": ""
+    "translation": "Полезные материалы"
   },
   {
     "id": "Signup",
-    "translation": ""
+    "translation": "Регистрация"
   },
   {
     "id": "Memo",
-    "translation": ""
+    "translation": "Memo"
   },
   {
     "id": "Poll",
-    "translation": ""
+    "translation": "Опрос"
   },
   {
     "id": "Notifications",
-    "translation": ""
+    "translation": "Уведомления"
   },
   {
     "id": "Settings",
-    "translation": ""
+    "translation": "Настройки"
   },
   {
     "id": "new_poll",
-    "translation": ""
+    "translation": "новый опрос"
   },
   {
     "id": "type",
-    "translation": ""
+    "translation": "тип"
   },
   {
     "id": "select_one_option",
-    "translation": ""
+    "translation": "С одним вариантом ответа"
   },
   {
     "id": "select_multiple_options",
-    "translation": ""
+    "translation": "С множественным выбором варинатов ответа"
   },
   {
     "id": "question",
-    "translation": ""
+    "translation": "вопрос"
   },
   {
     "id": "option",
     "translation": {
-      "one": "",
-      "other": ""
+      "one": "вариант",
+      "other": "варианты"
     }
   },
   {
     "id": "add_option",
-    "translation": ""
+    "translation": "добавить вариант"
   },
   {
     "id": "create_poll",
-    "translation": ""
+    "translation": "создать опрос"
   },
   {
     "id": "view_topic",
-    "translation": ""
+    "translation": "перейти к теме"
   },
   {
     "id": "search",
-    "translation": ""
+    "translation": "поиск"
   },
   {
     "id": "all",
-    "translation": "all"
+    "translation": "все"
   },
   {
     "id": "most_posts",
-    "translation": "most posts"
+    "translation": "наибольшее воличество постов"
   },
   {
     "id": "most_followed",
-    "translation": "most followed"
+    "translation": "наибольшее количество подписчиков"
   },
   {
     "id": "start_thread",
-    "translation": "start thread"
+    "translation": "начать тред"
   },
   {
     "id": "set_profile_pic",
-    "translation": "set profile picture"
+    "translation": "добавить фотографию профиля"
   },
   {
     "id": "show",
-    "translation": "show"
+    "translation": "показать"
   },
   {
     "id": "replied_to",
-    "translation": ""
+    "translation": "ответить"
   },
   {
     "id": "topics_following",
-    "translation": "topics following"
+    "translation": "подписки на темы"
   }
 ]

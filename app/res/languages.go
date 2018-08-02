@@ -56,7 +56,7 @@ var Languages = []lang{{
 	Flag: "nl",
 }, {
 	Code: "ru-RU",
-	Name: "ру́сский",
+	Name: "Русский",
 	Flag: "ru",
 }}
 

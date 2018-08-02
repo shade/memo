@@ -43,16 +43,19 @@
 ```sh
 go build
 
-# Run node
-./memo main-node
+# Run action node to collect all memo actions
+./memo action-node
 
 # Separately run web server
 ./memo web --insecure
+
+# Also run the user node to get funding txns from local users
+./memo user-node
 ```
 
 ### Notes
-- Can take about 30 minutes for main-node to full sync
-- Main node can sometimes disconnect while syncing, just restart
+- Can take about 30 minutes for the action node to fully sync
+- Node can sometimes disconnect while syncing, just restart
 - You may see a few errors, these are usually mal-formed memos and can be ignored
 
 

@@ -20,7 +20,7 @@
 - Create MySQL database
   - Use charset `utf8_general_ci`
 
-- Create config.yaml in memo diretory
+- Create config.yaml in memo directory
 
     ```yaml
     MYSQL_HOST: 127.0.0.1

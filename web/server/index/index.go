@@ -80,6 +80,10 @@ func setFeed(r *web.Response, selfPkHash []byte, userId uint) error {
 	if err != nil {
 		return jerr.Get("error attaching polls to posts", err)
 	}
+	err = profile.AttachReputationToPosts(posts)
+	if err != nil {
+		return jerr.Get("error attaching reputation to posts", err)
+	}
 	r.Helper["PostCount"] = len(posts)
 	err = profile.SetShowMediaForPosts(posts, userId)
 	if err != nil {

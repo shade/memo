@@ -29,5 +29,6 @@ func Execute() {
 	memoCmd.AddCommand(populateTopicInfoCmd)
 	memoCmd.AddCommand(populateUserStatsCmd)
 	memoCmd.AddCommand(minifyCmd)
+	memoCmd.AddCommand(getUserInfoCmd)
 	memoCmd.Execute()
 }

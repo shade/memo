@@ -56,6 +56,7 @@ func (p Post) GetMessage() string {
 		msg = format.AddImgurImages(msg)
 		msg = format.AddGiphyImages(msg)
 		msg = format.AddTwitterImages(msg)
+		msg = format.AddRedditImages(msg)
 		msg = format.AddTweets(msg)
 	}
 	msg = strings.TrimSpace(msg)

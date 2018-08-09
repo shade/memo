@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"github.com/jchavannes/btcd/txscript"
 	"github.com/jchavannes/btcd/wire"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/spf13/cobra"
@@ -31,6 +32,18 @@ var decodeCmd = &cobra.Command{
 		fmt.Printf("msgTx: %#v\n", msgTx)
 		for _, out := range msgTx.TxOut {
 			fmt.Printf("out: %x\n", out.PkScript)
+			if bytes.Equal(out.PkScript[0:1], []byte{
+				txscript.OP_RETURN,
+			}) {
+				pushData, err := txscript.PushedData(out.PkScript)
+				if err != nil {
+					jerr.Get("error parsing push data from message", err).Print()
+					return nil
+				}
+				for i, data := range pushData {
+					fmt.Printf("i: %d, string: %s, hex: %x\n", i, data, data)
+				}
+			}
 		}
 		return nil
 	},

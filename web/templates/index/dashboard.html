@@ -1,9 +1,21 @@
 {{ template "snippets/header.html" . }}
 
 {{ if not .Posts }}
-<h3>Feed Empty</h3>
-<p>Start following others to see their posts here</p>
+<div class="center">
+    <h3>Feed Empty</h3>
+    <br/>
+    <p>Start following others to see their posts here.</p>
+    <br/>
 
+    <h4>Some places to check out</h4>
+    <br/>
+
+    <p>
+        <a class="btn btn-primary" href="profiles/most-followers">Profiles</a>
+        <a class="btn btn-primary" href="posts/ranked">Popular Posts</a>
+        <a class="btn btn-primary" href="topics">Topics</a>
+    </p>
+</div>
 {{ else }}
 
 {{ template "feed/header.html" dict "Page" "posts" "IsLoggedIn" .IsLoggedIn }}

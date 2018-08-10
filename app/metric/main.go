@@ -13,6 +13,17 @@ const (
 	NameMemoBroadcast       = "memo_broadcast"
 	NameMemoSave            = "memo_save"
 	NameTransactionSaveTime = "transaction_save_time"
+	NamePostSearch          = "post_search"
+)
+
+const (
+	TagUrl     = "url"
+	TagPattern = "pattern"
+	TagCode    = "response_code"
+
+	TagOutputType = "type"
+
+	TagSearchTerm = "search_term"
 )
 
 var statsdClient *statsd.Client

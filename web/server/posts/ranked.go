@@ -7,6 +7,7 @@ import (
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/db"
 	"github.com/memocash/memo/app/html-parser"
+	"github.com/memocash/memo/app/metric"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -70,6 +71,9 @@ var rankedRoute = web.Route{
 		res.SetPageAndOffset(r, offset)
 		if searchString != "" {
 			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlPostsRanked, "/"), searchString)
+			go func () {
+				metric.AddMemoPostSearch(searchString)
+			}()
 		} else {
 			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlPostsRanked)
 		}

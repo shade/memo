@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-const (
-	TagUrl     = "url"
-	TagPattern = "pattern"
-	TagCode    = "response_code"
-)
-
 func AddHttpRequest(url string, pattern string, requestTime time.Duration, code int) error {
 	c, err := getStatsd()
 	if err != nil {

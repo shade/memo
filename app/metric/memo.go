@@ -6,10 +6,6 @@ import (
 	"github.com/memocash/memo/app/bitcoin/memo"
 )
 
-const (
-	TagOutputType = "type"
-)
-
 func AddMemoBroadcast(outputType memo.OutputType) error {
 	c, err := getStatsd()
 	if err != nil {

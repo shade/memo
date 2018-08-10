@@ -287,6 +287,20 @@ a.disabled {
 .nav-item.notifications span {
     top: 3px;
 }
+@media (max-width: 767px) {
+    .form-inline .form-control {
+        display: inline-block;
+        width: auto;
+        vertical-align: middle;
+    }
+}
+@media (max-width: 767px) {
+    .form-inline .form-group {
+        display: inline-block;
+        margin-bottom: 0;
+        vertical-align: middle;
+    }
+}
 @media (max-width: 991px) {
     .footer {
         text-align: center;

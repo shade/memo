@@ -24,6 +24,14 @@ SELECT COUNT(*) FROM `transaction_ins` WHERE `previous_out_point_index` = 429496
 DELETE FROM `transaction_ins` WHERE `previous_out_point_index` = 4294967295 AND `previous_out_point_hash` = "";
 ```
 
+#### 2018-08-04 Initial Schema Updates
+
+```sql
+ALTER TABLE `transaction_ins` MODIFY `unlock_string` VARCHAR(1000);
+ALTER TABLE `transaction_outs` MODIFY `lock_string` VARCHAR(1000);
+ALTER TABLE `memo_posts` MODIFY `message` VARCHAR(500);
+```
+
 ## Useful Queries
 
 #### Memos by hour

@@ -1,13 +1,16 @@
 package posts
 
 import (
+	"fmt"
 	"github.com/jchavannes/jgo/jerr"
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/html-parser"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/res"
 	"net/http"
+	"strings"
 )
 
 var newRoute = web.Route{
@@ -15,6 +18,7 @@ var newRoute = web.Route{
 	Handler: func(r *web.Response) {
 		preHandler(r)
 		offset := r.Request.GetUrlParameterInt("offset")
+		searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
 		var userPkHash []byte
 		var userId uint
 		if auth.IsLoggedIn(r.Session.CookieId) {
@@ -31,7 +35,7 @@ var newRoute = web.Route{
 			userPkHash = key.PkHash
 			userId = user.Id
 		}
-		posts, err := profile.GetRecentPosts(userPkHash, uint(offset))
+		posts, err := profile.GetRecentPosts(userPkHash, uint(offset), searchString)
 		if err != nil {
 			r.Error(jerr.Get("error getting recent posts", err), http.StatusInternalServerError)
 			return
@@ -66,6 +70,12 @@ var newRoute = web.Route{
 		res.SetPageAndOffset(r, offset)
 		r.Helper["Posts"] = posts
 		r.Helper["Title"] = "Memo - New Posts"
+		r.Helper["SearchString"] = searchString
+		if searchString != "" {
+			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlPostsNew, "/"), searchString)
+		} else {
+			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlPostsNew)
+		}
 		r.Render()
 	},
 }

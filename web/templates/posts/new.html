@@ -2,18 +2,18 @@
 
 {{ template "posts/snippets/header.html" dict "Page" "new" "IsLoggedIn" .IsLoggedIn }}
 
-<p class="pagination">
-    <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}" href="posts/new?offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>
-    <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .Posts) 25 }}disabled{{ end }}" href="posts/new?offset={{ .NextOffset }}">{{ T "next" }} &gt;</a>
-</p>
+<div class="center">
+    <form id="posts-search-form" class="form-inline search-form">
+        <input id="posts-search" class="form-control" type="text" name="s" placeholder="{{ T "Search Memo" }}"
+               value="{{ .SearchString }}"/>
+        <input class="btn btn-primary" type="submit" value="{{ T "search" | Title }}"/>
+    </form>
+</div>
+
+{{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Posts }}
 
 {{ template "posts/snippets/posts.html" dict "Posts" .Posts "TimeZone" .TimeZone "UserSettings" .UserSettings }}
 
-<p class="pagination">
-    <a class="{{ if eq .NextOffset 25 }}disabled{{ end }}" href="posts/new?offset={{ .PrevOffset }}">&lt; {{ T "previous" }}</a>
-    <span class="page">{{ .Page }}</span>
-    <a class="{{ if lt (len .Posts) 25 }}disabled{{ end }}" href="posts/new?offset={{ .NextOffset }}">{{ T "next" }} &gt;</a>
-</p>
+{{ template "snippets/pagination.html" dict "OffsetLink" "posts/new?" "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Posts }}
 
 {{ template "snippets/footer.html" . }}

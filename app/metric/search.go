@@ -5,7 +5,7 @@ import (
 	"github.com/jchavannes/jgo/jerr"
 )
 
-func AddMemoPostSearch(searchTerm string) error {
+func AddMemoPostSearch(searchTerm string, pagePattern string) error {
 	c, err := getStatsd()
 	if err != nil {
 		return jerr.Get("error getting statsd", err)
@@ -15,6 +15,7 @@ func AddMemoPostSearch(searchTerm string) error {
 	}
 	tags := []string{
 		fmt.Sprintf("%s:%s", TagSearchTerm, searchTerm),
+		fmt.Sprintf("%s:%s", TagPattern, pagePattern),
 	}
 	err = c.Incr(NamePostSearch, tags, 1)
 	if err != nil {

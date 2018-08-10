@@ -75,7 +75,7 @@ var newRoute = web.Route{
 		if searchString != "" {
 			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlPostsNew, "/"), searchString)
 			go func () {
-				metric.AddMemoPostSearch(searchString)
+				metric.AddMemoPostSearch(searchString, res.UrlPostsNew)
 			}()
 		} else {
 			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlPostsNew)

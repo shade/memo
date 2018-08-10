@@ -72,7 +72,7 @@ var rankedRoute = web.Route{
 		if searchString != "" {
 			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlPostsRanked, "/"), searchString)
 			go func () {
-				metric.AddMemoPostSearch(searchString)
+				metric.AddMemoPostSearch(searchString, res.UrlPostsRanked)
 			}()
 		} else {
 			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlPostsRanked)

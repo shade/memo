@@ -371,8 +371,8 @@ func AttachRepliesToPost(post *Post, offset uint) error {
 	return nil
 }
 
-func GetRecentPosts(selfPkHash []byte, offset uint) ([]*Post, error) {
-	dbPosts, err := db.GetRecentPosts(offset)
+func GetRecentPosts(selfPkHash []byte, offset uint, searchString string) ([]*Post, error) {
+	dbPosts, err := db.GetRecentPosts(offset, searchString)
 	if err != nil {
 		return nil, jerr.Get("error getting posts for hash", err)
 	}
@@ -406,8 +406,8 @@ func GetTopPostsNamedRange(selfPkHash []byte, offset uint, timeRange string, per
 	return GetTopPosts(selfPkHash, offset, timeStart, time.Time{}, personalized)
 }
 
-func GetRankedPosts(selfPkHash []byte, offset uint) ([]*Post, error) {
-	memoPosts, err := db.GetRankedPosts(offset)
+func GetRankedPosts(selfPkHash []byte, offset uint, searchString string) ([]*Post, error) {
+	memoPosts, err := db.GetRankedPosts(offset, searchString)
 	if err != nil {
 		return nil, jerr.Get("error getting posts for hash", err)
 	}

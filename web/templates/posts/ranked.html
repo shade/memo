@@ -2,6 +2,14 @@
 
 {{ template "posts/snippets/header.html" dict "Page" "ranked" "IsLoggedIn" .IsLoggedIn }}
 
+<div class="center">
+    <form id="posts-search-form" class="form-inline search-form">
+        <input id="posts-search" class="form-control" type="text" name="s" placeholder="{{ T "Search Memo" }}"
+               value="{{ .SearchString }}"/>
+        <input class="btn btn-primary" type="submit" value="{{ T "search" | Title }}"/>
+    </form>
+</div>
+
 {{ template "snippets/pagination.html" dict "OffsetLink" .OffsetLink "NextOffset" .NextOffset "PrevOffset" .PrevOffset "Page" .Page "Items" .Posts }}
 
 {{ template "posts/snippets/posts.html" dict "Posts" .Posts "TimeZone" .TimeZone "UserSettings" .UserSettings }}

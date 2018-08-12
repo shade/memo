@@ -478,7 +478,12 @@ func GetTopicInfoFromPosts(topicNames ...string) ([]*view.Topic, error) {
 	}
 	joinSelect := "LEFT JOIN (" +
 		"	SELECT MAX(id) AS id" +
-		"	FROM memo_topic_follows" +
+		"	FROM memo_topic_follows"
+	if len(topicNames) > 0 {
+		joinSelect +=
+		" WHERE topic IN (?)"
+	}
+	joinSelect +=
 		"	GROUP BY pk_hash, topic" +
 		") sq ON (sq.id = memo_topic_follows.id) "
 	query := db.
@@ -489,7 +494,7 @@ func GetTopicInfoFromPosts(topicNames ...string) ([]*view.Topic, error) {
 		"COUNT(DISTINCT memo_posts.id) AS post_count, " +
 		"COUNT(DISTINCT case memo_topic_follows.unfollow when 0 then memo_topic_follows.id else null end) AS follower_count").
 		Joins("LEFT JOIN memo_topic_follows ON (memo_posts.topic = memo_topic_follows.topic)").
-		Joins(joinSelect).
+		Joins(joinSelect, topicNames).
 		Joins("LEFT JOIN blocks ON (memo_posts.block_id = blocks.id)").
 		Group("memo_posts.topic")
 	if len(topicNames) > 0 {

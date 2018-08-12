@@ -9,7 +9,7 @@ func updateTopicInfo(topicName string) {
 	go func() {
 		err := topic_info.Update(topicName)
 		if err != nil {
-			jerr.Getf(err, "error updating topic info: %s", topicName)
+			jerr.Getf(err, "error updating topic info: %s", topicName).Print()
 		}
 	}()
 }

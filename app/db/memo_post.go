@@ -265,12 +265,15 @@ func GetPostsForPkHash(pkHash []byte, offset uint) ([]*MemoPost, error) {
 	return memoPosts, nil
 }
 
-func GetRecentPosts(offset uint) ([]*MemoPost, error) {
+func GetRecentPosts(offset uint, searchString string) ([]*MemoPost, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
 	}
 	db = db.Preload(BlockTable)
+	if searchString != "" {
+		db = db.Where("message LIKE ?", fmt.Sprintf("%%%s%%", searchString))
+	}
 	var memoPosts []*MemoPost
 	result := db.
 		Limit(25).
@@ -368,7 +371,7 @@ const (
 	RankGravity    float32 = 2
 )
 
-func GetRankedPosts(offset uint) ([]*MemoPost, error) {
+func GetRankedPosts(offset uint, searchString string) ([]*MemoPost, error) {
 	db, err := getDb()
 	if err != nil {
 		return nil, jerr.Get("error getting db", err)
@@ -376,11 +379,15 @@ func GetRankedPosts(offset uint) ([]*MemoPost, error) {
 	var coalescedTimestamp = "IF(COALESCE(blocks.timestamp, memo_posts.created_at) < memo_posts.created_at, blocks.timestamp, memo_posts.created_at)"
 	var scoreQuery = fmt.Sprintf("((COUNT(DISTINCT memo_likes.pk_hash)-1)*%d)/POW(TIMESTAMPDIFF(MINUTE, "+coalescedTimestamp+", NOW())+2,%0.2f)", RankCountBoost, RankGravity)
 
+	if searchString != "" {
+		db = db.Where("message LIKE ?", fmt.Sprintf("%%%s%%", searchString))
+	} else {
+		db = db.Where(coalescedTimestamp + " > DATE_SUB(NOW(), INTERVAL 7 DAY)")
+	}
 	var memoPosts []*MemoPost
 	result := db.
 		Joins("LEFT OUTER JOIN memo_likes ON (memo_posts.tx_hash = memo_likes.like_tx_hash)").
 		Joins("LEFT OUTER JOIN blocks ON (memo_posts.block_id = blocks.id)").
-		Where(coalescedTimestamp + " > DATE_SUB(NOW(), INTERVAL 3 DAY)").
 		Group("memo_posts.tx_hash").
 		Order(scoreQuery + " DESC").
 		Limit(25).

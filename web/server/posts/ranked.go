@@ -6,6 +6,7 @@ import (
 	"github.com/jchavannes/jgo/web"
 	"github.com/memocash/memo/app/auth"
 	"github.com/memocash/memo/app/db"
+	"github.com/memocash/memo/app/html-parser"
 	"github.com/memocash/memo/app/profile"
 	"github.com/memocash/memo/app/res"
 	"net/http"
@@ -17,6 +18,7 @@ var rankedRoute = web.Route{
 	Handler: func(r *web.Response) {
 		preHandler(r)
 		offset := r.Request.GetUrlParameterInt("offset")
+		searchString := html_parser.EscapeWithEmojis(r.Request.GetUrlParameter("s"))
 		var userPkHash []byte
 		var userId uint
 		if auth.IsLoggedIn(r.Session.CookieId) {
@@ -33,7 +35,7 @@ var rankedRoute = web.Route{
 			userPkHash = key.PkHash
 			userId = user.Id
 		}
-		posts, err := profile.GetRankedPosts(userPkHash, uint(offset))
+		posts, err := profile.GetRankedPosts(userPkHash, uint(offset), searchString)
 		if err != nil {
 			r.Error(jerr.Get("error getting ranked posts", err), http.StatusInternalServerError)
 			return
@@ -66,7 +68,12 @@ var rankedRoute = web.Route{
 			return
 		}
 		res.SetPageAndOffset(r, offset)
-		r.Helper["OffsetLink"] = fmt.Sprintf("%s?", strings.TrimLeft(res.UrlPostsRanked, "/"))
+		if searchString != "" {
+			r.Helper["OffsetLink"] = fmt.Sprintf("%s?s=%s", strings.TrimLeft(res.UrlPostsRanked, "/"), searchString)
+		} else {
+			r.Helper["OffsetLink"] = fmt.Sprintf("%s?", res.UrlPostsRanked)
+		}
+		r.Helper["SearchString"] = searchString
 		r.Helper["Posts"] = posts
 		r.Helper["Title"] = "Memo - Ranked Posts"
 		r.Render()

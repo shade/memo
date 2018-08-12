@@ -17,13 +17,17 @@ const (
 )
 
 const (
-	TagUrl     = "url"
-	TagPattern = "pattern"
-	TagCode    = "response_code"
+	TagUrl          = "url"
+	TagPattern      = "pattern"
+	TagResponseCode = "response_code"
 
 	TagOutputType = "type"
 
 	TagSearchTerm = "search_term"
+
+	TagCmd    = "cmd"
+	TagCode   = "code"
+	TagReason = "reason"
 )
 
 var statsdClient *statsd.Client

@@ -8,6 +8,8 @@ import (
 	"github.com/memocash/memo/app/config"
 	"log"
 	"net"
+	"github.com/memocash/memo/app/metric"
+	"github.com/jchavannes/jgo/jerr"
 )
 
 var Node QNode
@@ -24,7 +26,6 @@ func (n *QNode) Start() {
 		ChainParams:      &wallet.MainNetParams,
 		DisableRelayTx:   true,
 		Listeners: peer.MessageListeners{
-			OnVerAck: n.OnVerAck,
 			OnReject: n.OnReject,
 			OnPing:   n.OnPing,
 		},
@@ -49,11 +50,12 @@ func (n *QNode) KeepAlive() {
 	}
 }
 
-func (n *QNode) OnVerAck(p *peer.Peer, msg *wire.MsgVerAck) {
-}
-
 func (n *QNode) OnReject(p *peer.Peer, msg *wire.MsgReject) {
 	fmt.Printf("Hash: %s\nCmd: %s\nCode: %s\nReason: %s\n", msg.Hash.String(), msg.Cmd, msg.Code.String(), msg.Reason)
+	err := metric.AddMemoReject(msg.Cmd, msg.Code.String(), msg.Reason)
+	if err != nil {
+		jerr.Get("error adding reject metric", err).Print()
+	}
 }
 
 func (n *QNode) OnPing(p *peer.Peer, msg *wire.MsgPing) {

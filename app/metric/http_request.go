@@ -17,7 +17,7 @@ func AddHttpRequest(url string, pattern string, requestTime time.Duration, code 
 	tags := []string{
 		fmt.Sprintf("%s:%s", TagUrl, url),
 		fmt.Sprintf("%s:%s", TagPattern, pattern),
-		fmt.Sprintf("%s:%d", TagCode, code),
+		fmt.Sprintf("%s:%d", TagResponseCode, code),
 	}
 	err = c.Incr(NameHttpRequest, tags, 1)
 	if err != nil {

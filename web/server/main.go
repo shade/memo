@@ -47,8 +47,8 @@ func getCsrfToken(cookieId string) string {
 
 func preHandler(r *web.Response) {
 	useMinJS := config.GetUseMinJs()
-	r.Helper["Title"] = "Memo"
-	r.Helper["Description"] = "Universal social networking dapp built on Bitcoin Cash"
+	r.Helper["Title"] = "Memo - The Bitcoin Social Network"
+	r.Helper["Description"] = "Universal social networking and identity dapp built on Bitcoin Cash"
 	r.Helper["BaseUrl"] = res.GetBaseUrl(r)
 	if r.Request.HttpRequest.Host != "memo.cash" {
 		r.Helper["Dev"] = true
